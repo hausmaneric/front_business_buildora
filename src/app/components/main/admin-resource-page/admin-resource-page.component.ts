@@ -390,7 +390,7 @@ export class AdminResourcePageComponent {
   }
 
   actionColumnWidth(): number {
-    return 164;
+    return 184;
   }
 
   dialogTitle(): string {

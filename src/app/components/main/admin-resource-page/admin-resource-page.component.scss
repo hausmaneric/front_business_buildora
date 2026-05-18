@@ -134,6 +134,7 @@
   width: max-content;
   min-width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .resource-grid th,
@@ -164,9 +165,25 @@
   background: rgba(16, 185, 129, 0.04);
 }
 
+.resource-grid tbody tr:hover td.actions-column {
+  background: rgba(16, 185, 129, 0.04);
+}
+
 .actions-column {
-  width: 150px;
-  min-width: 150px;
+  width: 184px;
+  min-width: 184px;
+  max-width: 184px;
+  text-align: center;
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: #fff;
+  box-shadow: -1px 0 0 rgba(100, 116, 139, 0.08);
+}
+
+.resource-grid th.actions-column {
+  z-index: 3;
+  background: #f8fafc;
 }
 
 .status-badge {
@@ -249,9 +266,10 @@
 
 .row-actions {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 .row-action {
