@@ -1,0 +1,101 @@
+<section class="ops-page">
+  @if (loading) {
+    <article class="ops-state orb-card">
+      <strong>Carregando {{ title.toLowerCase() }}...</strong>
+    </article>
+  } @else if (errorMessage) {
+    <article class="ops-state orb-card error-state">
+      <strong>Falha ao carregar dados</strong>
+      <span>{{ errorMessage }}</span>
+    </article>
+  } @else {
+    <article class="ops-header orb-card">
+      <div>
+        <h3>{{ title }}</h3>
+        <p>{{ subtitle }}</p>
+      </div>
+    </article>
+
+    <div class="ops-cards">
+      @for (card of cards; track card.label) {
+        <article class="ops-card orb-card" [class]="'tone-' + (card.tone || 'default')">
+          <span class="card-label">{{ card.label }}</span>
+          <strong>{{ card.value }}</strong>
+          <small>{{ card.detail }}</small>
+        </article>
+      }
+    </div>
+
+    @if (rows.length) {
+      <article class="ops-grid orb-card">
+        <div class="ops-grid-toolbar">
+          <div class="ops-grid-count">{{ totalRowsLabel() }}</div>
+          <div class="ops-grid-search">
+            <ejs-textbox
+              cssClass="orb-input"
+              placeholder="Buscar registros..."
+              [value]="searchTerm"
+              (input)="onSearch($any($event.target).value)">
+            </ejs-textbox>
+          </div>
+        </div>
+
+        @if (filteredRows.length) {
+          <div class="ops-grid-shell">
+            <table class="ops-table" [style.min-width.px]="totalRowsMinWidth()">
+              <colgroup>
+                @for (column of columns; track column.field) {
+                  <col [style.width.px]="column.width || 180" [style.min-width.px]="column.width || 180" />
+                }
+              </colgroup>
+              <thead>
+                <tr>
+                  @for (column of columns; track column.field) {
+                    <th [title]="column.headerText">{{ column.headerText }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of filteredRows; track $index) {
+                  <tr>
+                    @for (column of columns; track column.field) {
+                      <td [title]="row?.[column.field] ?? ''">
+                        @if (isBadgeField(column)) {
+                          <span class="status-badge" [class]="'status-badge ' + badgeTone(row?.[column.field])">
+                            {{ row?.[column.field] ?? '-' }}
+                          </span>
+                        } @else {
+                          {{ row?.[column.field] ?? '-' }}
+                        }
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-grid-state">
+            <strong>Nenhum registro encontrado</strong>
+            <p>Ajuste a busca para refinar os dados desta área.</p>
+          </div>
+        }
+      </article>
+    }
+
+    @if (panels.length) {
+      <div class="ops-panels">
+        @for (panel of panels; track panel.title) {
+          <article class="ops-panel orb-card">
+            <h4>{{ panel.title }}</h4>
+            <ul>
+              @for (line of panel.lines; track line) {
+                <li>{{ line }}</li>
+              }
+            </ul>
+          </article>
+        }
+      </div>
+    }
+  }
+</section>

@@ -1,0 +1,96 @@
+/* ============================= */
+/* CONTENT LAYOUT */
+/* ============================= */
+
+.content {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* GRID ocupa o restante */
+.grid-wrapper {
+  flex: 1;
+  margin-top: 8px;
+  min-height: 0;
+}
+
+
+/* ============================= */
+/* GRID CLEAN + COMPACT STYLE */
+/* ============================= */
+
+::ng-deep .e-grid {
+  border: none !important;
+  font-size: 12px;
+}
+
+/* REMOVE BORDA SUPERIOR DO HEADER */
+::ng-deep .e-gridheader {
+  border-top: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* HEADER */
+::ng-deep .e-headercontent,
+::ng-deep .e-headercell {
+  border-top: none !important;
+}
+
+::ng-deep .e-headercell {
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  background: #f9fafb;
+  padding: 6px 10px !important;
+  height: 34px !important;
+  line-height: 18px !important;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ROW */
+::ng-deep .e-row {
+  height: 34px !important;
+}
+
+::ng-deep .e-rowcell {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 6px 10px !important;
+  line-height: 18px !important;
+  font-size: 12px;
+}
+
+/* Remove linhas verticais */
+::ng-deep .e-grid td,
+::ng-deep .e-grid th {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Seleção elegante */
+::ng-deep .e-selectionbackground {
+  background-color: #e6f2ff !important;
+}
+
+/* Hover suave */
+::ng-deep .e-row:hover .e-rowcell {
+  background-color: #f3f8ff !important;
+}
+
+/* Ícone de sort visível */
+::ng-deep .e-sortfilterdiv {
+  opacity: 1 !important;
+}
+
+/* Scroll somente na grid */
+::ng-deep .e-gridcontent {
+  overflow-y: auto !important;
+}
+

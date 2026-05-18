@@ -1,0 +1,37 @@
+<div class="content">
+
+  <!-- TOOLBAR -->
+<app-action-toolbar
+  [moduleTitle]="moduleTitle"
+  [moduleIcon]="moduleIcon"
+  [buttons]="toolbarButtons"
+  (action)="handleToolbarAction($event)">
+</app-action-toolbar>
+
+  <!-- GRID -->
+  <div class="grid-wrapper">
+
+    <ejs-grid
+      #grid
+      [dataSource]="data"
+      [allowPaging]="false"
+      [allowSorting]="true"
+      [sortSettings]="sortOptions"
+      [selectionSettings]="selectionOptions"
+      height="100%"
+      (rowSelected)="onRowSelected($event)"
+      (recordDoubleClick)="onDoubleClick($event)"
+      (dataBound)="onDataBound()"  
+    >
+
+      <e-columns>
+        <e-column field="id" headerText="ID" width="80" textAlign="Right"></e-column>
+        <e-column field="name" headerText="Departamento" width="200"></e-column>
+        <e-column field="email" headerText="Email"></e-column>
+      </e-columns>
+
+    </ejs-grid>
+
+  </div>
+
+</div>

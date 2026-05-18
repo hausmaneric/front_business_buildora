@@ -1,0 +1,39 @@
+<header class="topbar orb-card">
+  <div class="topbar-left">
+    <button class="menu-btn" type="button" (click)="layoutService.onMenuToggle()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="page-copy">
+      <h2>{{ title }}</h2>
+      <p>{{ subtitle }}</p>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="search-field" type="button" title="Buscar módulos e dados" (click)="focusPageSearch()">
+      <i class="icon-search"></i>
+      <span>Buscar...</span>
+    </button>
+
+    <button class="icon-btn notification-btn" type="button" title="Abrir ocorrências e alertas" (click)="openNotifications()">
+      <i class="icon-bell"></i>
+      <span class="badge">3</span>
+    </button>
+
+    <div class="date-picker-shell">
+      <span class="calendar-icon"></span>
+      <ejs-dropdownlist
+        cssClass="date-range-dropdown"
+        [dataSource]="dateRanges"
+        [fields]="{ text: 'text', value: 'id' }"
+        [value]="currentDateRange"
+        (change)="onDateRangeChange($any($event).value)">
+      </ejs-dropdownlist>
+    </div>
+
+    <button class="new-diary-btn" type="button" (click)="openNewDiary()">+ Novo Diário</button>
+  </div>
+</header>

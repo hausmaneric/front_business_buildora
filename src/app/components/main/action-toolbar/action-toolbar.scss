@@ -1,0 +1,115 @@
+/* ============================= */
+/* TOOLBAR BASE */
+/* ============================= */
+
+.erp-toolbar {
+  width: 100%;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 6px 20px;
+  box-sizing: border-box;
+}
+
+/* 🔥 CONTAINER CENTRAL */
+.erp-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ============================= */
+/* MODULE (TITLE) */
+/* ============================= */
+
+.erp-module {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.erp-module-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.erp-module-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.erp-module-icon i {
+  font-size: 26px;
+}
+
+.erp-module-title {
+  font-size: 18px;
+}
+
+/* ============================= */
+/* ACTIONS */
+/* ============================= */
+
+.erp-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ============================= */
+/* BUTTON */
+/* ============================= */
+
+.erp-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column; /* 🔥 padrão com texto */
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: 0.2s;
+}
+
+/* 🔥 Quando for apenas ícone */
+
+.erp-btn.icon-only {
+  flex-direction: row;
+  padding: 6px;
+}
+
+/* 🔥 TAMANHO UNIFICADO DOS ÍCONES */
+
+.erp-btn i,
+.erp-icon-img {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: contain;
+}
+
+/* 🔥 TEXTO */
+
+.erp-btn-text {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Hover */
+
+.erp-btn:hover:not(:disabled) {
+  background: rgba(0,0,0,0.05);
+  border-radius: 6px;
+}
+
+.erp-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

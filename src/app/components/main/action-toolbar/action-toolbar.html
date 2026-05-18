@@ -1,0 +1,67 @@
+<div class="erp-toolbar">
+
+  <div class="erp-container">
+
+    <!-- 🔥 TÍTULO (se existir) -->
+    <div class="erp-module" *ngIf="moduleTitle">
+
+      <div class="erp-module-icon">
+
+        <img
+          *ngIf="moduleImage; else iconTpl"
+          [src]="moduleImage"
+          class="erp-module-img"
+          alt="module-icon" />
+
+        <ng-template #iconTpl>
+          <i *ngIf="moduleIcon" class="e-icons" [ngClass]="moduleIcon"></i>
+        </ng-template>
+
+      </div>
+
+      <div class="erp-module-title form-title">
+        {{ moduleTitle }}
+      </div>
+
+    </div>
+
+    <!-- 🔥 BOTÕES -->
+    <div class="erp-actions">
+
+      <ng-container *ngFor="let btn of buttons">
+
+        <ng-container *ngIf="btn.visible !== false">
+
+          <button
+            class="erp-btn"
+            [class.icon-only]="!btn.text"
+            [disabled]="btn.disabled"
+            (click)="onClick(btn.id)">
+
+            <!-- 🔹 Ícone ou imagem -->
+            <img
+              *ngIf="btn.image; else iconButtonTpl"
+              [src]="btn.image"
+              class="erp-icon-img"
+              alt="icon" />
+
+            <ng-template #iconButtonTpl>
+              <i *ngIf="btn.icon" class="e-icons" [ngClass]="btn.icon"></i>
+            </ng-template>
+
+            <!-- 🔥 TEXTO OPCIONAL -->
+            <span *ngIf="btn.text" class="erp-btn-text">
+              {{ btn.text }}
+            </span>
+
+          </button>
+
+        </ng-container>
+
+      </ng-container>
+
+    </div>
+
+  </div>
+
+</div>

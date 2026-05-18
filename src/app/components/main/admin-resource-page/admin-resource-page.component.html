@@ -1,0 +1,208 @@
+<section class="resource-page">
+  @if (toasts.length) {
+    <div class="toast-stack">
+      @for (toast of toasts; track toast.id) {
+        <div class="toast-item" [class.success]="toast.type === 'success'" [class.error]="toast.type === 'error'" [class.info]="toast.type === 'info'">
+          <div>
+            <strong>{{ toast.title }}</strong>
+            <p>{{ toast.message }}</p>
+          </div>
+          <button type="button" class="toast-close" (click)="dismissToast(toast.id)">×</button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (loading) {
+    <article class="resource-body orb-card loading-state">
+      <div class="loading-skeleton">
+        <span class="skeleton-line w-40"></span>
+        <span class="skeleton-line w-70"></span>
+        <span class="skeleton-line w-55"></span>
+      </div>
+      <strong>Carregando {{ title.toLowerCase() }}...</strong>
+    </article>
+  } @else if (placeholder) {
+    <article class="resource-body orb-card placeholder-state">
+      <strong>{{ title }}</strong>
+      <p>{{ placeholderMessage }}</p>
+    </article>
+  } @else {
+    <article class="resource-body orb-card">
+      <div class="resource-topline">
+        <div>
+          <h3>{{ title }}</h3>
+          <p>{{ subtitle }}</p>
+        </div>
+
+        @if (supportsCreate) {
+          <button ejs-button class="primary-action" type="button" (click)="openCreateDialog()">Novo cadastro</button>
+        }
+      </div>
+
+      <div class="resource-summary">
+        <span class="metric-pill">Total: <strong>{{ totalItems }}</strong></span>
+        <span class="metric-pill">Página: <strong>{{ currentPage }}</strong></span>
+        <span class="metric-pill">Mostrando: <strong>{{ filteredRows.length }}</strong></span>
+        <span class="metric-pill">Busca: <strong>{{ appliedSearch || 'Sem filtro' }}</strong></span>
+      </div>
+
+      <div class="resource-toolbar">
+        <div class="resource-search">
+          <ejs-textbox cssClass="orb-input" placeholder="Buscar registros..." [value]="searchTerm" (input)="searchTerm = $any($event.target).value"></ejs-textbox>
+        </div>
+        <button ejs-button cssClass="dialog-secondary" type="button" (click)="clearSearch()">Limpar</button>
+        <button ejs-button cssClass="dialog-primary" type="button" (click)="applySearch()">Buscar</button>
+        <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportCsv()">Exportar CSV</button>
+        <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportJson()">Exportar JSON</button>
+      </div>
+
+      <div class="resource-controls">
+        <div class="control-item">
+          <label>Ordenar por</label>
+          <ejs-dropdownlist
+            [dataSource]="sortOptions"
+            [fields]="{ text: 'text', value: 'id' }"
+            [value]="sortField"
+            (change)="changeSortField($any($event).value)">
+          </ejs-dropdownlist>
+        </div>
+        <div class="control-item">
+          <label>Direção</label>
+          <ejs-dropdownlist
+            [dataSource]="sortDirectionOptions"
+            [fields]="{ text: 'text', value: 'id' }"
+            [value]="sortDirection"
+            (change)="changeSortDirection($any($event).value)">
+          </ejs-dropdownlist>
+        </div>
+        <div class="control-item">
+          <label>Tamanho da página</label>
+          <ejs-dropdownlist
+            [dataSource]="pageSizeOptions"
+            [fields]="{ text: 'text', value: 'id' }"
+            [value]="pageSize"
+            (change)="changePageSize($any($event).value)">
+          </ejs-dropdownlist>
+        </div>
+      </div>
+
+      @if (filteredRows.length) {
+        <div class="grid-shell">
+          <table class="resource-grid" [style.min-width.px]="totalRowsMinWidth()">
+            <colgroup>
+              @for (column of columns; track column.field) {
+                <col [style.width.px]="column.width" [style.min-width.px]="column.width" />
+              }
+              <col [style.width.px]="actionColumnWidth()" [style.min-width.px]="actionColumnWidth()" />
+            </colgroup>
+            <thead>
+              <tr>
+                @for (column of columns; track column.field) {
+                  <th [title]="column.headerText">{{ column.headerText }}</th>
+                }
+                <th class="actions-column">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredRows; track row.id ?? row.code ?? $index) {
+                <tr>
+                  @for (column of columns; track column.field) {
+                    <td [title]="row?.[column.field] ?? ''">
+                      @if (isBadgeField(column)) {
+                        <span class="status-badge" [class]="'status-badge ' + badgeTone(row?.[column.field])">
+                          {{ row?.[column.field] ?? '-' }}
+                        </span>
+                      } @else {
+                        {{ row?.[column.field] ?? '-' }}
+                      }
+                    </td>
+                  }
+                  <td class="actions-column">
+                    <div class="row-actions">
+                      <button ejs-button cssClass="row-action edit icon-only" type="button" title="Editar" [disabled]="!canEdit(row)" (click)="openEditDialog(row)">
+                        <span class="row-action-icon">✎</span>
+                      </button>
+                      <button ejs-button cssClass="row-action duplicate icon-only" type="button" title="Duplicar" [disabled]="!canDuplicate(row)" (click)="openDuplicateDialog(row)">
+                        <span class="row-action-icon">⧉</span>
+                      </button>
+                      <button ejs-button cssClass="row-action delete icon-only" type="button" [disabled]="!canDelete(row)" [title]="disabledReason(row) || 'Remover'" (click)="deleteRow(row)">
+                        <span class="row-action-icon">✕</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pager-bar">
+          <button ejs-button cssClass="dialog-secondary" type="button" [disabled]="currentPage <= 1" (click)="previousPage()">Anterior</button>
+          <div class="pager-copy">
+            <span class="pager-info">{{ totalRowsLabel() }}</span>
+            <small>{{ pageLabel() }}</small>
+          </div>
+          <button ejs-button cssClass="dialog-primary" type="button" [disabled]="currentPage >= totalPages" (click)="nextPage()">Próxima</button>
+        </div>
+      } @else {
+        <div class="empty-grid-state">
+          <strong>Nenhum registro encontrado</strong>
+          <p>Ajuste a busca ou crie um novo cadastro para este módulo.</p>
+        </div>
+      }
+    </article>
+  }
+
+  <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="760px" [header]="dialogTitle()">
+    <form class="create-form" [formGroup]="createForm">
+      <div class="form-grid two-cols">
+        @for (field of activeFields; track field.controlName) {
+          <div class="form-field" [class.full-span]="field.type === 'textarea'">
+            <label>{{ field.label }}</label>
+
+            @switch (field.type) {
+              @case ('textarea') {
+                <textarea class="orb-native-textarea" [formControlName]="field.controlName" [placeholder]="field.placeholder || ''" rows="4"></textarea>
+              }
+              @case ('select') {
+                <ejs-dropdownlist
+                  [formControlName]="field.controlName"
+                  [dataSource]="controlOptions(field)"
+                  [fields]="{ text: 'text', value: 'id' }"
+                  [placeholder]="field.placeholder || 'Selecione'">
+                </ejs-dropdownlist>
+              }
+              @case ('checkbox') {
+                <label class="checkbox-field">
+                  <input type="checkbox" [formControlName]="field.controlName" />
+                  <span>Sim</span>
+                </label>
+              }
+              @default {
+                <ejs-textbox [formControlName]="field.controlName" [type]="inputType(field)" cssClass="orb-input" [placeholder]="field.placeholder || ''"></ejs-textbox>
+              }
+            }
+
+            @if (fieldError(field.controlName)) {
+              <small class="field-error">{{ fieldError(field.controlName) }}</small>
+            }
+          </div>
+        }
+      </div>
+
+      @if (dialogMessage) {
+        <div class="dialog-error">{{ dialogMessage }}</div>
+      }
+    </form>
+
+    <ng-template #footerTemplate>
+      <div class="dialog-actions">
+        <button ejs-button type="button" cssClass="dialog-secondary" (click)="closeCreateDialog()">Cancelar</button>
+        <button ejs-button type="button" cssClass="dialog-primary" (click)="submitCreate()">
+          {{ saving ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+    </ng-template>
+  </ejs-dialog>
+</section>

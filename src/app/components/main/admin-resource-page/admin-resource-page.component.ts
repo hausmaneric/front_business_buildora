@@ -1,0 +1,1201 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
+import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
+import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { DialogComponent, DialogModule } from '@syncfusion/ej2-angular-popups';
+import { Observable, finalize } from 'rxjs';
+import {
+  BusinessActivity,
+  BusinessDiary,
+  BusinessDocument,
+  BusinessEquipment,
+  BusinessMaterial,
+  BusinessOccurrence,
+  BusinessProject,
+  BusinessTeam,
+  BusinessUser,
+  TenantMetadataRole
+} from '../../../models/admin-resource';
+import { AdminDataService } from '../../../services/admin-data.service';
+import { LoginService } from '../../../services/login.service';
+
+type DialogMode = 'create' | 'edit' | 'duplicate';
+type ResourceKey =
+  | 'projects'
+  | 'diaries'
+  | 'activities'
+  | 'teams'
+  | 'materials'
+  | 'equipments'
+  | 'occurrences'
+  | 'documents'
+  | 'users';
+type SelectBucket =
+  | 'companies'
+  | 'users'
+  | 'roles'
+  | 'projects'
+  | 'diaries'
+  | 'projectStatus'
+  | 'diaryStatus'
+  | 'movementType'
+  | 'equipmentStatus'
+  | 'occurrenceType'
+  | 'severity';
+type ResourceFieldType = 'text' | 'number' | 'textarea' | 'select' | 'date' | 'checkbox';
+
+interface ResourceColumn {
+  field: string;
+  headerText: string;
+  width: number;
+  type?: 'badge' | 'date' | 'currency' | 'storage' | 'number';
+}
+
+interface ResourceField {
+  controlName: string;
+  label: string;
+  type: ResourceFieldType;
+  placeholder?: string;
+  optionsKey?: SelectBucket;
+  required?: boolean;
+  min?: number;
+  hideOnEdit?: boolean;
+}
+
+interface ResourceConfig {
+  sortField: string;
+  supportsCreate: boolean;
+  supportsEdit: boolean;
+  supportsDuplicate: boolean;
+  supportsDelete: boolean;
+  list: (token: string) => Observable<any>;
+  create?: (token: string, payload: Record<string, any>) => Observable<any>;
+  update?: (token: string, payload: Record<string, any>) => Observable<any>;
+  remove?: (token: string, id: number) => Observable<any>;
+  columns: ResourceColumn[];
+  fields: ResourceField[];
+}
+
+interface ToastMessage {
+  id: number;
+  type: 'success' | 'error' | 'info';
+  title: string;
+  message: string;
+}
+
+@Component({
+  selector: 'app-admin-resource-page',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TextBoxModule, DialogModule, ButtonModule, DropDownListModule],
+  templateUrl: './admin-resource-page.component.html',
+  styleUrl: './admin-resource-page.component.scss'
+})
+export class AdminResourcePageComponent {
+  @ViewChild('createDialog') createDialog!: DialogComponent;
+
+  title = 'Operação';
+  subtitle = '';
+  resource: ResourceKey = 'projects';
+  loading = true;
+  saving = false;
+  placeholder = false;
+  placeholderMessage = '';
+  dialogMessage = '';
+  rows: any[] = [];
+  filteredRows: any[] = [];
+  columns: ResourceColumn[] = [];
+  createForm!: FormGroup;
+  dialogMode: DialogMode = 'create';
+  editingRow: any = null;
+  searchTerm = '';
+  appliedSearch = '';
+  pageSize = 20;
+  currentPage = 1;
+  totalItems = 0;
+  totalPages = 1;
+  sortField = 'id';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  sortOptions: Array<{ id: string; text: string }> = [];
+  toasts: ToastMessage[] = [];
+
+  readonly pageSizeOptions = [
+    { id: 10, text: '10 por página' },
+    { id: 20, text: '20 por página' },
+    { id: 50, text: '50 por página' }
+  ];
+
+  readonly sortDirectionOptions = [
+    { id: 'desc', text: 'Decrescente' },
+    { id: 'asc', text: 'Crescente' }
+  ];
+
+  optionBuckets: Record<SelectBucket, Array<{ id: any; text: string }>> = {
+    companies: [],
+    users: [],
+    roles: [],
+    projects: [],
+    diaries: [],
+    projectStatus: [],
+    diaryStatus: [],
+    movementType: [],
+    equipmentStatus: [],
+    occurrenceType: [],
+    severity: []
+  };
+
+  private toastSeed = 1;
+  private supportLoaded = false;
+  private allRows: any[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private loginService: LoginService,
+    private adminDataService: AdminDataService,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.route.data.subscribe((data) => {
+      this.title = data['title'] ?? 'Operação';
+      this.subtitle = data['subtitle'] ?? '';
+      this.resource = data['resource'] ?? 'projects';
+      this.configurePage();
+    });
+  }
+
+  get activeFields(): ResourceField[] {
+    return this.config().fields.filter((field) => !(this.dialogMode === 'edit' && field.hideOnEdit));
+  }
+
+  get supportsCreate(): boolean {
+    return this.config().supportsCreate;
+  }
+
+  openCreateDialog(): void {
+    if (!this.config().supportsCreate) {
+      return;
+    }
+    this.ensureSupportOptions();
+    this.dialogMode = 'create';
+    this.editingRow = null;
+    this.createForm = this.buildForm();
+    this.dialogMessage = '';
+    this.createDialog.show();
+  }
+
+  openEditDialog(row: any): void {
+    if (!this.canEdit(row)) {
+      return;
+    }
+    this.ensureSupportOptions();
+    this.dialogMode = 'edit';
+    this.editingRow = row;
+    this.createForm = this.buildForm();
+    this.createForm.patchValue(this.toFormValue(row, 'edit'));
+    this.dialogMessage = '';
+    this.createDialog.show();
+  }
+
+  openDuplicateDialog(row: any): void {
+    if (!this.canDuplicate(row)) {
+      return;
+    }
+    this.ensureSupportOptions();
+    this.dialogMode = 'duplicate';
+    this.editingRow = row;
+    this.createForm = this.buildForm();
+    this.createForm.patchValue(this.toFormValue(row, 'duplicate'));
+    this.dialogMessage = '';
+    this.createDialog.show();
+  }
+
+  closeCreateDialog(): void {
+    this.createDialog.hide();
+  }
+
+  submitCreate(): void {
+    if (this.createForm.invalid || this.saving) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+
+    const token = this.loginService.getToken();
+    if (!token) {
+      this.redirectToLogin();
+      return;
+    }
+
+    const config = this.config();
+    const payload = this.createPayload();
+    const request$ = this.dialogMode === 'edit' ? config.update?.(token, payload) : config.create?.(token, payload);
+    if (!request$) {
+      return;
+    }
+
+    this.saving = true;
+    request$
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.flushView();
+      }))
+      .subscribe({
+        next: (response) => {
+          if (!response?.status) {
+            if (this.isAuthenticationFailure(response?.message)) {
+              this.redirectToLogin();
+              return;
+            }
+            this.dialogMessage = response?.message || 'Não foi possível salvar o registro.';
+            this.pushToast('error', 'Falha ao salvar', this.dialogMessage);
+            return;
+          }
+
+          this.pushToast(
+            'success',
+            this.dialogMode === 'edit' ? 'Registro atualizado' : 'Registro salvo',
+            response.message || 'Operação concluída com sucesso.'
+          );
+          this.closeCreateDialog();
+          this.loadRows();
+        },
+        error: (error) => {
+          const message = error?.error?.message || 'Não foi possível salvar o registro.';
+          if (this.isAuthenticationFailure(message)) {
+            this.redirectToLogin();
+            return;
+          }
+          this.dialogMessage = message;
+          this.pushToast('error', 'Erro de operação', message);
+        }
+      });
+  }
+
+  deleteRow(row: any): void {
+    if (!this.canDelete(row)) {
+      return;
+    }
+
+    const token = this.loginService.getToken();
+    if (!token) {
+      this.redirectToLogin();
+      return;
+    }
+
+    if (!confirm(`Deseja remover este registro de ${this.title.toLowerCase()}?`)) {
+      return;
+    }
+
+    const remove = this.config().remove;
+    if (!remove) {
+      return;
+    }
+
+    this.loading = true;
+    remove(token, row.id)
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.flushView();
+      }))
+      .subscribe({
+        next: (response) => {
+          if (!response?.status) {
+            if (this.isAuthenticationFailure(response?.message)) {
+              this.redirectToLogin();
+              return;
+            }
+            this.pushToast('error', 'Falha ao remover', response?.message || 'Não foi possível remover o registro.');
+            return;
+          }
+          this.pushToast('success', 'Registro removido', response.message || 'Exclusão realizada com sucesso.');
+          this.loadRows();
+        },
+        error: (error) => {
+          const message = error?.error?.message || 'Não foi possível remover o registro.';
+          if (this.isAuthenticationFailure(message)) {
+            this.redirectToLogin();
+            return;
+          }
+          this.pushToast('error', 'Erro de exclusão', message);
+        }
+      });
+  }
+
+  applySearch(): void {
+    this.appliedSearch = this.searchTerm.trim();
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.appliedSearch = '';
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = Number(size) || 20;
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
+  previousPage(): void {
+    if (this.currentPage <= 1) {
+      return;
+    }
+    this.currentPage -= 1;
+    this.applyGridState();
+  }
+
+  nextPage(): void {
+    if (this.currentPage >= this.totalPages) {
+      return;
+    }
+    this.currentPage += 1;
+    this.applyGridState();
+  }
+
+  changeSortField(field: string): void {
+    this.sortField = field;
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
+  changeSortDirection(direction: string): void {
+    this.sortDirection = direction === 'asc' ? 'asc' : 'desc';
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
+  totalRowsLabel(): string {
+    if (!this.filteredRows.length) {
+      return `0 de ${this.totalItems} registros`;
+    }
+    const start = (this.currentPage - 1) * this.pageSize + 1;
+    const end = start + this.filteredRows.length - 1;
+    return `${start}-${end} de ${this.totalItems} registros`;
+  }
+
+  pageLabel(): string {
+    return `Página ${this.currentPage} de ${this.totalPages}`;
+  }
+
+  totalRowsMinWidth(): number {
+    return this.columns.reduce((sum, column) => sum + column.width, 0) + this.actionColumnWidth();
+  }
+
+  actionColumnWidth(): number {
+    return 164;
+  }
+
+  dialogTitle(): string {
+    if (this.dialogMode === 'edit') {
+      return `Editar ${this.title}`;
+    }
+    if (this.dialogMode === 'duplicate') {
+      return `Duplicar ${this.title}`;
+    }
+    return `Novo cadastro de ${this.title}`;
+  }
+
+  fieldError(controlName: string): string {
+    const control = this.createForm.get(controlName);
+    if (!control || !control.touched || !control.errors) {
+      return '';
+    }
+    if (control.errors['required']) return 'Campo obrigatório.';
+    if (control.errors['email']) return 'Informe um e-mail válido.';
+    if (control.errors['min']) return 'Valor abaixo do mínimo permitido.';
+    return 'Valor inválido.';
+  }
+
+  dismissToast(id: number): void {
+    this.toasts = this.toasts.filter((item) => item.id !== id);
+  }
+
+  exportJson(): void {
+    this.downloadBlob('application/json', JSON.stringify(this.filteredRows, null, 2), `${this.resource}-pagina-${this.currentPage}.json`);
+    this.pushToast('info', 'Exportação JSON', 'Página atual exportada com sucesso.');
+  }
+
+  exportCsv(): void {
+    const headers = [...this.columns.map((item) => item.headerText), 'Ações'];
+    const fields = this.columns.map((item) => item.field);
+    const rows = this.filteredRows.map((row) => fields.map((field) => `"${String(row?.[field] ?? '').replace(/"/g, '""')}"`).join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    this.downloadBlob('text/csv;charset=utf-8', csv, `${this.resource}-pagina-${this.currentPage}.csv`);
+    this.pushToast('info', 'Exportação CSV', 'Página atual exportada com sucesso.');
+  }
+
+  canEdit(_row: any): boolean {
+    return this.config().supportsEdit;
+  }
+
+  canDuplicate(_row: any): boolean {
+    return this.config().supportsDuplicate;
+  }
+
+  canDelete(_row: any): boolean {
+    return this.config().supportsDelete;
+  }
+
+  disabledReason(_row: any): string {
+    if (!this.config().supportsEdit && !this.config().supportsDelete) {
+      return 'Este módulo não expõe edição ou exclusão pela API.';
+    }
+    if (!this.config().supportsDelete) {
+      return 'A API atual não permite exclusão neste módulo.';
+    }
+    return '';
+  }
+
+  isBadgeField(column: ResourceColumn): boolean {
+    return column.type === 'badge';
+  }
+
+  badgeTone(value: any): string {
+    const text = String(value ?? '').toLowerCase();
+    if (text.includes('ativo') || text.includes('aprovado') || text.includes('conclu') || text.includes('resolvida')) return 'success';
+    if (text.includes('pendente') || text.includes('andamento') || text.includes('planejada')) return 'warning';
+    if (text.includes('reprovado') || text.includes('inativo') || text.includes('crítica') || text.includes('bloqueada') || text.includes('aberta')) return 'danger';
+    return 'neutral';
+  }
+
+  inputType(field: ResourceField): string {
+    if (field.type === 'number') return 'number';
+    if (field.type === 'date') return 'date';
+    return 'text';
+  }
+
+  controlOptions(field: ResourceField): Array<{ id: any; text: string }> {
+    return field.optionsKey ? this.optionBuckets[field.optionsKey] || [] : [];
+  }
+
+  private configurePage(): void {
+    const token = this.loginService.getToken();
+    if (!token) {
+      this.redirectToLogin();
+      return;
+    }
+
+    this.loading = true;
+    this.placeholder = false;
+    this.placeholderMessage = '';
+    this.columns = this.config().columns;
+    this.sortField = this.config().sortField;
+    this.sortDirection = 'desc';
+    this.sortOptions = this.columns.map((column) => ({ id: column.field, text: column.headerText }));
+    this.currentPage = 1;
+    this.searchTerm = '';
+    this.appliedSearch = '';
+    this.supportLoaded = false;
+    this.createForm = this.buildForm();
+    this.ensureSupportOptions();
+    this.loadRows();
+  }
+
+  private config(): ResourceConfig {
+    const baseColumns = {
+      projects: [
+        { field: 'code', headerText: 'Código', width: 130 },
+        { field: 'name', headerText: 'Obra', width: 280 },
+        { field: 'clientDisplay', headerText: 'Cliente', width: 220 },
+        { field: 'locationDisplay', headerText: 'Cidade / UF', width: 180 },
+        { field: 'budgetDisplay', headerText: 'Orçamento', width: 160, type: 'currency' as const },
+        { field: 'statusDisplay', headerText: 'Situação', width: 160, type: 'badge' as const },
+        { field: 'periodDisplay', headerText: 'Prazo', width: 200, type: 'date' as const }
+      ],
+      diaries: [
+        { field: 'projectDisplay', headerText: 'Obra', width: 260 },
+        { field: 'workDateDisplay', headerText: 'Data', width: 140, type: 'date' as const },
+        { field: 'weatherDisplay', headerText: 'Clima', width: 180 },
+        { field: 'statusDisplay', headerText: 'Situação', width: 160, type: 'badge' as const },
+        { field: 'summaryDisplay', headerText: 'Resumo', width: 360 }
+      ],
+      activities: [
+        { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
+        { field: 'service_name', headerText: 'Serviço', width: 260 },
+        { field: 'quantityDisplay', headerText: 'Quantidade', width: 150 },
+        { field: 'unitDisplay', headerText: 'Unidade', width: 120 },
+        { field: 'locationDisplay', headerText: 'Local', width: 200 }
+      ],
+      teams: [
+        { field: 'projectDisplay', headerText: 'Obra', width: 240 },
+        { field: 'name', headerText: 'Equipe', width: 220 },
+        { field: 'descriptionDisplay', headerText: 'Descrição', width: 320 },
+        { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ],
+      materials: [
+        { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
+        { field: 'material_name', headerText: 'Material', width: 260 },
+        { field: 'movementDisplay', headerText: 'Movimento', width: 160 },
+        { field: 'quantityDisplay', headerText: 'Quantidade', width: 150 },
+        { field: 'notesDisplay', headerText: 'Observações', width: 280 }
+      ],
+      equipments: [
+        { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
+        { field: 'equipment_name', headerText: 'Equipamento', width: 240 },
+        { field: 'equipmentStatusDisplay', headerText: 'Situação', width: 160, type: 'badge' as const },
+        { field: 'hoursUsedDisplay', headerText: 'Horas de uso', width: 150 },
+        { field: 'notesDisplay', headerText: 'Observações', width: 280 }
+      ],
+      occurrences: [
+        { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
+        { field: 'title', headerText: 'Título', width: 240 },
+        { field: 'occurrenceTypeDisplay', headerText: 'Tipo', width: 160 },
+        { field: 'severityDisplay', headerText: 'Gravidade', width: 150, type: 'badge' as const },
+        { field: 'resolvedDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ],
+      documents: [
+        { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
+        { field: 'file_name', headerText: 'Arquivo', width: 260 },
+        { field: 'fileTypeDisplay', headerText: 'Tipo', width: 150 },
+        { field: 'fileSizeDisplay', headerText: 'Tamanho', width: 150, type: 'storage' as const },
+        { field: 'urlDisplay', headerText: 'Link', width: 320 }
+      ],
+      users: [
+        { field: 'companyDisplay', headerText: 'Empresa', width: 240 },
+        { field: 'name', headerText: 'Usuário', width: 220 },
+        { field: 'email', headerText: 'E-mail', width: 260 },
+        { field: 'roleDisplay', headerText: 'Perfil', width: 180 },
+        { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ]
+    };
+
+    const map: Record<ResourceKey, ResourceConfig> = {
+      projects: {
+        sortField: 'name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.projects(token),
+        create: (token, payload) => this.adminDataService.createProject(token, payload),
+        update: (token, payload) => this.adminDataService.updateProject(token, payload),
+        remove: (token, id) => this.adminDataService.deleteProject(token, id),
+        columns: baseColumns.projects,
+        fields: [
+          { controlName: 'code', label: 'Código', type: 'text', required: true },
+          { controlName: 'name', label: 'Nome da obra', type: 'text', required: true },
+          { controlName: 'client_name', label: 'Cliente', type: 'text' },
+          { controlName: 'company_id', label: 'Empresa', type: 'select', optionsKey: 'companies', required: true },
+          { controlName: 'engineer_user_id', label: 'Responsável', type: 'select', optionsKey: 'users' },
+          { controlName: 'address', label: 'Endereço', type: 'text' },
+          { controlName: 'number', label: 'Número', type: 'text' },
+          { controlName: 'district', label: 'Bairro', type: 'text' },
+          { controlName: 'city', label: 'Cidade', type: 'text' },
+          { controlName: 'state', label: 'UF', type: 'text' },
+          { controlName: 'zipcode', label: 'CEP', type: 'text' },
+          { controlName: 'budget_amount', label: 'Orçamento', type: 'number', min: 0 },
+          { controlName: 'start_date', label: 'Data de início', type: 'date' },
+          { controlName: 'end_date', label: 'Data final', type: 'date' },
+          { controlName: 'status', label: 'Situação', type: 'select', optionsKey: 'projectStatus' }
+        ]
+      },
+      diaries: {
+        sortField: 'workDateDisplay',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: false,
+        list: (token) => this.adminDataService.diaries(token),
+        create: (token, payload) => this.adminDataService.createDiary(token, payload),
+        update: (token, payload) => this.adminDataService.updateDiary(token, payload),
+        columns: baseColumns.diaries,
+        fields: [
+          { controlName: 'project_id', label: 'Obra', type: 'select', optionsKey: 'projects', required: true },
+          { controlName: 'work_date', label: 'Data da obra', type: 'date', required: true },
+          { controlName: 'weather', label: 'Clima', type: 'text' },
+          { controlName: 'summary', label: 'Resumo', type: 'textarea' },
+          { controlName: 'occurrences', label: 'Observações', type: 'textarea' },
+          { controlName: 'status', label: 'Situação', type: 'select', optionsKey: 'diaryStatus' }
+        ]
+      },
+      activities: {
+        sortField: 'service_name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.activities(token),
+        create: (token, payload) => this.adminDataService.createActivity(token, payload),
+        update: (token, payload) => this.adminDataService.updateActivity(token, payload),
+        remove: (token, id) => this.adminDataService.deleteActivity(token, id),
+        columns: baseColumns.activities,
+        fields: [
+          { controlName: 'daily_log_id', label: 'Diário', type: 'select', optionsKey: 'diaries', required: true },
+          { controlName: 'service_name', label: 'Serviço', type: 'text', required: true },
+          { controlName: 'quantity', label: 'Quantidade', type: 'number', min: 0 },
+          { controlName: 'unit', label: 'Unidade', type: 'text' },
+          { controlName: 'location', label: 'Local', type: 'text' },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' }
+        ]
+      },
+      teams: {
+        sortField: 'name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.teams(token),
+        create: (token, payload) => this.adminDataService.createTeam(token, payload),
+        update: (token, payload) => this.adminDataService.updateTeam(token, payload),
+        remove: (token, id) => this.adminDataService.deleteTeam(token, id),
+        columns: baseColumns.teams,
+        fields: [
+          { controlName: 'project_id', label: 'Obra', type: 'select', optionsKey: 'projects', required: true },
+          { controlName: 'name', label: 'Nome da equipe', type: 'text', required: true },
+          { controlName: 'description', label: 'Descrição', type: 'textarea' },
+          { controlName: 'active', label: 'Ativa', type: 'checkbox' }
+        ]
+      },
+      materials: {
+        sortField: 'material_name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.materials(token),
+        create: (token, payload) => this.adminDataService.createMaterial(token, payload),
+        update: (token, payload) => this.adminDataService.updateMaterial(token, payload),
+        remove: (token, id) => this.adminDataService.deleteMaterial(token, id),
+        columns: baseColumns.materials,
+        fields: [
+          { controlName: 'daily_log_id', label: 'Diário', type: 'select', optionsKey: 'diaries', required: true },
+          { controlName: 'material_name', label: 'Material', type: 'text', required: true },
+          { controlName: 'movement_type', label: 'Movimento', type: 'select', optionsKey: 'movementType' },
+          { controlName: 'quantity', label: 'Quantidade', type: 'number', min: 0 },
+          { controlName: 'unit', label: 'Unidade', type: 'text' },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' }
+        ]
+      },
+      equipments: {
+        sortField: 'equipment_name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.equipments(token),
+        create: (token, payload) => this.adminDataService.createEquipment(token, payload),
+        update: (token, payload) => this.adminDataService.updateEquipment(token, payload),
+        remove: (token, id) => this.adminDataService.deleteEquipment(token, id),
+        columns: baseColumns.equipments,
+        fields: [
+          { controlName: 'daily_log_id', label: 'Diário', type: 'select', optionsKey: 'diaries', required: true },
+          { controlName: 'equipment_name', label: 'Equipamento', type: 'text', required: true },
+          { controlName: 'status', label: 'Situação', type: 'select', optionsKey: 'equipmentStatus' },
+          { controlName: 'hours_used', label: 'Horas de uso', type: 'number', min: 0 },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' }
+        ]
+      },
+      occurrences: {
+        sortField: 'title',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.occurrences(token),
+        create: (token, payload) => this.adminDataService.createOccurrence(token, payload),
+        update: (token, payload) => this.adminDataService.updateOccurrence(token, payload),
+        remove: (token, id) => this.adminDataService.deleteOccurrence(token, id),
+        columns: baseColumns.occurrences,
+        fields: [
+          { controlName: 'daily_log_id', label: 'Diário', type: 'select', optionsKey: 'diaries', required: true },
+          { controlName: 'occurrence_type', label: 'Tipo', type: 'select', optionsKey: 'occurrenceType' },
+          { controlName: 'title', label: 'Título', type: 'text', required: true },
+          { controlName: 'description', label: 'Descrição', type: 'textarea' },
+          { controlName: 'severity', label: 'Gravidade', type: 'select', optionsKey: 'severity' },
+          { controlName: 'resolved', label: 'Resolvida', type: 'checkbox' }
+        ]
+      },
+      documents: {
+        sortField: 'file_name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.documents(token),
+        create: (token, payload) => this.adminDataService.createDocument(token, payload),
+        update: (token, payload) => this.adminDataService.updateDocument(token, payload),
+        remove: (token, id) => this.adminDataService.deleteDocument(token, id),
+        columns: baseColumns.documents,
+        fields: [
+          { controlName: 'daily_log_id', label: 'Diário', type: 'select', optionsKey: 'diaries', required: true },
+          { controlName: 'file_name', label: 'Nome do arquivo', type: 'text', required: true },
+          { controlName: 'file_type', label: 'Tipo', type: 'text' },
+          { controlName: 'file_url', label: 'URL do arquivo', type: 'text' },
+          { controlName: 'file_size_bytes', label: 'Tamanho em bytes', type: 'number', min: 0 },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' }
+        ]
+      },
+      users: {
+        sortField: 'name',
+        supportsCreate: true,
+        supportsEdit: false,
+        supportsDuplicate: false,
+        supportsDelete: false,
+        list: (token) => this.adminDataService.tenantUsers(token),
+        create: (token, payload) => this.adminDataService.createTenantUser(token, payload),
+        columns: baseColumns.users,
+        fields: [
+          { controlName: 'company_id', label: 'Empresa', type: 'select', optionsKey: 'companies', required: true },
+          { controlName: 'name', label: 'Nome', type: 'text', required: true },
+          { controlName: 'email', label: 'E-mail', type: 'text', required: true },
+          { controlName: 'password', label: 'Senha', type: 'text', required: true, hideOnEdit: true },
+          { controlName: 'role_id', label: 'Perfil', type: 'select', optionsKey: 'roles' },
+          { controlName: 'phone', label: 'Telefone', type: 'text' },
+          { controlName: 'active', label: 'Ativo', type: 'checkbox' }
+        ]
+      }
+    };
+
+    return map[this.resource];
+  }
+
+  private ensureSupportOptions(): void {
+    if (this.supportLoaded) {
+      return;
+    }
+    const token = this.loginService.getToken();
+    if (!token) {
+      return;
+    }
+
+    this.supportLoaded = true;
+    this.optionBuckets.projectStatus = [
+      { id: 'em_andamento', text: 'Em andamento' },
+      { id: 'planejada', text: 'Planejada' },
+      { id: 'concluida', text: 'Concluída' },
+      { id: 'pausada', text: 'Pausada' }
+    ];
+    this.optionBuckets.diaryStatus = [
+      { id: 'pendente', text: 'Pendente' },
+      { id: 'aprovado', text: 'Aprovado' },
+      { id: 'reprovado', text: 'Reprovado' }
+    ];
+    this.optionBuckets.movementType = [
+      { id: 'entrada', text: 'Entrada' },
+      { id: 'saida', text: 'Saída' },
+      { id: 'consumo', text: 'Consumo' }
+    ];
+    this.optionBuckets.equipmentStatus = [
+      { id: 'disponivel', text: 'Disponível' },
+      { id: 'em_uso', text: 'Em uso' },
+      { id: 'manutencao', text: 'Manutenção' }
+    ];
+    this.optionBuckets.occurrenceType = [
+      { id: 'seguranca', text: 'Segurança' },
+      { id: 'qualidade', text: 'Qualidade' },
+      { id: 'material', text: 'Material' },
+      { id: 'clima', text: 'Clima' },
+      { id: 'geral', text: 'Geral' }
+    ];
+    this.optionBuckets.severity = [
+      { id: 'baixa', text: 'Baixa' },
+      { id: 'media', text: 'Média' },
+      { id: 'alta', text: 'Alta' },
+      { id: 'critica', text: 'Crítica' }
+    ];
+
+    this.adminDataService.projects(token).subscribe({
+      next: (response) => {
+        this.optionBuckets.projects = this.items<BusinessProject>(response?.data).map((item) => ({
+          id: item.id,
+          text: `${item.code} - ${item.name}`
+        }));
+      }
+    });
+
+    this.adminDataService.diaries(token).subscribe({
+      next: (response) => {
+        this.optionBuckets.diaries = this.items<BusinessDiary>(response?.data).map((item) => ({
+          id: item.id,
+          text: `${this.formatDate(item.work_date)} - Diário #${item.id}`
+        }));
+      }
+    });
+
+    this.adminDataService.tenantCompanies(token).subscribe({
+      next: (response) => {
+        this.optionBuckets.companies = this.items<any>(response?.data).map((item) => ({
+          id: item.id,
+          text: item.fantasy_name || item.corporate_name || item.name || `Empresa #${item.id}`
+        }));
+      }
+    });
+
+    this.adminDataService.tenantUsers(token).subscribe({
+      next: (response) => {
+        this.optionBuckets.users = this.items<BusinessUser>(response?.data).map((item) => ({
+          id: item.id,
+          text: `${item.name} - ${item.email}`
+        }));
+      }
+    });
+
+    this.adminDataService.tenantMetadata(token).subscribe({
+      next: (response) => {
+        const roles = Array.isArray(response?.data?.roles) ? (response.data.roles as TenantMetadataRole[]) : [];
+        this.optionBuckets.roles = roles.map((item) => ({ id: item.id, text: item.name }));
+      }
+    });
+  }
+
+  private loadRows(): void {
+    const token = this.loginService.getToken();
+    if (!token) {
+      this.redirectToLogin();
+      return;
+    }
+
+    this.loading = true;
+    this.placeholder = false;
+    this.placeholderMessage = '';
+
+    this.config()
+      .list(token)
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.flushView();
+      }))
+      .subscribe({
+        next: (response) => {
+          if (!response?.status) {
+            if (this.isAuthenticationFailure(response?.message)) {
+              this.redirectToLogin();
+              return;
+            }
+            this.placeholder = true;
+            this.placeholderMessage = response?.message || 'Falha ao carregar os dados do módulo.';
+            this.allRows = [];
+            this.rows = [];
+            this.filteredRows = [];
+            this.totalItems = 0;
+            return;
+          }
+
+          this.allRows = this.mapRowsForDisplay(this.items(response?.data));
+          this.applyGridState();
+        },
+        error: (error) => {
+          const message = error?.error?.message || 'Falha na conexão com a API tenant.';
+          if (this.isAuthenticationFailure(message)) {
+            this.redirectToLogin();
+            return;
+          }
+          this.placeholder = true;
+          this.placeholderMessage = message;
+          this.allRows = [];
+          this.rows = [];
+          this.filteredRows = [];
+          this.totalItems = 0;
+        }
+      });
+  }
+
+  private applyGridState(): void {
+    let rows = [...this.allRows];
+
+    if (this.appliedSearch) {
+      const term = this.appliedSearch.toLowerCase();
+      rows = rows.filter((row) => Object.values(row).some((value) => String(value ?? '').toLowerCase().includes(term)));
+    }
+
+    rows.sort((left, right) => this.compareRows(left?.[this.sortField], right?.[this.sortField], this.sortDirection));
+
+    this.totalItems = rows.length;
+    this.totalPages = Math.max(1, Math.ceil(Math.max(rows.length, 1) / this.pageSize));
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.rows = rows;
+    this.filteredRows = rows.slice(start, end);
+    this.flushView();
+  }
+
+  private buildForm(): FormGroup {
+    const group: Record<string, FormControl> = {};
+    for (const field of this.config().fields) {
+      const validators = [];
+      if (field.required) validators.push(Validators.required);
+      if (field.min !== undefined) validators.push(Validators.min(field.min));
+      if (field.controlName === 'email') validators.push(Validators.email);
+      const initial = field.type === 'checkbox' ? false : '';
+      group[field.controlName] = new FormControl(initial, validators);
+    }
+    group['id'] = new FormControl(null);
+    return this.fb.group(group);
+  }
+
+  private createPayload(): Record<string, any> {
+    const raw = { ...this.createForm.getRawValue() };
+    ['active', 'resolved'].forEach((field) => {
+      if (field in raw) {
+        raw[field] = this.toBoolean(raw[field]);
+      }
+    });
+
+    const numericFields = ['company_id', 'engineer_user_id', 'project_id', 'daily_log_id', 'role_id', 'quantity', 'hours_used', 'file_size_bytes', 'budget_amount'];
+    numericFields.forEach((field) => {
+      if (field in raw && raw[field] !== '' && raw[field] !== null && raw[field] !== undefined) {
+        raw[field] = Number(raw[field]);
+      }
+    });
+
+    if (this.dialogMode !== 'edit') {
+      delete raw.id;
+    }
+
+    if (this.resource === 'diaries' && this.dialogMode !== 'edit') {
+      raw.created_by = this.loginService.getLocalToken()?.user?.id ?? 1;
+    }
+
+    return raw;
+  }
+
+  private toFormValue(row: any, mode: DialogMode): Record<string, any> {
+    if (this.resource === 'projects') {
+      return {
+        id: mode === 'edit' ? row.id : null,
+        code: mode === 'duplicate' ? `${row.code}-copy` : row.code,
+        name: mode === 'duplicate' ? `${row.name} - Cópia` : row.name,
+        client_name: row.client_name || '',
+        company_id: row.company_id || '',
+        engineer_user_id: row.engineer_user_id || '',
+        address: row.address || '',
+        number: row.number || '',
+        district: row.district || '',
+        city: row.city || '',
+        state: row.state || '',
+        zipcode: row.zipcode || '',
+        budget_amount: row.budget_amount || '',
+        start_date: row.start_date || '',
+        end_date: row.end_date || '',
+        status: row.status || 'em_andamento'
+      };
+    }
+
+    if (this.resource === 'diaries') {
+      return {
+        id: mode === 'edit' ? row.id : null,
+        project_id: row.project_id || '',
+        work_date: row.work_date || '',
+        weather: row.weather || '',
+        summary: row.summary || '',
+        occurrences: row.occurrences || '',
+        status: row.status || 'pendente'
+      };
+    }
+
+    if (this.resource === 'users') {
+      return {
+        id: null,
+        company_id: row.company_id || '',
+        name: row.name || '',
+        email: mode === 'duplicate' ? `copy.${row.email}` : row.email,
+        password: '',
+        role_id: row.role_id || '',
+        phone: row.phone || '',
+        active: this.toBoolean(row.active)
+      };
+    }
+
+    return {
+      id: mode === 'edit' ? row.id : null,
+      ...row
+    };
+  }
+
+  private mapRowsForDisplay(rows: any[]): any[] {
+    switch (this.resource) {
+      case 'projects':
+        return rows.map((row: BusinessProject) => ({
+          ...row,
+          clientDisplay: row.client_name || 'Sem cliente',
+          locationDisplay: [row.city, row.state].filter(Boolean).join(' - ') || 'Não informado',
+          budgetDisplay: this.formatCurrency(row.budget_amount),
+          statusDisplay: this.projectStatus(row.status),
+          periodDisplay: [this.formatDate(row.start_date), this.formatDate(row.end_date)].filter((item) => item !== '-').join(' até ') || '-'
+        }));
+      case 'diaries':
+        return rows.map((row: BusinessDiary) => ({
+          ...row,
+          projectDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`),
+          workDateDisplay: this.formatDate(row.work_date),
+          weatherDisplay: row.weather || 'Não informado',
+          statusDisplay: this.diaryStatus(row.status),
+          summaryDisplay: row.summary || 'Sem resumo'
+        }));
+      case 'activities':
+        return rows.map((row: BusinessActivity) => ({
+          ...row,
+          diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          quantityDisplay: row.quantity ? `${this.formatNumber(row.quantity)} ${row.unit || ''}`.trim() : 'Não informado',
+          unitDisplay: row.unit || 'Unidade',
+          locationDisplay: row.location || 'Não informado'
+        }));
+      case 'teams':
+        return rows.map((row: BusinessTeam) => ({
+          ...row,
+          projectDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`),
+          descriptionDisplay: row.description || 'Sem descrição',
+          activeDisplay: this.activeDisplay(row.active)
+        }));
+      case 'materials':
+        return rows.map((row: BusinessMaterial) => ({
+          ...row,
+          diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          movementDisplay: this.labelize(row.movement_type || 'Movimentação'),
+          quantityDisplay: row.quantity ? `${this.formatNumber(row.quantity)} ${row.unit || ''}`.trim() : 'Não informado',
+          notesDisplay: row.notes || 'Sem observações'
+        }));
+      case 'equipments':
+        return rows.map((row: BusinessEquipment) => ({
+          ...row,
+          diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          equipmentStatusDisplay: this.labelize(row.status || 'Em uso'),
+          hoursUsedDisplay: row.hours_used ? `${this.formatNumber(row.hours_used)} h` : '0 h',
+          notesDisplay: row.notes || 'Sem observações'
+        }));
+      case 'occurrences':
+        return rows.map((row: BusinessOccurrence) => ({
+          ...row,
+          diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          occurrenceTypeDisplay: this.labelize(row.occurrence_type || 'Geral'),
+          severityDisplay: this.labelize(row.severity || 'Média'),
+          resolvedDisplay: this.toBoolean(row.resolved) ? 'Resolvida' : 'Aberta'
+        }));
+      case 'documents':
+        return rows.map((row: BusinessDocument) => ({
+          ...row,
+          diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          fileTypeDisplay: this.labelize(row.file_type || 'Arquivo'),
+          fileSizeDisplay: this.formatFileSize(row.file_size_bytes),
+          urlDisplay: row.file_url || 'Sem link'
+        }));
+      case 'users':
+        return rows.map((row: BusinessUser) => ({
+          ...row,
+          companyDisplay: this.optionLabel('companies', row.company_id, `Empresa #${row.company_id}`),
+          roleDisplay: this.optionLabel('roles', row.role_id, 'Usuário'),
+          activeDisplay: this.activeDisplay(row.active)
+        }));
+      default:
+        return rows;
+    }
+  }
+
+  private compareRows(left: any, right: any, direction: 'asc' | 'desc'): number {
+    const normalize = (value: any) => {
+      if (value === null || value === undefined) return '';
+      if (typeof value === 'number') return value;
+      const parsedDate = Date.parse(String(value));
+      if (!Number.isNaN(parsedDate) && String(value).includes('-')) return parsedDate;
+      return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    };
+    const a = normalize(left);
+    const b = normalize(right);
+    const order = a > b ? 1 : a < b ? -1 : 0;
+    return direction === 'asc' ? order : order * -1;
+  }
+
+  private optionLabel(bucket: SelectBucket, id: any, fallback: string): string {
+    const found = this.optionBuckets[bucket]?.find((item) => String(item.id) === String(id));
+    return found?.text || fallback;
+  }
+
+  private items<T>(data: T[] | null | undefined): T[] {
+    return Array.isArray(data) ? data : [];
+  }
+
+  private formatCurrency(value: any): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value || 0));
+  }
+
+  private formatDate(value: any): string {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+  }
+
+  private formatNumber(value: any): string {
+    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(Number(value || 0));
+  }
+
+  private formatFileSize(value: any): string {
+    const bytes = Number(value || 0);
+    if (!bytes) return '0 KB';
+    if (bytes >= 1024 * 1024) return `${this.formatNumber(bytes / (1024 * 1024))} MB`;
+    return `${this.formatNumber(bytes / 1024)} KB`;
+  }
+
+  private toBoolean(value: any): boolean {
+    return value === true || value === 1 || value === '1' || String(value).toLowerCase() === 'true';
+  }
+
+  private activeDisplay(value: any): string {
+    return this.toBoolean(value) ? 'Ativo' : 'Inativo';
+  }
+
+  private diaryStatus(status?: string): string {
+    const value = String(status || '').toLowerCase();
+    if (!value) return 'Pendente';
+    if (value.includes('aprov')) return 'Aprovado';
+    if (value.includes('reprov')) return 'Reprovado';
+    if (value.includes('pend')) return 'Pendente';
+    return this.labelize(status);
+  }
+
+  private projectStatus(status?: string): string {
+    const value = String(status || '').toLowerCase();
+    if (!value) return 'Em andamento';
+    if (value.includes('plan')) return 'Planejada';
+    if (value.includes('concl')) return 'Concluída';
+    if (value.includes('pause')) return 'Pausada';
+    return 'Em andamento';
+  }
+
+  private labelize(value: any): string {
+    const raw = String(value ?? '').replace(/_/g, ' ').trim();
+    if (!raw) return '-';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  }
+
+  private isAuthenticationFailure(message?: string): boolean {
+    const normalized = String(message ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return normalized.includes('autentic') || normalized.includes('sessao') || normalized.includes('token');
+  }
+
+  private redirectToLogin(): void {
+    this.adminDataService.clearCache();
+    this.loginService.clearToken();
+    void this.router.navigate(['/login']);
+  }
+
+  private pushToast(type: 'success' | 'error' | 'info', title: string, message: string): void {
+    const id = this.toastSeed++;
+    this.toasts = [...this.toasts, { id, type, title, message }];
+    setTimeout(() => this.dismissToast(id), 4200);
+  }
+
+  private downloadBlob(type: string, content: string, filename: string): void {
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  private flushView(): void {
+    queueMicrotask(() => this.cdr.detectChanges());
+  }
+}

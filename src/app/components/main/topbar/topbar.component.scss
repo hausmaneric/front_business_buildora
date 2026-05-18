@@ -1,0 +1,233 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.topbar-left {
+  min-width: 0;
+}
+
+.topbar-right {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.menu-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(7, 18, 34, 0.45);
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.menu-btn span {
+  height: 2px;
+  border-radius: 999px;
+  background: #d7e6fb;
+}
+
+.page-copy h2 {
+  margin: 0 0 4px;
+  font-size: 2rem;
+}
+
+.page-copy {
+  min-width: 0;
+}
+
+.page-copy h2,
+.page-copy p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-copy p {
+  margin: 0;
+  color: var(--orbax-text-soft);
+}
+
+.icon-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(7, 18, 34, 0.45);
+  position: relative;
+  color: white;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #2f6fff;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-picker-shell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  width: min(100%, 310px);
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(7, 18, 34, 0.45);
+}
+
+.date-picker-shell ::ng-deep .date-range-dropdown.e-control-wrapper,
+.date-picker-shell ::ng-deep .date-range-dropdown.e-input-group {
+  flex: 1;
+  min-height: 42px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.calendar-icon,
+.icon-search,
+.icon-bell {
+  position: relative;
+  display: inline-block;
+}
+
+.calendar-icon::before,
+.icon-search::before,
+.icon-bell::before {
+  content: '';
+  display: block;
+}
+
+.icon-search::before {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #d6e7ff;
+  border-radius: 50%;
+  box-shadow: 7px 7px 0 -5px #d6e7ff;
+}
+
+.icon-bell::before {
+  width: 12px;
+  height: 14px;
+  border: 2px solid #d6e7ff;
+  border-bottom-width: 4px;
+  border-radius: 8px 8px 4px 4px;
+}
+
+.calendar-icon::before {
+  width: 14px;
+  height: 12px;
+  border: 2px solid #d6e7ff;
+  border-radius: 4px;
+}
+
+::ng-deep .date-range-dropdown.e-control-wrapper,
+::ng-deep .date-range-dropdown.e-input-group {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .date-range-dropdown .e-input-group-icon,
+::ng-deep .date-range-dropdown .e-ddl-icon,
+::ng-deep .date-range-dropdown .e-input-group-icon:last-child {
+  background: transparent !important;
+  color: var(--orbax-text-soft) !important;
+}
+
+::ng-deep .date-range-dropdown input,
+::ng-deep .date-range-dropdown .e-input-value,
+::ng-deep .date-range-dropdown .e-input-group-icon {
+  color: white !important;
+}
+
+::ng-deep .date-range-dropdown input.e-input,
+::ng-deep .date-range-dropdown .e-input-value {
+  background: transparent !important;
+}
+
+@media (max-width: 980px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .date-picker-shell {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .page-copy h2 {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 14px 16px;
+    gap: 14px;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .menu-btn,
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .page-copy {
+    flex: 1;
+  }
+
+  .page-copy h2 {
+    font-size: 1.35rem;
+  }
+
+  .page-copy p {
+    font-size: 0.92rem;
+  }
+
+  .date-picker-shell {
+    width: 100%;
+    padding-inline: 12px;
+  }
+}

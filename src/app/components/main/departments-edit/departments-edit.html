@@ -1,0 +1,53 @@
+<div class="content">
+
+  <app-action-toolbar
+    [buttons]="toolbarButtons"
+    (action)="handleToolbarAction($event)">
+  </app-action-toolbar>
+
+  <div class="content-title">
+    @if(form.get('name')?.value){
+      <h3><span>{{ moduleTitle }} </span> {{ form.get('name')?.value }}</h3>
+    }
+  </div>
+
+  <form [formGroup]="form" class="form-container">
+
+    <div class="form-row">
+
+      <div class="form-field w-150">
+        <ejs-textbox
+          formControlName="id"
+          placeholder="ID"
+          floatLabelType="Always"
+          cssClass="e-small">
+        </ejs-textbox>
+      </div>
+    </div>
+
+    <div class="form-row">
+
+      <div class="form-field w-500">
+        <ejs-textbox
+          formControlName="name"
+          placeholder="Departamento"
+          floatLabelType="Always"
+          cssClass="e-small">
+        </ejs-textbox>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field w-500">
+        <ejs-textbox
+          formControlName="email"
+          placeholder="Email"
+          floatLabelType="Always"
+          cssClass="e-small">
+        </ejs-textbox>
+      </div>
+    </div>
+
+  </form>
+
+</div>

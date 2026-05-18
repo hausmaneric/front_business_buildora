@@ -1,0 +1,76 @@
+<div class="login-page">
+  <div class="login-glow login-glow-left"></div>
+  <div class="login-glow login-glow-right"></div>
+
+  <section class="login-brand">
+    <div class="brand-mark">
+      <span class="bar bar-sm"></span>
+      <span class="bar bar-md"></span>
+      <span class="bar bar-lg"></span>
+    </div>
+
+    <div class="brand-copy">
+      <h1>OBRAX</h1>
+      <p>Gestão operacional da empresa na plataforma Buildora.</p>
+    </div>
+
+    <div class="brand-panel orb-card">
+      <span class="eyebrow">PORTAL EMPRESARIAL</span>
+      <h2>Acompanhe obras, diários, equipes, ocorrências e produtividade em um só lugar.</h2>
+      <ul>
+        <li>Acesso tenant com o código da empresa</li>
+        <li>Estrutura Angular alinhada ao painel administrativo</li>
+        <li>Integração direta com a API operacional do Obrax</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="login-card orb-card">
+    <div class="login-card-header">
+      <span class="eyebrow">ACESSO DA EMPRESA</span>
+      <h3>Entrar no portal empresarial</h3>
+      <p>Use o código da conta e o usuário do tenant para acessar sua operação.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="card-login-field">
+        <label>Código da empresa</label>
+        <ejs-textbox cssClass="orb-input e-bigger" formControlName="accountCode" placeholder="buildora001"></ejs-textbox>
+      </div>
+
+      <div class="card-login-field">
+        <label>E-mail</label>
+        <ejs-textbox cssClass="orb-input e-bigger" formControlName="email" placeholder="admin@buildora001.com"></ejs-textbox>
+      </div>
+
+      <div class="card-login-field password-wrapper">
+        <label>Senha</label>
+        <ejs-textbox
+          [type]="showPassword ? 'text' : 'password'"
+          cssClass="orb-input e-bigger"
+          formControlName="password"
+          placeholder="123456">
+        </ejs-textbox>
+
+        <button class="password-toggle" type="button" (click)="togglePassword()">
+          {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+
+      <div class="login-hint">
+        Ambiente tenant apontando para a API publicada no Railway.
+      </div>
+
+      <button ejs-button class="submit-button" [disabled]="loading" type="submit">
+        {{ loading ? 'Entrando...' : 'Acessar portal' }}
+      </button>
+    </form>
+  </section>
+
+  <ejs-dialog #errorDialog [visible]="false" [isModal]="true" width="380px" header="Falha de autenticação">
+    <div class="dialog-content">{{ dialogMessage }}</div>
+    <ng-template #footerTemplate>
+      <button ejs-button cssClass="e-primary" (click)="closeDialog()">Fechar</button>
+    </ng-template>
+  </ejs-dialog>
+</div>

@@ -1,0 +1,78 @@
+<section class="tenant-bootstrap-page">
+  <header class="tenant-header orb-card">
+    <div>
+      <h3>Onboarding do Tenant</h3>
+      <p>Inicialize a base operacional da conta com empresa principal, roles, permissões e administrador do ambiente.</p>
+    </div>
+  </header>
+
+  @if (loading) {
+    <article class="tenant-card orb-card state-card">
+      <strong>Carregando contas...</strong>
+    </article>
+  } @else {
+    <article class="tenant-card orb-card">
+      <form class="tenant-form" [formGroup]="form">
+        <div class="form-grid two-cols">
+          <div class="form-field">
+            <label>Conta</label>
+            <ejs-dropdownlist formControlName="account_code" [dataSource]="accounts" [fields]="{ text: 'text', value: 'id' }"></ejs-dropdownlist>
+          </div>
+          <div class="form-field">
+            <label>Código da empresa</label>
+            <ejs-textbox formControlName="company_code" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>Documento</label>
+            <ejs-textbox formControlName="company_document" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>Razão social</label>
+            <ejs-textbox formControlName="corporate_name" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>Nome fantasia</label>
+            <ejs-textbox formControlName="fantasy_name" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>Telefone</label>
+            <ejs-textbox formControlName="phone" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>Email da empresa</label>
+            <ejs-textbox formControlName="email" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field">
+            <label>CEP</label>
+            <ejs-textbox formControlName="zipcode" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field full-span">
+            <label>Endereço</label>
+            <ejs-textbox formControlName="address" cssClass="orb-input"></ejs-textbox>
+          </div>
+          <div class="form-field"><label>Número</label><ejs-textbox formControlName="number" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Bairro</label><ejs-textbox formControlName="district" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Cidade</label><ejs-textbox formControlName="city" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Estado</label><ejs-textbox formControlName="state" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Nome do admin</label><ejs-textbox formControlName="admin_name" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Email do admin</label><ejs-textbox formControlName="admin_email" cssClass="orb-input"></ejs-textbox></div>
+          <div class="form-field"><label>Senha do admin</label><ejs-textbox formControlName="admin_password" cssClass="orb-input"></ejs-textbox></div>
+        </div>
+
+        @if (message) {
+          <div class="result-banner success">{{ message }}</div>
+        }
+
+        @if (error) {
+          <div class="result-banner error">{{ error }}</div>
+        }
+
+        <div class="actions">
+          <button ejs-button class="submit-btn" type="button" (click)="submit()">
+            {{ saving ? 'Executando...' : 'Executar bootstrap do tenant' }}
+          </button>
+        </div>
+      </form>
+    </article>
+  }
+</section>
