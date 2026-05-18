@@ -86,6 +86,18 @@ interface ToastMessage {
   message: string;
 }
 
+interface ResourceOverviewCard {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: 'default' | 'success' | 'warning' | 'danger';
+}
+
+interface ResourceInsightPanel {
+  title: string;
+  lines: string[];
+}
+
 @Component({
   selector: 'app-admin-resource-page',
   standalone: true,
@@ -120,6 +132,8 @@ export class AdminResourcePageComponent {
   sortDirection: 'asc' | 'desc' = 'desc';
   sortOptions: Array<{ id: string; text: string }> = [];
   toasts: ToastMessage[] = [];
+  overviewCards: ResourceOverviewCard[] = [];
+  insightPanels: ResourceInsightPanel[] = [];
 
   readonly pageSizeOptions = [
     { id: 10, text: '10 por página' },
@@ -149,6 +163,7 @@ export class AdminResourcePageComponent {
   private toastSeed = 1;
   private supportLoaded = false;
   private allRows: any[] = [];
+  private teamMembersCache: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -844,6 +859,17 @@ export class AdminResourcePageComponent {
         this.optionBuckets.roles = roles.map((item) => ({ id: item.id, text: item.name }));
       }
     });
+
+    this.adminDataService.teamMembers(token).subscribe({
+      next: (response) => {
+        this.teamMembersCache = this.items<any>(response?.data);
+        if (this.resource === 'teams' && this.allRows.length) {
+          this.allRows = this.mapRowsForView(this.rows.length ? this.rows : this.allRows);
+          this.rebuildOverview();
+          this.applyGridState();
+        }
+      }
+    });
   }
 
   private loadRows(): void {
@@ -879,7 +905,8 @@ export class AdminResourcePageComponent {
             return;
           }
 
-          this.allRows = this.mapRowsForDisplay(this.items(response?.data));
+          this.allRows = this.mapRowsForView(this.items(response?.data));
+          this.rebuildOverview();
           this.applyGridState();
         },
         error: (error) => {
@@ -894,6 +921,8 @@ export class AdminResourcePageComponent {
           this.rows = [];
           this.filteredRows = [];
           this.totalItems = 0;
+          this.overviewCards = [];
+          this.insightPanels = [];
         }
       });
   }
@@ -1089,6 +1118,178 @@ export class AdminResourcePageComponent {
       default:
         return rows;
     }
+  }
+
+  private rebuildOverview(): void {
+    const rows = this.allRows;
+    const total = rows.length;
+
+    switch (this.resource) {
+      case 'projects': {
+        const active = rows.filter((row) => String(row.statusDisplay || '').toLowerCase().includes('andamento')).length;
+        const dueSoon = rows.filter((row) => this.isDueSoon(row.end_date)).length;
+        const budget = rows.reduce((sum, row) => sum + Number(row.budget_amount || 0), 0);
+        this.overviewCards = [
+          { label: 'Obras cadastradas', value: String(total), detail: `${active} em andamento` },
+          { label: 'Prazo próximo', value: String(dueSoon), detail: 'Vencem em até 15 dias', tone: dueSoon ? 'warning' : 'success' },
+          { label: 'Clientes ativos', value: String(new Set(rows.map((row) => row.client_name).filter(Boolean)).size), detail: 'Carteira vinculada' },
+          { label: 'Orçamento total', value: this.formatCurrency(budget), detail: 'Base consolidada das obras', tone: 'success' }
+        ];
+        this.insightPanels = [
+          { title: 'Obras com prazo sensível', lines: rows.filter((row) => this.isDueSoon(row.end_date)).slice(0, 4).map((row) => `${row.name} • ${this.formatDate(row.end_date)}`) },
+          { title: 'Responsáveis', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.engineerDisplay || 'Não definido'}`) }
+        ];
+        break;
+      }
+      case 'diaries': {
+        const approved = rows.filter((row) => row.statusDisplay === 'Aprovado').length;
+        const pending = rows.filter((row) => row.statusDisplay === 'Pendente').length;
+        this.overviewCards = [
+          { label: 'Diários lançados', value: String(total), detail: `${pending} aguardando análise` },
+          { label: 'Aprovados', value: String(approved), detail: 'Prontos para histórico', tone: 'success' },
+          { label: 'Climas distintos', value: String(new Set(rows.map((row) => row.weatherDisplay).filter(Boolean)).size), detail: 'Registro ambiental da operação' },
+          { label: 'Obras com diário', value: String(new Set(rows.map((row) => row.project_id)).size), detail: 'Cobertura das frentes ativas' }
+        ];
+        this.insightPanels = [
+          { title: 'Pendências do dia', lines: rows.filter((row) => row.statusDisplay === 'Pendente').slice(0, 5).map((row) => `${row.workDateDisplay} • ${row.projectDisplay}`) },
+          { title: 'Condições de clima', lines: rows.slice(0, 4).map((row) => `${row.workDateDisplay} • ${row.weatherDisplay}`) }
+        ];
+        break;
+      }
+      case 'activities': {
+        const quantity = rows.reduce((sum, row) => sum + Number(row.quantity || 0), 0);
+        this.overviewCards = [
+          { label: 'Atividades registradas', value: String(total), detail: `${new Set(rows.map((row) => row.daily_log_id)).size} diários impactados` },
+          { label: 'Serviços distintos', value: String(new Set(rows.map((row) => row.service_name)).size), detail: 'Frentes executadas' },
+          { label: 'Quantidade acumulada', value: this.formatNumber(quantity), detail: 'Total declarado no período', tone: 'success' },
+          { label: 'Com localização', value: String(rows.filter((row) => row.location).length), detail: 'Rastreáveis na obra' }
+        ];
+        this.insightPanels = [
+          { title: 'Últimos serviços', lines: rows.slice(0, 5).map((row) => `${row.service_name} • ${row.diaryDisplay}`) },
+          { title: 'Observações recentes', lines: rows.filter((row) => row.notes).slice(0, 4).map((row) => `${row.service_name} • ${row.notes}`) }
+        ];
+        break;
+      }
+      case 'teams': {
+        const members = rows.reduce((sum, row) => sum + Number(row.memberCountDisplay || 0), 0);
+        this.overviewCards = [
+          { label: 'Equipes cadastradas', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} ativas` },
+          { label: 'Integrantes alocados', value: String(members), detail: 'Vínculos ativos nas equipes', tone: 'success' },
+          { label: 'Média por equipe', value: total ? this.formatNumber(members / total) : '0', detail: 'Composição média' },
+          { label: 'Obras atendidas', value: String(new Set(rows.map((row) => row.project_id)).size), detail: 'Frentes com equipe formada' }
+        ];
+        this.insightPanels = [
+          { title: 'Equipes com maior composição', lines: [...rows].sort((a, b) => Number(b.memberCountDisplay || 0) - Number(a.memberCountDisplay || 0)).slice(0, 4).map((row) => `${row.name} • ${row.memberCountDisplay} integrantes`) },
+          { title: 'Distribuição por obra', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.projectDisplay}`) }
+        ];
+        break;
+      }
+      case 'users': {
+        this.overviewCards = [
+          { label: 'Usuários cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
+          { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
+          { label: 'Empresas cobertas', value: String(new Set(rows.map((row) => row.company_id)).size), detail: 'Entidades operacionais' },
+          { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato rápido disponível' }
+        ];
+        this.insightPanels = [
+          { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
+          { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) }
+        ];
+        break;
+      }
+      default:
+        this.overviewCards = [{ label: 'Registros carregados', value: String(total), detail: 'Base ativa neste módulo' }];
+        this.insightPanels = [];
+        break;
+    }
+
+    this.insightPanels = this.insightPanels.filter((panel) => panel.lines.length);
+  }
+
+  private mapRowsForView(rows: any[]): any[] {
+    const mapped = this.mapRowsForDisplay(rows);
+
+    if (this.resource === 'projects') {
+      return mapped.map((row: any) => ({
+        ...row,
+        engineerDisplay: this.optionLabel('users', row.engineer_user_id, 'Não definido')
+      }));
+    }
+
+    if (this.resource === 'diaries') {
+      return mapped.map((row: any) => ({
+        ...row,
+        createdByDisplay: this.optionLabel('users', row.created_by, 'Sem responsável')
+      }));
+    }
+
+    if (this.resource === 'activities') {
+      return mapped.map((row: any) => ({
+        ...row,
+        notesDisplay: row.notes || 'Sem observações'
+      }));
+    }
+
+    if (this.resource === 'teams') {
+      return mapped.map((row: any) => ({
+        ...row,
+        memberCountDisplay: `${this.teamMembersCache.filter((item) => Number(item.team_id) === Number(row.id)).length}`,
+        allocationDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`)
+      }));
+    }
+
+    if (this.resource === 'materials') {
+      return mapped.map((row: any) => ({
+        ...row,
+        unitDisplay: row.unit || 'Unidade'
+      }));
+    }
+
+    if (this.resource === 'equipments') {
+      return mapped.map((row: any) => ({
+        ...row,
+        maintenanceDisplay: this.equipmentMaintenanceLabel(row.status, row.hours_used)
+      }));
+    }
+
+    if (this.resource === 'occurrences') {
+      return mapped.map((row: any) => ({
+        ...row,
+        descriptionDisplay: row.description || 'Sem descrição'
+      }));
+    }
+
+    if (this.resource === 'documents') {
+      return mapped.map((row: any) => ({
+        ...row,
+        notesDisplay: row.notes || 'Sem observações'
+      }));
+    }
+
+    if (this.resource === 'users') {
+      return mapped.map((row: any) => ({
+        ...row,
+        phoneDisplay: row.phone || 'Não informado'
+      }));
+    }
+
+    return mapped;
+  }
+
+  private equipmentMaintenanceLabel(status: string | undefined, hoursUsed: number | null | undefined): string {
+    if (String(status || '').toLowerCase().includes('manut')) {
+      return 'Em manutenção';
+    }
+    return Number(hoursUsed || 0) >= 120 ? 'Revisão sugerida' : 'Sem alerta';
+  }
+
+  private isDueSoon(value: any): boolean {
+    if (!value) return false;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return false;
+    const now = new Date();
+    const diffDays = (date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays >= 0 && diffDays <= 15;
   }
 
   private compareRows(left: any, right: any, direction: 'asc' | 'desc'): number {

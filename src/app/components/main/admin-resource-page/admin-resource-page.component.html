@@ -47,6 +47,16 @@
         <span class="metric-pill">Busca: <strong>{{ appliedSearch || 'Sem filtro' }}</strong></span>
       </div>
 
+      <div class="overview-grid" *ngIf="overviewCards.length">
+        @for (card of overviewCards; track card.label) {
+          <article class="overview-card" [class]="'tone-' + (card.tone || 'default')">
+            <span class="overview-label">{{ card.label }}</span>
+            <strong>{{ card.value }}</strong>
+            <small>{{ card.detail }}</small>
+          </article>
+        }
+      </div>
+
       <div class="resource-toolbar">
         <div class="resource-search">
           <ejs-textbox cssClass="orb-input" placeholder="Buscar registros..." [value]="searchTerm" (input)="searchTerm = $any($event.target).value"></ejs-textbox>
@@ -149,6 +159,21 @@
         <div class="empty-grid-state">
           <strong>Nenhum registro encontrado</strong>
           <p>Ajuste a busca ou crie um novo cadastro para este módulo.</p>
+        </div>
+      }
+
+      @if (insightPanels.length) {
+        <div class="insight-grid">
+          @for (panel of insightPanels; track panel.title) {
+            <article class="insight-panel">
+              <h4>{{ panel.title }}</h4>
+              <ul>
+                @for (line of panel.lines; track line) {
+                  <li>{{ line }}</li>
+                }
+              </ul>
+            </article>
+          }
         </div>
       }
     </article>
