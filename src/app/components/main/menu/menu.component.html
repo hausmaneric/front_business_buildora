@@ -11,9 +11,10 @@
     </div>
   </div>
 
-  <div class="company-switcher orb-card">
-    <span>{{ loginService.getLocalToken()?.account?.name || 'Buildora Cliente 001' }}</span>
-  </div>
+  <button type="button" class="company-switcher orb-card">
+    <span>{{ loginService.getLocalToken()?.account?.name || 'Construtora Exemplo' }}</span>
+    <span class="chevron"></span>
+  </button>
 
   <div class="menu-tree">
     <button type="button" class="menu-link root-link" [class.active]="isActive(dashboardItem.route)" (click)="navigate(dashboardItem.route)">
@@ -23,7 +24,6 @@
 
     @for (section of sections; track section.id) {
       <section class="menu-section">
-        <div class="menu-section-title">{{ section.name }}</div>
         <div class="menu-section-items">
           @for (item of section.items; track item.id) {
             <button type="button" class="menu-link" [class.active]="isActive(item.route)" (click)="navigate(item.route)">
@@ -40,8 +40,10 @@
     <div class="avatar">J</div>
     <div class="user-copy">
       <strong>{{ userName }}</strong>
-      <span>Tenant</span>
+      <span>Engenheiro</span>
     </div>
-    <button type="button" class="logout-btn" (click)="logout()">Sair</button>
+    <button type="button" class="logout-btn" (click)="logout()">
+      <span class="logout-chevron"></span>
+    </button>
   </div>
 </aside>

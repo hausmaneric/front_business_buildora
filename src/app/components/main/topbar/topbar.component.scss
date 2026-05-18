@@ -3,17 +3,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 18px 22px;
+  padding: 16px 20px;
   margin-bottom: 18px;
   border-radius: 22px;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(100, 116, 139, 0.1);
 }
 
 .topbar-left,
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
 }
 
 .topbar-left {
@@ -26,66 +28,74 @@
   min-width: 0;
 }
 
-.menu-btn {
-  width: 46px;
-  height: 46px;
+.menu-btn,
+.icon-btn {
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(7, 18, 34, 0.45);
+  border: 1px solid rgba(100, 116, 139, 0.14);
+  background: #fff;
   display: inline-flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  cursor: pointer;
+  color: #334155;
+  box-shadow: 0 10px 24px rgba(148, 163, 184, 0.08);
+}
+
+.menu-btn {
+  flex-direction: column;
   gap: 4px;
   padding: 0 12px;
-  cursor: pointer;
 }
 
 .menu-btn span {
+  width: 16px;
   height: 2px;
   border-radius: 999px;
-  background: #d7e6fb;
-}
-
-.page-copy h2 {
-  margin: 0 0 4px;
-  font-size: 2rem;
+  background: #334155;
 }
 
 .page-copy {
   min-width: 0;
 }
 
-.page-copy h2,
-.page-copy p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.page-copy h2 {
+  margin: 0 0 4px;
+  font-size: 1.95rem;
+  color: #0f172a;
 }
 
 .page-copy p {
   margin: 0;
-  color: var(--orbax-text-soft);
+  color: #64748b;
 }
 
-.icon-btn {
-  width: 46px;
-  height: 46px;
+.search-field {
+  min-width: min(100%, 288px);
+  min-height: 44px;
+  padding: 0 16px;
   border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(7, 18, 34, 0.45);
-  position: relative;
-  color: white;
+  border: 1px solid rgba(100, 116, 139, 0.14);
+  background: #fff;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(148, 163, 184, 0.06);
 }
 
 .badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 5px;
+  right: 5px;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: #2f6fff;
+  background: #dc2626;
+  color: #fff;
   font-size: 11px;
   display: inline-flex;
   align-items: center;
@@ -95,13 +105,34 @@
 .date-picker-shell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  width: min(100%, 310px);
+  width: min(100%, 260px);
   padding: 0 14px;
   border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(7, 18, 34, 0.45);
+  border: 1px solid rgba(100, 116, 139, 0.14);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(148, 163, 184, 0.06);
+}
+
+.new-diary-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(5, 150, 105, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plus-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .date-picker-shell ::ng-deep .date-range-dropdown.e-control-wrapper,
@@ -115,14 +146,16 @@
 
 .calendar-icon,
 .icon-search,
-.icon-bell {
+.icon-bell,
+.icon-help {
   position: relative;
   display: inline-block;
 }
 
 .calendar-icon::before,
 .icon-search::before,
-.icon-bell::before {
+.icon-bell::before,
+.icon-help::before {
   content: '';
   display: block;
 }
@@ -130,23 +163,31 @@
 .icon-search::before {
   width: 12px;
   height: 12px;
-  border: 2px solid #d6e7ff;
+  border: 2px solid #64748b;
   border-radius: 50%;
-  box-shadow: 7px 7px 0 -5px #d6e7ff;
+  box-shadow: 7px 7px 0 -5px #64748b;
 }
 
 .icon-bell::before {
   width: 12px;
   height: 14px;
-  border: 2px solid #d6e7ff;
+  border: 2px solid #334155;
   border-bottom-width: 4px;
   border-radius: 8px 8px 4px 4px;
+}
+
+.icon-help::before {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #334155;
+  border-radius: 50%;
+  box-shadow: inset 0 -3px 0 -2px #334155;
 }
 
 .calendar-icon::before {
   width: 14px;
   height: 12px;
-  border: 2px solid #d6e7ff;
+  border: 2px solid #64748b;
   border-radius: 4px;
 }
 
@@ -160,13 +201,13 @@
 ::ng-deep .date-range-dropdown .e-ddl-icon,
 ::ng-deep .date-range-dropdown .e-input-group-icon:last-child {
   background: transparent !important;
-  color: var(--orbax-text-soft) !important;
+  color: #64748b !important;
 }
 
 ::ng-deep .date-range-dropdown input,
 ::ng-deep .date-range-dropdown .e-input-value,
 ::ng-deep .date-range-dropdown .e-input-group-icon {
-  color: white !important;
+  color: #0f172a !important;
 }
 
 ::ng-deep .date-range-dropdown input.e-input,
@@ -186,13 +227,9 @@
     justify-content: space-between;
   }
 
+  .search-field,
   .date-picker-shell {
-    min-width: 0;
     flex: 1;
-  }
-
-  .page-copy h2 {
-    font-size: 1.65rem;
   }
 }
 
@@ -208,26 +245,17 @@
     flex-wrap: wrap;
   }
 
-  .menu-btn,
-  .icon-btn {
-    width: 42px;
-    height: 42px;
-  }
-
   .page-copy {
     flex: 1;
   }
 
   .page-copy h2 {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
   }
 
-  .page-copy p {
-    font-size: 0.92rem;
-  }
-
-  .date-picker-shell {
+  .search-field,
+  .date-picker-shell,
+  .new-diary-btn {
     width: 100%;
-    padding-inline: 12px;
   }
 }

@@ -2,15 +2,17 @@
   min-height: 100vh;
   display: flex;
   background:
-    radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 25%),
-    linear-gradient(180deg, #07162b 0%, #081930 100%);
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 24%),
+    radial-gradient(circle at top left, rgba(51, 65, 85, 0.04), transparent 18%),
+    linear-gradient(180deg, #fbfdfd 0%, #f4f8fb 100%);
 }
 
 .layout-sidebar {
-  width: 260px;
-  min-width: 260px;
-  background: linear-gradient(180deg, rgba(8, 24, 48, 0.98), rgba(8, 22, 43, 0.98));
-  border-right: 1px solid rgba(148, 163, 184, 0.12);
+  width: 236px;
+  min-width: 236px;
+  background: rgba(255, 255, 255, 0.96);
+  border-right: 1px solid rgba(100, 116, 139, 0.12);
+  box-shadow: 24px 0 50px rgba(148, 163, 184, 0.08);
   transition: transform 0.3s ease;
   z-index: 4;
 }
@@ -27,12 +29,7 @@
   display: flex;
   flex-direction: column;
   padding: 16px 16px 0;
-  transition: margin-left 0.3s ease;
   overflow: hidden;
-}
-
-.layout-main-container.main-expanded {
-  margin-left: 0;
 }
 
 .layout-main {
@@ -40,28 +37,23 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-bottom: 18px;
 }
 
 @media (max-width: 1024px) {
   .layout-sidebar {
     position: fixed;
     inset: 0 auto 0 0;
-    box-shadow: 18px 0 48px rgba(2, 6, 23, 0.35);
-  }
-
-  .layout-sidebar.sidebar-closed {
-    transform: translateX(-100%);
+    box-shadow: 18px 0 40px rgba(15, 23, 42, 0.16);
   }
 
   .layout-main-container {
-    padding-inline: 14px;
-    padding-top: 14px;
+    padding: 12px 12px 0;
   }
 }
 
 @media (max-width: 640px) {
   .layout-main-container {
-    padding-inline: 10px;
-    padding-top: 10px;
+    padding: 10px 10px 0;
   }
 }

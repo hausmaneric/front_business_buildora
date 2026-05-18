@@ -39,7 +39,7 @@ export class MenuComponent {
   sections: MenuSection[] = [
     {
       id: 'operacao',
-      name: 'OPERAÇÃO',
+      name: 'Operação',
       items: [
         { id: 'projects', name: 'Obras', iconKey: 'briefcase', route: '/main/projects' },
         { id: 'diaries', name: 'Diários de Obra', iconKey: 'receipt', route: '/main/diaries' },
@@ -52,7 +52,7 @@ export class MenuComponent {
     },
     {
       id: 'analises',
-      name: 'ANÁLISES',
+      name: 'Análises',
       items: [
         { id: 'reports', name: 'Relatórios', iconKey: 'chart', route: '/main/reports' },
         { id: 'documents', name: 'Documentos', iconKey: 'log', route: '/main/documents' }
@@ -60,7 +60,7 @@ export class MenuComponent {
     },
     {
       id: 'administracao',
-      name: 'ADMINISTRAÇÃO',
+      name: 'Administração',
       items: [
         { id: 'users', name: 'Usuários', iconKey: 'users', route: '/main/users' },
         { id: 'settings', name: 'Configurações', iconKey: 'settings', route: '/main/settings' }

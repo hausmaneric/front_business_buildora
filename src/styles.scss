@@ -1,21 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 :root {
-  --orbax-bg: #081a33;
-  --orbax-surface: #0d2341;
-  --orbax-surface-soft: #102947;
-  --orbax-surface-strong: #132e53;
-  --orbax-border: rgba(147, 197, 253, 0.12);
-  --orbax-text: #f8fafc;
-  --orbax-text-soft: #9fb3cc;
-  --orbax-accent: #2f6fff;
-  --orbax-accent-soft: rgba(47, 111, 255, 0.18);
-  --orbax-success: #1fd28c;
-  --orbax-warning: #f7b940;
-  --orbax-danger: #ef5b5b;
-  --orbax-cyan: #20c7df;
+  --orbax-bg: #f4f7fb;
+  --orbax-surface: #ffffff;
+  --orbax-surface-soft: #f7fafc;
+  --orbax-surface-strong: #eef4fb;
+  --orbax-border: rgba(15, 23, 42, 0.08);
+  --orbax-text: #0f172a;
+  --orbax-text-soft: #64748b;
+  --orbax-accent: #12a36f;
+  --orbax-accent-soft: rgba(18, 163, 111, 0.12);
+  --orbax-accent-strong: #0f8d61;
+  --orbax-success: #16a34a;
+  --orbax-warning: #f59e0b;
+  --orbax-danger: #ef4444;
+  --orbax-cyan: #0ea5e9;
   --orbax-violet: #8b5cf6;
-  --orbax-card-shadow: 0 24px 60px rgba(1, 10, 24, 0.35);
+  --orbax-card-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
   --font-size12: 12px;
   --font-size14: 14px;
 }
@@ -26,8 +27,8 @@ body {
   padding: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top center, rgba(33, 85, 173, 0.18), transparent 28%),
-    linear-gradient(180deg, #07162a 0%, #081c37 42%, #07162c 100%);
+    radial-gradient(circle at top right, rgba(18, 163, 111, 0.08), transparent 24%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%);
   color: var(--orbax-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -56,22 +57,22 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(148, 163, 184, 0.12);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(96, 165, 250, 0.28);
+  background: rgba(15, 23, 42, 0.18);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(96, 165, 250, 0.4);
+  background: rgba(15, 23, 42, 0.28);
 }
 
 .orb-card {
-  background: linear-gradient(180deg, rgba(14, 35, 65, 0.96), rgba(10, 27, 50, 0.96));
+  background: var(--orbax-surface);
   border: 1px solid var(--orbax-border);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: var(--orbax-card-shadow);
 }
 
@@ -84,63 +85,6 @@ a {
 .orb-section-subtitle {
   color: var(--orbax-text-soft);
   font-size: 0.92rem;
-}
-
-.e-grid,
-.e-grid .e-gridcontent,
-.e-grid .e-gridheader,
-.e-grid .e-headercontent,
-.e-grid .e-content,
-.e-grid .e-table,
-.e-grid .e-gridheader table,
-.e-grid .e-gridcontent table,
-.e-grid .e-gridheader .e-table,
-.e-grid .e-gridcontent .e-table,
-.e-grid .e-rowcell,
-.e-grid .e-headercell {
-  background: transparent !important;
-  color: var(--orbax-text) !important;
-  border-color: rgba(148, 163, 184, 0.12) !important;
-}
-
-.e-grid {
-  border: none !important;
-}
-
-.e-grid .e-headercell {
-  background: rgba(255, 255, 255, 0.02) !important;
-  color: var(--orbax-text-soft) !important;
-  font-size: 12px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.e-grid .e-headercell .e-headercelldiv,
-.e-grid .e-rowcell {
-  color: var(--orbax-text) !important;
-}
-
-.e-grid .e-row:hover .e-rowcell {
-  background: rgba(59, 130, 246, 0.08) !important;
-}
-
-.e-grid .e-selectionbackground,
-.e-grid .e-active .e-rowcell,
-.e-grid .e-rowcell.e-selectionbackground {
-  background: rgba(47, 111, 255, 0.12) !important;
-  color: var(--orbax-text) !important;
-}
-
-.e-grid .e-rowcell {
-  color: rgba(239, 246, 255, 0.92) !important;
-}
-
-.e-grid .e-row {
-  background: transparent !important;
-}
-
-.e-grid .e-altrow {
-  background: rgba(255, 255, 255, 0.015) !important;
 }
 
 .e-toolbar,
@@ -167,9 +111,9 @@ a {
 .e-ddl .e-input-group input,
 .e-input-group .e-input-group-icon,
 .e-control-wrapper .e-input-group-icon {
-  background: rgba(9, 24, 44, 0.92) !important;
+  background: #fff !important;
   color: var(--orbax-text) !important;
-  border-color: rgba(147, 197, 253, 0.18) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
 }
 
 .e-input-group-icon,
@@ -177,14 +121,14 @@ a {
 .e-ddl .e-ddl-icon,
 .e-ddl .e-input-group-icon.e-ddl-icon,
 .e-input-group-icon:last-child {
-  background: rgba(9, 24, 44, 0.92) !important;
+  background: #fff !important;
   color: var(--orbax-text-soft) !important;
 }
 
 .e-input-group:not(.e-float-icon-left),
 .e-control-wrapper.e-input-group:not(.e-float-icon-left),
 .e-ddl.e-control-wrapper.e-input-group {
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   overflow: hidden !important;
 }
 
@@ -192,12 +136,12 @@ a {
 .e-control-wrapper input.e-input,
 .e-ddl .e-input-value,
 .e-ddl .e-input-group-icon {
-  min-height: 42px !important;
+  min-height: 44px !important;
 }
 
 .e-input::placeholder,
 .e-input-group input::placeholder {
-  color: rgba(159, 179, 204, 0.72) !important;
+  color: rgba(100, 116, 139, 0.92) !important;
 }
 
 .e-popup,
@@ -205,39 +149,39 @@ a {
 .e-dropdown-popup,
 .e-list-parent,
 .e-list-item {
-  background: #0d2341 !important;
+  background: #fff !important;
   color: var(--orbax-text) !important;
-  border-color: rgba(147, 197, 253, 0.12) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
 .e-list-item:hover,
 .e-list-item.e-active,
 .e-list-item.e-item-focus {
-  background: rgba(47, 111, 255, 0.18) !important;
-  color: white !important;
+  background: rgba(18, 163, 111, 0.12) !important;
+  color: var(--orbax-text) !important;
 }
 
 .e-popup .e-input-focus,
 .e-popup .e-active {
-  background: rgba(47, 111, 255, 0.18) !important;
+  background: rgba(18, 163, 111, 0.12) !important;
 }
 
 .e-btn,
 .e-css.e-btn {
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   box-shadow: none !important;
 }
 
 .e-btn.dialog-secondary {
-  background: rgba(14, 35, 65, 0.96) !important;
-  border: 1px solid rgba(147, 197, 253, 0.16) !important;
+  background: #fff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
   color: var(--orbax-text) !important;
 }
 
 .e-btn.dialog-primary,
 .e-btn.primary-action {
-  background: linear-gradient(135deg, #2f6fff 0%, #6aa3ff 100%) !important;
-  border: 1px solid rgba(120, 167, 255, 0.4) !important;
+  background: linear-gradient(135deg, var(--orbax-accent) 0%, #32c58e 100%) !important;
+  border: 1px solid rgba(18, 163, 111, 0.3) !important;
   color: #fff !important;
 }
 
@@ -245,11 +189,11 @@ a {
 .e-dialog .e-dlg-content,
 .e-dialog .e-footer-content,
 .e-dialog .e-dlg-header-content {
-  background: #0d2341 !important;
+  background: #fff !important;
   color: var(--orbax-text) !important;
-  border-color: rgba(147, 197, 253, 0.12) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
 .e-input-focus {
-  box-shadow: 0 0 0 2px rgba(47, 111, 255, 0.18) !important;
+  box-shadow: 0 0 0 3px rgba(18, 163, 111, 0.14) !important;
 }

@@ -1,6 +1,6 @@
 <header class="topbar orb-card">
   <div class="topbar-left">
-    <button class="menu-btn" type="button" (click)="layoutService.onMenuToggle()">
+    <button class="menu-btn" type="button" (click)="layoutService.onMenuToggle()" aria-label="Abrir menu">
       <span></span>
       <span></span>
       <span></span>
@@ -23,6 +23,10 @@
       <span class="badge">3</span>
     </button>
 
+    <button class="icon-btn help-btn" type="button" title="Abrir ajuda">
+      <i class="icon-help"></i>
+    </button>
+
     <div class="date-picker-shell">
       <span class="calendar-icon"></span>
       <ejs-dropdownlist
@@ -34,6 +38,9 @@
       </ejs-dropdownlist>
     </div>
 
-    <button class="new-diary-btn" type="button" (click)="openNewDiary()">+ Novo Diário</button>
+    <button class="new-diary-btn" type="button" (click)="openNewDiary()">
+      <span class="plus-icon">+</span>
+      <span>Novo Diário</span>
+    </button>
   </div>
 </header>
