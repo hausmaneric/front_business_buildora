@@ -35,7 +35,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Diários de Obra',
-          subtitle: 'Controle dos diários registrados por obra, data e status',
+          subtitle: 'Consulta, edição, aprovação e reprovação dos diários das obras',
           resource: 'diaries'
         }
       },
@@ -44,7 +44,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Atividades',
-          subtitle: 'Atividades produtivas registradas nos diários das obras',
+          subtitle: 'Serviços executados, produtividade e apontamentos operacionais',
           resource: 'activities'
         }
       },
@@ -53,7 +53,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Equipes',
-          subtitle: 'Equipes vinculadas às obras, responsáveis e status de atuação',
+          subtitle: 'Equipes vinculadas às obras, funções e alocações de campo',
           resource: 'teams'
         }
       },
@@ -62,7 +62,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Materiais',
-          subtitle: 'Materiais consumidos, recebidos ou movimentados nos diários',
+          subtitle: 'Entradas, consumo e observações de materiais por diário',
           resource: 'materials'
         }
       },
@@ -71,7 +71,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Equipamentos',
-          subtitle: 'Equipamentos, horas de uso e status operacional registrados nas obras',
+          subtitle: 'Máquinas, ferramentas, uso diário e manutenção operacional',
           resource: 'equipments'
         }
       },
@@ -80,7 +80,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Ocorrências',
-          subtitle: 'Incidentes, problemas e apontamentos abertos nos diários da obra',
+          subtitle: 'Severidade, resolução e acompanhamento das ocorrências das obras',
           resource: 'occurrences'
         }
       },
@@ -89,7 +89,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Relatórios',
-          subtitle: 'Resumo executivo das obras, produtividade e evolução dos diários',
+          subtitle: 'Relatórios executivos, produtividade, diários e consolidados por obra',
           resource: 'reports'
         }
       },
@@ -98,7 +98,7 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Documentos',
-          subtitle: 'Arquivos, fotos e anexos vinculados aos diários das obras',
+          subtitle: 'Contratos, ARTs, plantas, anexos e organização documental do tenant',
           resource: 'documents'
         }
       },
@@ -107,8 +107,161 @@ export const routes: Routes = [
         component: AdminResourcePageComponent,
         data: {
           title: 'Usuários',
-          subtitle: 'Pessoas da empresa com acesso ao ambiente empresarial',
+          subtitle: 'Gestores, engenheiros, encarregados e usuários operacionais da empresa',
           resource: 'users'
+        }
+      },
+      {
+        path: 'permissions',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Permissões',
+          subtitle: 'Perfis de acesso, visibilidade, edição, aprovação e governança operacional',
+          resource: 'permissions'
+        }
+      },
+      {
+        path: 'photos',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Fotos',
+          subtitle: 'Galeria por obra, diário, data e tipo de arquivo',
+          resource: 'photos'
+        }
+      },
+      {
+        path: 'climate',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Clima',
+          subtitle: 'Clima informado nos diários e impactos operacionais nas obras',
+          resource: 'climate'
+        }
+      },
+      {
+        path: 'signatures',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Assinaturas',
+          subtitle: 'Fluxo de assinatura, aprovação e conformidade dos diários',
+          resource: 'signatures'
+        }
+      },
+      {
+        path: 'schedule',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Cronograma',
+          subtitle: 'Prazo, andamento e marcos das obras em execução',
+          resource: 'schedule'
+        }
+      },
+      {
+        path: 'measurements',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Medições',
+          subtitle: 'Quantidades executadas, avanço físico e acompanhamento por obra',
+          resource: 'measurements'
+        }
+      },
+      {
+        path: 'budget',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Orçamento x Realizado',
+          subtitle: 'Comparativo de orçamento, consumo e execução das obras',
+          resource: 'budget'
+        }
+      },
+      {
+        path: 'finance',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Financeiro da Obra',
+          subtitle: 'Controle financeiro operacional, custos e alocação por obra',
+          resource: 'finance'
+        }
+      },
+      {
+        path: 'safety',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Checklist de Segurança',
+          subtitle: 'Checklist, conformidade e ações corretivas de segurança',
+          resource: 'safety'
+        }
+      },
+      {
+        path: 'epi',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'EPI',
+          subtitle: 'Controle de entrega, uso e conformidade de equipamentos de proteção',
+          resource: 'epi'
+        }
+      },
+      {
+        path: 'whatsapp',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Integração com WhatsApp',
+          subtitle: 'Fluxos de comunicação operacional e compartilhamento externo',
+          resource: 'whatsapp'
+        }
+      },
+      {
+        path: 'approval-flow',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Aprovação por Fluxo',
+          subtitle: 'Filas, aprovações pendentes e governança do fluxo operacional',
+          resource: 'approval-flow'
+        }
+      },
+      {
+        path: 'pdf-automation',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Envio Automático de PDF',
+          subtitle: 'Geração e envio automático de relatórios e diários em PDF',
+          resource: 'pdf-automation'
+        }
+      },
+      {
+        path: 'bi',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'BI e Indicadores',
+          subtitle: 'Indicadores executivos, produtividade e visão analítica da operação',
+          resource: 'bi'
+        }
+      },
+      {
+        path: 'map',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Mapa das Obras',
+          subtitle: 'Localização, dispersão e status geográfico das obras',
+          resource: 'map'
+        }
+      },
+      {
+        path: 'integrations',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Integrações',
+          subtitle: 'Google Drive, OneDrive e conectores operacionais da empresa',
+          resource: 'integrations'
+        }
+      },
+      {
+        path: 'digital-signature',
+        component: AdminOpsPageComponent,
+        data: {
+          title: 'Assinatura Digital Avançada',
+          subtitle: 'Conformidade, trilhas e maturidade para assinatura digital avançada',
+          resource: 'digital-signature'
         }
       },
       {
@@ -116,7 +269,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Configurações',
-          subtitle: 'Metadados do tenant, catálogos, perfis e parâmetros de operação',
+          subtitle: 'Dados da empresa, logo, padrões operacionais e parâmetros do tenant',
           resource: 'settings'
         }
       }
