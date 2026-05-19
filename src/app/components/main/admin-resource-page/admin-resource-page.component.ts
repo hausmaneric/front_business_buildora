@@ -176,7 +176,7 @@ export class AdminResourcePageComponent {
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
-      this.title = data['title'] ?? 'Operação';
+      this.title = data['title'] ?? 'Opera??o';
       this.subtitle = data['subtitle'] ?? '';
       this.resource = data['resource'] ?? 'projects';
       this.configurePage();
@@ -387,6 +387,16 @@ export class AdminResourcePageComponent {
     this.applyGridState();
   }
 
+
+  trackRow(row: any, index: number): any {
+    return row?.id || row?.code || index;
+  }
+
+  displayCell(row: any, field: string): string {
+    const value = row?.[field];
+    return value === null || value === undefined || value === '' ? '-' : String(value);
+  }
+
   totalRowsLabel(): string {
     if (!this.filteredRows.length) {
       return `0 de ${this.totalItems} registros`;
@@ -405,7 +415,7 @@ export class AdminResourcePageComponent {
   }
 
   actionColumnWidth(): number {
-    return 184;
+    return this.resource === 'diaries' ? 280 : 184;
   }
 
   dialogTitle(): string {
@@ -457,6 +467,22 @@ export class AdminResourcePageComponent {
 
   canDelete(_row: any): boolean {
     return this.config().supportsDelete;
+  }
+
+  canApprove(row: any): boolean {
+    return this.resource === 'diaries' && !this.isDiaryStatus(row?.status, 'aprovado');
+  }
+
+  canReject(row: any): boolean {
+    return this.resource === 'diaries' && !this.isDiaryStatus(row?.status, 'reprovado');
+  }
+
+  approveDiary(row: any): void {
+    this.updateDiaryStatus(row, 'aprovado', 'Di?rio aprovado', 'Di?rio de obra aprovado com sucesso.');
+  }
+
+  rejectDiary(row: any): void {
+    this.updateDiaryStatus(row, 'reprovado', 'Di?rio reprovado', 'Di?rio de obra reprovado com sucesso.');
   }
 
   disabledReason(_row: any): string {
@@ -1343,6 +1369,65 @@ export class AdminResourcePageComponent {
 
   private activeDisplay(value: any): string {
     return this.toBoolean(value) ? 'Ativo' : 'Inativo';
+  }
+
+  private updateDiaryStatus(row: any, status: string, successTitle: string, successMessage: string): void {
+    const token = this.loginService.getToken();
+    if (!token) {
+      this.redirectToLogin();
+      return;
+    }
+
+    if (this.resource != 'diaries') {
+      return;
+    }
+
+    this.loading = true;
+    this.adminDataService
+      .updateDiary(token, {
+        id: row.id,
+        project_id: row.project_id,
+        work_date: row.work_date,
+        weather: row.weather,
+        summary: row.summary,
+        occurrences: row.occurrences,
+        status
+      })
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.flushView();
+      }))
+      .subscribe({
+        next: (response) => {
+          if (!response?.status) {
+            if (this.isAuthenticationFailure(response?.message)) {
+              this.redirectToLogin();
+              return;
+            }
+            this.pushToast('error', 'Falha ao atualizar di?rio', response?.message || 'N?o foi poss?vel atualizar a situa?o do di?rio.');
+            return;
+          }
+
+          this.pushToast('success', successTitle, response.message || successMessage);
+          this.loadRows();
+        },
+        error: (error) => {
+          const message = error?.error?.message || 'N?o foi poss?vel atualizar a situa?o do di?rio.';
+          if (this.isAuthenticationFailure(message)) {
+            this.redirectToLogin();
+            return;
+          }
+          this.pushToast('error', 'Erro de atualiza?o', message);
+        }
+      });
+  }
+
+  private isDiaryStatus(status: any, expected: 'aprovado' | 'reprovado'): boolean {
+    const value = String(status || '').toLowerCase();
+    if (expected == 'aprovado') {
+      return value.includes('aprov');
+    }
+    return value.includes('reprov');
   }
 
   private diaryStatus(status?: string): string {

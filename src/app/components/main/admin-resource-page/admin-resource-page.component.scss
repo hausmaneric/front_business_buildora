@@ -361,6 +361,18 @@
   border-color: rgba(220, 38, 38, 0.18);
 }
 
+.row-action.approve {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+  border-color: rgba(5, 150, 105, 0.22);
+}
+
+.row-action.reject {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
 .pager-bar {
   margin-top: 16px;
   display: flex;

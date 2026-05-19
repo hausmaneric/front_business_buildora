@@ -111,33 +111,41 @@
                 @for (column of columns; track column.field) {
                   <th [title]="column.headerText">{{ column.headerText }}</th>
                 }
-                <th class="actions-column">Ações</th>
+                <th class="actions-column">A??es</th>
               </tr>
             </thead>
             <tbody>
-              @for (row of filteredRows; track row.id ?? row.code ?? $index) {
+              @for (row of filteredRows; track trackRow(row, $index)) {
                 <tr>
                   @for (column of columns; track column.field) {
-                    <td [title]="row?.[column.field] ?? ''">
+                    <td [title]="displayCell(row, column.field)">
                       @if (isBadgeField(column)) {
                         <span class="status-badge" [class]="'status-badge ' + badgeTone(row?.[column.field])">
-                          {{ row?.[column.field] ?? '-' }}
+                          {{ displayCell(row, column.field) }}
                         </span>
                       } @else {
-                        {{ row?.[column.field] ?? '-' }}
+                        {{ displayCell(row, column.field) }}
                       }
                     </td>
                   }
                   <td class="actions-column">
                     <div class="row-actions">
                       <button ejs-button cssClass="row-action edit icon-only" type="button" title="Editar" [disabled]="!canEdit(row)" (click)="openEditDialog(row)">
-                        <span class="row-action-icon">✎</span>
+                        <span class="row-action-icon">?</span>
                       </button>
                       <button ejs-button cssClass="row-action duplicate icon-only" type="button" title="Duplicar" [disabled]="!canDuplicate(row)" (click)="openDuplicateDialog(row)">
-                        <span class="row-action-icon">⧉</span>
+                        <span class="row-action-icon">?</span>
                       </button>
+                      @if (resource === 'diaries') {
+                        <button ejs-button cssClass="row-action approve icon-only" type="button" title="Aprovar di?rio" [disabled]="!canApprove(row)" (click)="approveDiary(row)">
+                          <span class="row-action-icon">?</span>
+                        </button>
+                        <button ejs-button cssClass="row-action reject icon-only" type="button" title="Reprovar di?rio" [disabled]="!canReject(row)" (click)="rejectDiary(row)">
+                          <span class="row-action-icon">!</span>
+                        </button>
+                      }
                       <button ejs-button cssClass="row-action delete icon-only" type="button" [disabled]="!canDelete(row)" [title]="disabledReason(row) || 'Remover'" (click)="deleteRow(row)">
-                        <span class="row-action-icon">✕</span>
+                        <span class="row-action-icon">?</span>
                       </button>
                     </div>
                   </td>
