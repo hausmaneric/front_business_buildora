@@ -7,7 +7,7 @@
             <strong>{{ toast.title }}</strong>
             <p>{{ toast.message }}</p>
           </div>
-          <button type="button" class="toast-close" (click)="dismissToast(toast.id)">×</button>
+          <button type="button" class="toast-close" (click)="dismissToast(toast.id)">&times;</button>
         </div>
       }
     </div>
@@ -111,7 +111,7 @@
                 @for (column of columns; track column.field) {
                   <th [title]="column.headerText">{{ column.headerText }}</th>
                 }
-                <th class="actions-column">A??es</th>
+                <th class="actions-column">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -131,21 +131,21 @@
                   <td class="actions-column">
                     <div class="row-actions">
                       <button ejs-button cssClass="row-action edit icon-only" type="button" title="Editar" [disabled]="!canEdit(row)" (click)="openEditDialog(row)">
-                        <span class="row-action-icon">?</span>
+                        <span class="row-action-icon">&#9998;</span>
                       </button>
                       <button ejs-button cssClass="row-action duplicate icon-only" type="button" title="Duplicar" [disabled]="!canDuplicate(row)" (click)="openDuplicateDialog(row)">
-                        <span class="row-action-icon">?</span>
+                        <span class="row-action-icon">&#10697;</span>
                       </button>
                       @if (resource === 'diaries') {
-                        <button ejs-button cssClass="row-action approve icon-only" type="button" title="Aprovar di?rio" [disabled]="!canApprove(row)" (click)="approveDiary(row)">
-                          <span class="row-action-icon">?</span>
+                        <button ejs-button cssClass="row-action approve icon-only" type="button" title="Aprovar diário" [disabled]="!canApprove(row)" (click)="approveDiary(row)">
+                          <span class="row-action-icon">&#10003;</span>
                         </button>
-                        <button ejs-button cssClass="row-action reject icon-only" type="button" title="Reprovar di?rio" [disabled]="!canReject(row)" (click)="rejectDiary(row)">
-                          <span class="row-action-icon">!</span>
+                        <button ejs-button cssClass="row-action reject icon-only" type="button" title="Reprovar diário" [disabled]="!canReject(row)" (click)="rejectDiary(row)">
+                          <span class="row-action-icon">&#9888;</span>
                         </button>
                       }
                       <button ejs-button cssClass="row-action delete icon-only" type="button" [disabled]="!canDelete(row)" [title]="disabledReason(row) || 'Remover'" (click)="deleteRow(row)">
-                        <span class="row-action-icon">?</span>
+                        <span class="row-action-icon">&times;</span>
                       </button>
                     </div>
                   </td>
@@ -189,10 +189,25 @@
 
   <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="760px" [header]="dialogTitle()">
     <form class="create-form" [formGroup]="createForm">
+      <section class="dialog-hero">
+        <div>
+          <span class="dialog-eyebrow">{{ dialogMode === 'edit' ? 'Edição' : dialogMode === 'duplicate' ? 'Duplicação' : 'Novo cadastro' }}</span>
+          <strong>{{ dialogTitle() }}</strong>
+          <p>Preencha os campos principais com atenção. Esta tela foi organizada para facilitar a operação diária e reduzir erros de cadastro.</p>
+        </div>
+        <div class="dialog-meta">
+          <span class="dialog-meta-card">Módulo: {{ title }}</span>
+          <span class="dialog-meta-card">Campos: {{ activeFields.length }}</span>
+        </div>
+      </section>
+
       <div class="form-grid two-cols">
         @for (field of activeFields; track field.controlName) {
           <div class="form-field" [class.full-span]="field.type === 'textarea'">
             <label>{{ field.label }}</label>
+            @if (field.placeholder) {
+              <small class="form-hint">{{ field.placeholder }}</small>
+            }
 
             @switch (field.type) {
               @case ('textarea') {
@@ -203,7 +218,7 @@
                   [formControlName]="field.controlName"
                   [dataSource]="controlOptions(field)"
                   [fields]="{ text: 'text', value: 'id' }"
-                  [placeholder]="field.placeholder || 'Selecione'">
+                  [placeholder]="'Selecione uma opção'">
                 </ejs-dropdownlist>
               }
               @case ('checkbox') {
@@ -231,6 +246,10 @@
 
     <ng-template #footerTemplate>
       <div class="dialog-actions">
+        <div class="dialog-actions-copy">
+          <strong>{{ dialogMode === 'edit' ? 'Atualização em andamento' : 'Pronto para salvar' }}</strong>
+          <span>As alterações serão refletidas imediatamente no ambiente empresarial.</span>
+        </div>
         <button ejs-button type="button" cssClass="dialog-secondary" (click)="closeCreateDialog()">Cancelar</button>
         <button ejs-button type="button" cssClass="dialog-primary" (click)="submitCreate()">
           {{ saving ? 'Salvando...' : 'Salvar' }}

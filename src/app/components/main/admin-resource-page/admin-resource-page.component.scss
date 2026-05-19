@@ -42,7 +42,7 @@
 }
 
 .resource-body {
-  padding: 22px 22px 20px;
+  padding: 22px 22px 24px;
 }
 
 .resource-topline {
@@ -203,11 +203,13 @@
   border-bottom: 1px solid rgba(100, 116, 139, 0.08);
 }
 
-.resource-grid tbody tr:hover td {
-  background: rgba(16, 185, 129, 0.04);
+.resource-grid td[title] {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.resource-grid tbody tr:hover td.actions-column {
+.resource-grid tbody tr:hover td {
   background: rgba(16, 185, 129, 0.04);
 }
 
@@ -341,6 +343,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .row-action.edit {
@@ -402,14 +406,15 @@
 }
 
 .orb-native-textarea {
-  min-height: 110px;
-  border-radius: 12px;
-  border: 1px solid rgba(100, 116, 139, 0.16);
-  background: #fff;
+  min-height: 124px;
+  border-radius: 16px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   color: #0f172a;
-  padding: 12px 14px;
+  padding: 14px 16px;
   font: inherit;
   resize: vertical;
+  line-height: 1.6;
 }
 
 .checkbox-field {
@@ -425,6 +430,103 @@
   font-weight: 600;
 }
 
+.create-form {
+  display: grid;
+  gap: 22px;
+}
+
+.dialog-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.92) 0%, rgba(248, 250, 252, 0.96) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.14);
+}
+
+.dialog-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.dialog-hero strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.dialog-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.dialog-meta {
+  display: grid;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.dialog-meta-card {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  background: rgba(255, 255, 255, 0.82);
+  color: #334155;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px 18px;
+}
+
+.form-grid.two-cols {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 16px 16px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: #fff;
+}
+
+.form-field.full-span {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.form-hint {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
 .dialog-error {
   margin-top: 14px;
   padding: 12px 14px;
@@ -437,8 +539,71 @@
 .dialog-actions {
   width: 100%;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.dialog-actions-copy {
+  margin-right: auto;
+  display: grid;
+  gap: 2px;
+}
+
+.dialog-actions-copy strong {
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.dialog-actions-copy span {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+::ng-deep .e-dialog {
+  border-radius: 26px !important;
+}
+
+::ng-deep .e-dialog .e-dlg-header-content {
+  padding: 22px 26px 10px !important;
+  border-bottom: none !important;
+}
+
+::ng-deep .e-dialog .e-dlg-content {
+  padding: 8px 26px 18px !important;
+}
+
+::ng-deep .e-dialog .e-footer-content {
+  padding: 0 26px 24px !important;
+  border-top: none !important;
+}
+
+::ng-deep .e-dropdownlist,
+::ng-deep .e-ddl.e-input-group,
+::ng-deep .e-ddl.e-control-wrapper,
+::ng-deep .orb-input.e-control-wrapper,
+::ng-deep .orb-input.e-input-group {
+  border-radius: 16px !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .e-input-group input,
+::ng-deep .e-ddl .e-input-value,
+::ng-deep .e-ddl input,
+::ng-deep .orb-input input.e-input,
+::ng-deep .orb-input input {
+  color: #0f172a !important;
+  font-size: 0.96rem !important;
+}
+
+::ng-deep .e-input-group.e-control-wrapper.e-input-focus,
+::ng-deep .e-ddl.e-control-wrapper.e-input-focus,
+::ng-deep .orb-input.e-control-wrapper.e-input-focus,
+::ng-deep .orb-input.e-input-group.e-input-focus {
+  border-color: rgba(5, 150, 105, 0.42) !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08) !important;
 }
 
 @keyframes shimmer {
@@ -454,9 +619,15 @@
 
   .resource-topline,
   .resource-toolbar,
-  .pager-bar {
+  .pager-bar,
+  .dialog-hero,
+  .dialog-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dialog-actions-copy {
+    margin-right: 0;
   }
 
   .resource-controls {
@@ -470,7 +641,8 @@
 
 @media (max-width: 720px) {
   .overview-grid,
-  .insight-grid {
+  .insight-grid,
+  .form-grid.two-cols {
     grid-template-columns: 1fr;
   }
 }
