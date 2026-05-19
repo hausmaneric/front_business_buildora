@@ -190,7 +190,7 @@
     </article>
   }
 
-  <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="860px" [header]="dialogTitle()">
+  <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="960px" [header]="dialogTitle()">
     <form class="create-form" [formGroup]="createForm">
       <section class="dialog-hero">
         <div class="dialog-hero-copy">
@@ -216,10 +216,12 @@
         <div class="form-grid two-cols">
           @for (field of activeFields; track field.controlName) {
             <div class="form-field" [class.full-span]="field.type === 'textarea'">
-              <label>{{ field.label }}</label>
-              @if (field.placeholder) {
-                <small class="form-hint">{{ field.placeholder }}</small>
-              }
+              <div class="form-field-header">
+                <label>{{ field.label }}</label>
+                @if (field.placeholder) {
+                  <small class="form-hint">{{ field.placeholder }}</small>
+                }
+              </div>
 
               @switch (field.type) {
                 @case ('textarea') {

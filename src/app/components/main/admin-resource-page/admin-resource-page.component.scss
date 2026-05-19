@@ -42,7 +42,7 @@
 }
 
 .resource-body {
-  padding: 26px 26px 28px;
+  padding: 28px 28px 30px;
 }
 
 .resource-hero {
@@ -50,11 +50,14 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  padding: 22px 24px;
-  margin-bottom: 18px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(240, 253, 244, 0.9) 0%, rgba(255, 255, 255, 0.98) 100%);
+  padding: 26px 28px;
+  margin-bottom: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 36%),
+    linear-gradient(135deg, rgba(240, 253, 244, 0.94) 0%, rgba(255, 255, 255, 0.99) 100%);
   border: 1px solid rgba(16, 185, 129, 0.12);
+  box-shadow: 0 18px 42px rgba(148, 163, 184, 0.08);
 }
 
 .resource-hero-copy {
@@ -80,7 +83,7 @@
 
 .resource-hero h3 {
   margin: 0 0 6px;
-  font-size: 1.85rem;
+  font-size: 2rem;
   color: #0f172a;
 }
 
@@ -94,7 +97,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .overview-grid {
@@ -166,11 +169,12 @@
 .toolbar-shell {
   display: grid;
   gap: 16px;
-  margin-bottom: 18px;
-  padding: 18px;
-  border-radius: 22px;
+  margin-bottom: 22px;
+  padding: 22px;
+  border-radius: 26px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
   border: 1px solid rgba(226, 232, 240, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .resource-search {
@@ -182,7 +186,6 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 12px;
-  margin-bottom: 18px;
 }
 
 .control-item {
@@ -201,10 +204,12 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  border-radius: 20px;
+  border-radius: 24px;
   border: 1px solid rgba(100, 116, 139, 0.12);
   background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 16px 34px rgba(148, 163, 184, 0.06);
 }
 
 .resource-grid {
@@ -216,7 +221,7 @@
 
 .resource-grid th,
 .resource-grid td {
-  padding: 16px 18px;
+  padding: 18px 18px;
   text-align: left;
   vertical-align: middle;
 }
@@ -224,17 +229,18 @@
 .resource-grid th {
   color: #334155;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   background: linear-gradient(180deg, #fbfdff 0%, #f5f9fc 100%);
   border-bottom: 1px solid rgba(100, 116, 139, 0.12);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .resource-grid td {
   color: #0f172a;
   font-size: 0.95rem;
-  line-height: 1.35;
+  line-height: 1.45;
   white-space: nowrap;
   border-bottom: 1px solid rgba(100, 116, 139, 0.08);
   background: transparent;
@@ -251,9 +257,9 @@
 }
 
 .actions-column {
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
+  width: 212px;
+  min-width: 212px;
+  max-width: 212px;
   text-align: center;
 }
 
@@ -261,8 +267,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 28px;
-  padding: 0 12px;
+  min-height: 30px;
+  padding: 0 13px;
   border-radius: 999px;
   border: 1px solid rgba(100, 116, 139, 0.12);
   font-size: 0.84rem;
@@ -365,16 +371,16 @@
 
 .row-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   width: 100%;
 }
 
 .row-action {
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
   border-radius: 12px;
   border: 1px solid transparent;
   display: inline-flex;
@@ -415,7 +421,7 @@
 }
 
 .pager-bar {
-  margin-top: 16px;
+  margin-top: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -434,8 +440,9 @@
 }
 
 .primary-action {
-  min-height: 42px;
-  border-radius: 12px;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
   border: none;
   background: linear-gradient(135deg, #059669 0%, #10b981 100%);
   color: white;
@@ -443,12 +450,12 @@
 }
 
 .orb-native-textarea {
-  min-height: 124px;
-  border-radius: 16px;
+  min-height: 136px;
+  border-radius: 18px;
   border: 1px solid rgba(203, 213, 225, 0.9);
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   color: #0f172a;
-  padding: 14px 16px;
+  padding: 16px 18px;
   font: inherit;
   resize: vertical;
   line-height: 1.6;
@@ -469,8 +476,8 @@
 
 .create-form {
   display: grid;
-  gap: 22px;
-  padding-top: 4px;
+  gap: 24px;
+  padding-top: 6px;
 }
 
 .dialog-hero {
@@ -478,8 +485,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  padding: 22px 24px;
-  border-radius: 24px;
+  padding: 24px 26px;
+  border-radius: 28px;
   background:
     radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 38%),
     linear-gradient(135deg, rgba(240, 253, 244, 0.96) 0%, rgba(255, 255, 255, 0.98) 100%);
@@ -533,6 +540,50 @@
   font-weight: 700;
 }
 
+.form-section-card {
+  padding: 24px;
+  border-radius: 26px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.form-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.form-section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.form-section-header h4 {
+  margin: 10px 0 0;
+  color: #0f172a;
+  font-size: 1.14rem;
+}
+
+.form-section-header p {
+  max-width: 320px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  text-align: left;
+}
+
 .form-grid {
   display: grid;
   gap: 16px 18px;
@@ -551,6 +602,11 @@
   border: 1px solid rgba(226, 232, 240, 0.95);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.9) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.form-field-header {
+  display: grid;
+  gap: 5px;
 }
 
 .form-field.full-span {
@@ -583,7 +639,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  padding-top: 10px;
+  padding-top: 12px;
 }
 
 .dialog-actions-copy {
@@ -604,6 +660,7 @@
 
 ::ng-deep .e-dialog {
   border-radius: 26px !important;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.14) !important;
 }
 
 ::ng-deep .e-dialog .e-dlg-header-content {
@@ -638,6 +695,7 @@
 ::ng-deep .orb-input input {
   color: #0f172a !important;
   font-size: 0.96rem !important;
+  min-height: 44px;
 }
 
 ::ng-deep .e-input-group.e-control-wrapper.e-input-focus,
