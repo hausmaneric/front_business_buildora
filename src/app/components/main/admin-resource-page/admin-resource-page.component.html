@@ -29,8 +29,9 @@
     </article>
   } @else {
     <article class="resource-body orb-card">
-      <div class="resource-topline">
-        <div>
+      <div class="resource-hero">
+        <div class="resource-hero-copy">
+          <span class="resource-eyebrow">Operação empresarial</span>
           <h3>{{ title }}</h3>
           <p>{{ subtitle }}</p>
         </div>
@@ -57,43 +58,45 @@
         }
       </div>
 
-      <div class="resource-toolbar">
-        <div class="resource-search">
-          <ejs-textbox cssClass="orb-input" placeholder="Buscar registros..." [value]="searchTerm" (input)="searchTerm = $any($event.target).value"></ejs-textbox>
+      <div class="toolbar-shell">
+        <div class="resource-toolbar">
+          <div class="resource-search">
+            <ejs-textbox cssClass="orb-input" placeholder="Buscar registros..." [value]="searchTerm" (input)="searchTerm = $any($event.target).value"></ejs-textbox>
+          </div>
+          <button ejs-button cssClass="dialog-secondary" type="button" (click)="clearSearch()">Limpar</button>
+          <button ejs-button cssClass="dialog-primary" type="button" (click)="applySearch()">Buscar</button>
+          <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportCsv()">Exportar CSV</button>
+          <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportJson()">Exportar JSON</button>
         </div>
-        <button ejs-button cssClass="dialog-secondary" type="button" (click)="clearSearch()">Limpar</button>
-        <button ejs-button cssClass="dialog-primary" type="button" (click)="applySearch()">Buscar</button>
-        <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportCsv()">Exportar CSV</button>
-        <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportJson()">Exportar JSON</button>
-      </div>
 
-      <div class="resource-controls">
-        <div class="control-item">
-          <label>Ordenar por</label>
-          <ejs-dropdownlist
-            [dataSource]="sortOptions"
-            [fields]="{ text: 'text', value: 'id' }"
-            [value]="sortField"
-            (change)="changeSortField($any($event).value)">
-          </ejs-dropdownlist>
-        </div>
-        <div class="control-item">
-          <label>Direção</label>
-          <ejs-dropdownlist
-            [dataSource]="sortDirectionOptions"
-            [fields]="{ text: 'text', value: 'id' }"
-            [value]="sortDirection"
-            (change)="changeSortDirection($any($event).value)">
-          </ejs-dropdownlist>
-        </div>
-        <div class="control-item">
-          <label>Tamanho da página</label>
-          <ejs-dropdownlist
-            [dataSource]="pageSizeOptions"
-            [fields]="{ text: 'text', value: 'id' }"
-            [value]="pageSize"
-            (change)="changePageSize($any($event).value)">
-          </ejs-dropdownlist>
+        <div class="resource-controls">
+          <div class="control-item">
+            <label>Ordenar por</label>
+            <ejs-dropdownlist
+              [dataSource]="sortOptions"
+              [fields]="{ text: 'text', value: 'id' }"
+              [value]="sortField"
+              (change)="changeSortField($any($event).value)">
+            </ejs-dropdownlist>
+          </div>
+          <div class="control-item">
+            <label>Direção</label>
+            <ejs-dropdownlist
+              [dataSource]="sortDirectionOptions"
+              [fields]="{ text: 'text', value: 'id' }"
+              [value]="sortDirection"
+              (change)="changeSortDirection($any($event).value)">
+            </ejs-dropdownlist>
+          </div>
+          <div class="control-item">
+            <label>Tamanho da página</label>
+            <ejs-dropdownlist
+              [dataSource]="pageSizeOptions"
+              [fields]="{ text: 'text', value: 'id' }"
+              [value]="pageSize"
+              (change)="changePageSize($any($event).value)">
+            </ejs-dropdownlist>
+          </div>
         </div>
       </div>
 
@@ -187,13 +190,13 @@
     </article>
   }
 
-  <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="760px" [header]="dialogTitle()">
+  <ejs-dialog #createDialog [visible]="false" [isModal]="true" width="860px" [header]="dialogTitle()">
     <form class="create-form" [formGroup]="createForm">
       <section class="dialog-hero">
-        <div>
+        <div class="dialog-hero-copy">
           <span class="dialog-eyebrow">{{ dialogMode === 'edit' ? 'Edição' : dialogMode === 'duplicate' ? 'Duplicação' : 'Novo cadastro' }}</span>
           <strong>{{ dialogTitle() }}</strong>
-          <p>Preencha os campos principais com atenção. Esta tela foi organizada para facilitar a operação diária e reduzir erros de cadastro.</p>
+          <p>Preencha os campos principais com atenção. Esta tela foi organizada para facilitar a operação diária, reduzir erros e acelerar o cadastro da equipe.</p>
         </div>
         <div class="dialog-meta">
           <span class="dialog-meta-card">Módulo: {{ title }}</span>
