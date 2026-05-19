@@ -26,28 +26,37 @@
       <div class="card-login-field">
         <label>Código da empresa</label>
         <span class="field-hint">Use o identificador do tenant para abrir o ambiente correto.</span>
-        <ejs-textbox cssClass="orb-input e-bigger" formControlName="accountCode" placeholder="buildora001"></ejs-textbox>
+        <div class="field-shell">
+          <span class="field-icon">&#127970;</span>
+          <ejs-textbox cssClass="orb-input e-bigger" formControlName="accountCode" placeholder="buildora001"></ejs-textbox>
+        </div>
       </div>
 
       <div class="card-login-field">
         <label>E-mail</label>
         <span class="field-hint">Conta responsável pelo acesso empresarial.</span>
-        <ejs-textbox cssClass="orb-input e-bigger" formControlName="email" placeholder="admin@buildora001.com"></ejs-textbox>
+        <div class="field-shell">
+          <span class="field-icon">&#9993;</span>
+          <ejs-textbox cssClass="orb-input e-bigger" formControlName="email" placeholder="admin@buildora001.com"></ejs-textbox>
+        </div>
       </div>
 
       <div class="card-login-field password-wrapper">
         <label>Senha</label>
         <span class="field-hint">A mesma senha do usuário cadastrado no ambiente tenant.</span>
-        <ejs-textbox
-          [type]="showPassword ? 'text' : 'password'"
-          cssClass="orb-input e-bigger"
-          formControlName="password"
-          placeholder="123456">
-        </ejs-textbox>
+        <div class="field-shell password-shell">
+          <span class="field-icon">&#128274;</span>
+          <ejs-textbox
+            [type]="showPassword ? 'text' : 'password'"
+            cssClass="orb-input e-bigger"
+            formControlName="password"
+            placeholder="123456">
+          </ejs-textbox>
 
-        <button class="password-toggle" type="button" (click)="togglePassword()">
-          {{ showPassword ? 'Ocultar' : 'Mostrar' }}
-        </button>
+          <button class="password-toggle" type="button" (click)="togglePassword()">
+            {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
       </div>
 
       <div class="login-inline-meta">
@@ -79,28 +88,28 @@
 
       <div class="brand-feature-list">
         <article class="brand-feature">
-          <span class="feature-icon">▣</span>
+          <span class="feature-icon">&#128200;</span>
           <div>
             <strong>Visão estratégica</strong>
             <p>Dashboards completos, prioridades e indicadores em tempo real.</p>
           </div>
         </article>
         <article class="brand-feature">
-          <span class="feature-icon">◫</span>
+          <span class="feature-icon">&#128737;</span>
           <div>
             <strong>Segurança avançada</strong>
             <p>Acesso tenant, controle por usuário e integração com a API da plataforma.</p>
           </div>
         </article>
         <article class="brand-feature">
-          <span class="feature-icon">◎</span>
+          <span class="feature-icon">&#128101;</span>
           <div>
             <strong>Gestão centralizada</strong>
             <p>Obras, diários, equipes, materiais e equipamentos em um único fluxo.</p>
           </div>
         </article>
         <article class="brand-feature">
-          <span class="feature-icon">◌</span>
+          <span class="feature-icon">&#9729;</span>
           <div>
             <strong>Escala operacional</strong>
             <p>Preparado para acompanhar a operação em campo com clareza e produtividade.</p>

@@ -204,43 +204,53 @@
         </div>
       </section>
 
-      <div class="form-grid two-cols">
-        @for (field of activeFields; track field.controlName) {
-          <div class="form-field" [class.full-span]="field.type === 'textarea'">
-            <label>{{ field.label }}</label>
-            @if (field.placeholder) {
-              <small class="form-hint">{{ field.placeholder }}</small>
-            }
-
-            @switch (field.type) {
-              @case ('textarea') {
-                <textarea class="orb-native-textarea" [formControlName]="field.controlName" [placeholder]="field.placeholder || ''" rows="4"></textarea>
-              }
-              @case ('select') {
-                <ejs-dropdownlist
-                  [formControlName]="field.controlName"
-                  [dataSource]="controlOptions(field)"
-                  [fields]="{ text: 'text', value: 'id' }"
-                  [placeholder]="'Selecione uma opção'">
-                </ejs-dropdownlist>
-              }
-              @case ('checkbox') {
-                <label class="checkbox-field">
-                  <input type="checkbox" [formControlName]="field.controlName" />
-                  <span>Sim</span>
-                </label>
-              }
-              @default {
-                <ejs-textbox [formControlName]="field.controlName" [type]="inputType(field)" cssClass="orb-input" [placeholder]="field.placeholder || ''"></ejs-textbox>
-              }
-            }
-
-            @if (fieldError(field.controlName)) {
-              <small class="field-error">{{ fieldError(field.controlName) }}</small>
-            }
+      <section class="form-section-card">
+        <div class="form-section-header">
+          <div>
+            <span class="form-section-eyebrow">Dados principais</span>
+            <h4>Informações do registro</h4>
           </div>
-        }
-      </div>
+          <p>Organize os dados essenciais com clareza para manter a operação empresarial consistente.</p>
+        </div>
+
+        <div class="form-grid two-cols">
+          @for (field of activeFields; track field.controlName) {
+            <div class="form-field" [class.full-span]="field.type === 'textarea'">
+              <label>{{ field.label }}</label>
+              @if (field.placeholder) {
+                <small class="form-hint">{{ field.placeholder }}</small>
+              }
+
+              @switch (field.type) {
+                @case ('textarea') {
+                  <textarea class="orb-native-textarea" [formControlName]="field.controlName" [placeholder]="field.placeholder || ''" rows="4"></textarea>
+                }
+                @case ('select') {
+                  <ejs-dropdownlist
+                    [formControlName]="field.controlName"
+                    [dataSource]="controlOptions(field)"
+                    [fields]="{ text: 'text', value: 'id' }"
+                    [placeholder]="'Selecione uma opção'">
+                  </ejs-dropdownlist>
+                }
+                @case ('checkbox') {
+                  <label class="checkbox-field">
+                    <input type="checkbox" [formControlName]="field.controlName" />
+                    <span>Sim</span>
+                  </label>
+                }
+                @default {
+                  <ejs-textbox [formControlName]="field.controlName" [type]="inputType(field)" cssClass="orb-input" [placeholder]="field.placeholder || ''"></ejs-textbox>
+                }
+              }
+
+              @if (fieldError(field.controlName)) {
+                <small class="field-error">{{ fieldError(field.controlName) }}</small>
+              }
+            </div>
+          }
+        </div>
+      </section>
 
       @if (dialogMessage) {
         <div class="dialog-error">{{ dialogMessage }}</div>

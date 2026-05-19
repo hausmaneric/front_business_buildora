@@ -414,7 +414,7 @@ export class AdminOpsPageComponent {
       {
         title: 'Governança de acesso',
         lines: [
-          'Perfis controlam visibilidade, edi??o e aprovação dos fluxos de obra.',
+          'Perfis controlam visibilidade, edição e aprovação dos fluxos de obra.',
           'Usuários ativos entram na operação conforme o perfil vinculado.',
           'Esta leitura ajuda a revisar governança antes de abrir novos acessos.'
         ]
@@ -495,7 +495,7 @@ export class AdminOpsPageComponent {
       obra: this.projectName(payload, diary.project_id),
       clima: diary.weather || 'Não informado',
       resumo: diary.summary || 'Sem resumo',
-      situacao: this.isCriticalWeather(diary.weather) ? 'Aten??o' : 'Est?vel'
+      situacao: this.isCriticalWeather(diary.weather) ? 'Atenção' : 'Estável'
     }));
 
     this.columns = [
@@ -933,7 +933,7 @@ export class AdminOpsPageComponent {
         title: 'Leitura territorial',
         lines: [
           'O mapa das obras depende do endereço e das coordenadas informadas em cada projeto.',
-          'Com essa base, a operação pode evoluir para visualiza??o geográfica e roteamento.',
+          'Com essa base, a operação pode evoluir para visualização geográfica e roteamento.',
           'As obras sem coordenadas devem entrar na rotina de saneamento cadastral.'
         ]
       }

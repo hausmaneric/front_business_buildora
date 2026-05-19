@@ -176,7 +176,7 @@ export class AdminResourcePageComponent {
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
-      this.title = data['title'] ?? 'Opera??o';
+      this.title = data['title'] ?? 'Operação';
       this.subtitle = data['subtitle'] ?? '';
       this.resource = data['resource'] ?? 'projects';
       this.configurePage();
@@ -478,11 +478,11 @@ export class AdminResourcePageComponent {
   }
 
   approveDiary(row: any): void {
-    this.updateDiaryStatus(row, 'aprovado', 'Di?rio aprovado', 'Di?rio de obra aprovado com sucesso.');
+    this.updateDiaryStatus(row, 'aprovado', 'Diário aprovado', 'Diário de obra aprovado com sucesso.');
   }
 
   rejectDiary(row: any): void {
-    this.updateDiaryStatus(row, 'reprovado', 'Di?rio reprovado', 'Di?rio de obra reprovado com sucesso.');
+    this.updateDiaryStatus(row, 'reprovado', 'Diário reprovado', 'Diário de obra reprovado com sucesso.');
   }
 
   disabledReason(_row: any): string {
@@ -1213,9 +1213,9 @@ export class AdminResourcePageComponent {
       case 'users': {
         this.overviewCards = [
           { label: 'Usu?rios cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
-          { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribui??o de permiss?es' },
+          { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
           { label: 'Empresas cobertas', value: String(new Set(rows.map((row) => row.company_id)).size), detail: 'Entidades operacionais' },
-          { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato r?pido dispon?vel' }
+          { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato rápido disponível' }
         ];
         this.insightPanels = [
           { title: 'Perfis atribu?dos', lines: rows.slice(0, 5).map((row) => `${row.name} ? ${row.roleDisplay}`) },
@@ -1228,10 +1228,10 @@ export class AdminResourcePageComponent {
         const consumo = rows.filter((row) => String(row.movementDisplay || '').toLowerCase().includes('consumo')).length;
         const quantidade = rows.reduce((sum, row) => sum + Number(row.quantity || 0), 0);
         this.overviewCards = [
-          { label: 'Movimentos lan?ados', value: String(total), detail: `${entradas} entradas registradas` },
-          { label: 'Consumos apontados', value: String(consumo), detail: 'Sa?das e uso na frente', tone: consumo ? 'warning' : 'success' },
-          { label: 'Itens distintos', value: String(new Set(rows.map((row) => row.material_name)).size), detail: 'Cat?logo em uso' },
-          { label: 'Quantidade total', value: this.formatNumber(quantidade), detail: 'Volume apontado nos di?rios', tone: 'success' }
+          { label: 'Movimentos lançados', value: String(total), detail: `${entradas} entradas registradas` },
+          { label: 'Consumos apontados', value: String(consumo), detail: 'Saídas e uso na frente', tone: consumo ? 'warning' : 'success' },
+          { label: 'Itens distintos', value: String(new Set(rows.map((row) => row.material_name)).size), detail: 'Catálogo em uso' },
+          { label: 'Quantidade total', value: this.formatNumber(quantidade), detail: 'Volume apontado nos diários', tone: 'success' }
         ];
         this.insightPanels = [
           { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} ? ${row.quantityDisplay}`) },
@@ -1244,14 +1244,14 @@ export class AdminResourcePageComponent {
         const manutencao = rows.filter((row) => String(row.maintenanceDisplay || '').toLowerCase().includes('manuten')).length;
         const horas = rows.reduce((sum, row) => sum + Number(row.hours_used || 0), 0);
         this.overviewCards = [
-          { label: 'Equipamentos lan?ados', value: String(total), detail: `${emUso} em opera??o` },
-          { label: 'Horas registradas', value: `${this.formatNumber(horas)} h`, detail: 'Uso acumulado no per?odo', tone: 'success' },
-          { label: 'Em manuten??o', value: String(manutencao), detail: 'Acompanhar disponibilidade', tone: manutencao ? 'warning' : 'success' },
-          { label: 'Di?rios impactados', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Cobertura operacional' }
+          { label: 'Equipamentos lançados', value: String(total), detail: `${emUso} em operação` },
+          { label: 'Horas registradas', value: `${this.formatNumber(horas)} h`, detail: 'Uso acumulado no período', tone: 'success' },
+          { label: 'Em manutenção', value: String(manutencao), detail: 'Acompanhar disponibilidade', tone: manutencao ? 'warning' : 'success' },
+          { label: 'Diários impactados', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Cobertura operacional' }
         ];
         this.insightPanels = [
           { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} ? ${row.hoursUsedDisplay}`) },
-          { title: 'Situa??o operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} ? ${row.equipmentStatusDisplay}`) }
+          { title: 'Situação operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.equipmentStatusDisplay}`) }
         ];
         break;
       }
@@ -1259,14 +1259,14 @@ export class AdminResourcePageComponent {
         const abertas = rows.filter((row) => row.resolvedDisplay === 'Aberta').length;
         const graves = rows.filter((row) => String(row.severityDisplay || '').toLowerCase().includes('alta')).length;
         this.overviewCards = [
-          { label: 'Ocorr?ncias abertas', value: String(abertas), detail: 'Demandam acompanhamento', tone: abertas ? 'warning' : 'success' },
+          { label: 'Ocorrências abertas', value: String(abertas), detail: 'Demandam acompanhamento', tone: abertas ? 'warning' : 'success' },
           { label: 'Resolvidas', value: String(rows.filter((row) => row.resolvedDisplay === 'Resolvida').length), detail: 'Fechadas com registro', tone: 'success' },
-          { label: 'Alta gravidade', value: String(graves), detail: 'Aten??o imediata', tone: graves ? 'danger' : 'success' },
+          { label: 'Alta gravidade', value: String(graves), detail: 'Atenção imediata', tone: graves ? 'danger' : 'success' },
           { label: 'Tipos distintos', value: String(new Set(rows.map((row) => row.occurrenceTypeDisplay)).size), detail: 'Mapa de desvios' }
         ];
         this.insightPanels = [
-          { title: 'Pend?ncias cr?ticas', lines: rows.filter((row) => row.resolvedDisplay === 'Aberta').slice(0, 5).map((row) => `${row.title} ? ${row.severityDisplay}`) },
-          { title: 'Distribui??o por di?rio', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} ? ${row.occurrenceTypeDisplay}`) }
+          { title: 'Pendências críticas', lines: rows.filter((row) => row.resolvedDisplay === 'Aberta').slice(0, 5).map((row) => `${row.title} • ${row.severityDisplay}`) },
+          { title: 'Distribuição por diário', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.occurrenceTypeDisplay}`) }
         ];
         break;
       }
@@ -1451,7 +1451,7 @@ export class AdminResourcePageComponent {
               this.redirectToLogin();
               return;
             }
-            this.pushToast('error', 'Falha ao atualizar di?rio', response?.message || 'N?o foi poss?vel atualizar a situa?o do di?rio.');
+            this.pushToast('error', 'Falha ao atualizar diário', response?.message || 'Não foi possível atualizar a situação do diário.');
             return;
           }
 
@@ -1459,7 +1459,7 @@ export class AdminResourcePageComponent {
           this.loadRows();
         },
         error: (error) => {
-          const message = error?.error?.message || 'N?o foi poss?vel atualizar a situa?o do di?rio.';
+          const message = error?.error?.message || 'Não foi possível atualizar a situação do diário.';
           if (this.isAuthenticationFailure(message)) {
             this.redirectToLogin();
             return;
