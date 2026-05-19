@@ -12,7 +12,10 @@
   </div>
 
   <button type="button" class="company-switcher orb-card">
-    <span>{{ loginService.getLocalToken()?.account?.name || 'Construtora Exemplo' }}</span>
+    <div class="company-switcher-copy">
+      <small>Empresa ativa</small>
+      <span>{{ loginService.getLocalToken()?.account?.name || 'Construtora Exemplo' }}</span>
+    </div>
     <span class="chevron"></span>
   </button>
 

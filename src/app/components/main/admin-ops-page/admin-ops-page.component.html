@@ -1,16 +1,24 @@
-﻿<section class="ops-page">
+<section class="ops-page">
   @if (loading) {
     <article class="ops-state orb-card">
-      <strong>Carregando {{ title.toLowerCase() }}...</strong>
+      <div class="ops-state-icon pulse"></div>
+      <div class="ops-state-copy">
+        <strong>Carregando {{ title.toLowerCase() }}...</strong>
+        <span>Montando a visão operacional desta área.</span>
+      </div>
     </article>
   } @else if (errorMessage) {
     <article class="ops-state orb-card error-state">
-      <strong>Falha ao carregar dados</strong>
-      <span>{{ errorMessage }}</span>
+      <div class="ops-state-icon warning"></div>
+      <div class="ops-state-copy">
+        <strong>Falha ao carregar dados</strong>
+        <span>{{ errorMessage }}</span>
+      </div>
     </article>
   } @else {
     <article class="ops-header orb-card">
-      <div>
+      <div class="ops-header-copy">
+        <span class="ops-eyebrow">Gestão empresarial</span>
         <h3>{{ title }}</h3>
         <p>{{ subtitle }}</p>
       </div>
@@ -28,15 +36,21 @@
 
     @if (rows.length) {
       <article class="ops-grid orb-card">
-        <div class="ops-grid-toolbar">
-          <div class="ops-grid-count">{{ totalRowsLabel() }}</div>
-          <div class="ops-grid-search">
-            <ejs-textbox
-              cssClass="orb-input"
-              placeholder="Buscar registros..."
-              [value]="searchTerm"
-              (input)="onSearch($any($event.target).value)">
-            </ejs-textbox>
+        <div class="ops-grid-header">
+          <div class="ops-grid-copy">
+            <h4>Base operacional</h4>
+            <p>{{ totalRowsLabel() }}</p>
+          </div>
+
+          <div class="ops-grid-toolbar">
+            <div class="ops-grid-search">
+              <ejs-textbox
+                cssClass="orb-input"
+                placeholder="Buscar registros..."
+                [value]="searchTerm"
+                (input)="onSearch($any($event.target).value)">
+              </ejs-textbox>
+            </div>
           </div>
         </div>
 
@@ -99,4 +113,3 @@
     }
   }
 </section>
-

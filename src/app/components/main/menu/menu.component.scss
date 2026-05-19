@@ -48,8 +48,8 @@
 
 .company-switcher {
   width: 100%;
-  min-height: 48px;
-  padding: 0 14px;
+  min-height: 58px;
+  padding: 10px 14px;
   border: 1px solid rgba(100, 116, 139, 0.14);
   display: flex;
   align-items: center;
@@ -58,6 +58,22 @@
   font-weight: 600;
   background: #fff;
   cursor: pointer;
+}
+
+.company-switcher-copy {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.company-switcher-copy small {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.company-switcher-copy span {
+  color: #0f172a;
+  font-size: 0.94rem;
 }
 
 .chevron,
