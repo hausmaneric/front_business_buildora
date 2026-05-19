@@ -1212,14 +1212,14 @@ export class AdminResourcePageComponent {
       }
       case 'users': {
         this.overviewCards = [
-          { label: 'Usu?rios cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
+          { label: 'Usuários cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
           { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
           { label: 'Empresas cobertas', value: String(new Set(rows.map((row) => row.company_id)).size), detail: 'Entidades operacionais' },
           { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato rápido disponível' }
         ];
         this.insightPanels = [
-          { title: 'Perfis atribu?dos', lines: rows.slice(0, 5).map((row) => `${row.name} ? ${row.roleDisplay}`) },
-          { title: 'Usu?rios ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} ? ${row.email}`) }
+          { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
+          { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) }
         ];
         break;
       }
@@ -1234,8 +1234,8 @@ export class AdminResourcePageComponent {
           { label: 'Quantidade total', value: this.formatNumber(quantidade), detail: 'Volume apontado nos diários', tone: 'success' }
         ];
         this.insightPanels = [
-          { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} ? ${row.quantityDisplay}`) },
-          { title: '?ltimas movimenta??es', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} ? ${row.movementDisplay}`) }
+          { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} • ${row.quantityDisplay}`) },
+          { title: 'Últimas movimentações', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.movementDisplay}`) }
         ];
         break;
       }
@@ -1250,7 +1250,7 @@ export class AdminResourcePageComponent {
           { label: 'Diários impactados', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Cobertura operacional' }
         ];
         this.insightPanels = [
-          { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} ? ${row.hoursUsedDisplay}`) },
+          { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.hoursUsedDisplay}`) },
           { title: 'Situação operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.equipmentStatusDisplay}`) }
         ];
         break;
@@ -1464,7 +1464,7 @@ export class AdminResourcePageComponent {
             this.redirectToLogin();
             return;
           }
-          this.pushToast('error', 'Erro de atualiza?o', message);
+          this.pushToast('error', 'Erro de atualização', message);
         }
       });
   }
