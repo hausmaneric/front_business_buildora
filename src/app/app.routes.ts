@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { MainComponent } from './components/main/main.component';
 import { DashboardComponent } from './components/main/dashboard/dashboard.component';
@@ -224,7 +224,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Envio Automático de PDF',
-          subtitle: 'Geração e envio automático de relatórios e diários em PDF',
+          subtitle: 'Automação de fechamento, exportação e entrega de relatórios',
           resource: 'pdf-automation'
         }
       },
@@ -233,7 +233,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'BI e Indicadores',
-          subtitle: 'Indicadores executivos, produtividade e visão analítica da operação',
+          subtitle: 'Painéis, indicadores e leituras gerenciais da operação',
           resource: 'bi'
         }
       },
@@ -242,7 +242,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Mapa das Obras',
-          subtitle: 'Localização, dispersão e status geográfico das obras',
+          subtitle: 'Geolocalização, distribuição territorial e leitura geográfica das obras',
           resource: 'map'
         }
       },
@@ -251,7 +251,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Integrações',
-          subtitle: 'Google Drive, OneDrive e conectores operacionais da empresa',
+          subtitle: 'Google Drive, OneDrive e conectores documentais da empresa',
           resource: 'integrations'
         }
       },
@@ -260,7 +260,7 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Assinatura Digital Avançada',
-          subtitle: 'Conformidade, trilhas e maturidade para assinatura digital avançada',
+          subtitle: 'Rastreio, elegibilidade e governança da assinatura digital dos diários',
           resource: 'digital-signature'
         }
       },
@@ -269,11 +269,10 @@ export const routes: Routes = [
         component: AdminOpsPageComponent,
         data: {
           title: 'Configurações',
-          subtitle: 'Dados da empresa, logo, padrões operacionais e parâmetros do tenant',
+          subtitle: 'Dados da empresa, padrões, governança e base operacional do tenant',
           resource: 'settings'
         }
       }
     ]
-  },
-  { path: '**', redirectTo: 'login' }
+  }
 ];
