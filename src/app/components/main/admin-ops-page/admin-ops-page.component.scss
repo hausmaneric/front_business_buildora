@@ -276,12 +276,43 @@
   display: grid;
   align-content: center;
   justify-items: start;
-  gap: 10px;
+  gap: 12px;
 }
 
 .empty-grid-state p,
 .error-state span {
   color: #64748b;
+}
+
+.empty-grid-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: left;
+}
+
+.empty-grid-icon {
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  color: #2563eb;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.empty-grid-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.empty-grid-copy strong {
+  color: #0f172a;
 }
 
 @media (max-width: 1200px) {

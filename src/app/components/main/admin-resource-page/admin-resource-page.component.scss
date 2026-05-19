@@ -342,12 +342,85 @@
   display: grid;
   align-content: center;
   justify-items: start;
-  gap: 10px;
+  gap: 18px;
 }
 
-.placeholder-state p,
-.empty-grid-state p {
+.state-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.state-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.14);
+}
+
+.state-icon-loading {
+  position: relative;
+  color: transparent;
+}
+
+.state-icon-loading::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid rgba(5, 150, 105, 0.18);
+  border-top-color: #059669;
+  animation: orb-spin 0.9s linear infinite;
+}
+
+.state-icon-placeholder {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.16);
+}
+
+.state-icon-empty {
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.16);
+}
+
+.state-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.state-copy strong {
+  color: #0f172a;
+  font-size: 1.2rem;
+}
+
+.state-copy span,
+.state-copy p {
+  margin: 0;
   color: #64748b;
+  line-height: 1.6;
+}
+
+.state-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .loading-skeleton {
@@ -655,7 +728,6 @@
 
 .dialog-actions-copy span {
   color: #64748b;
-  font-size: 0.82rem;
 }
 
 ::ng-deep .e-dialog {
@@ -709,6 +781,11 @@
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+@keyframes orb-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 980px) {

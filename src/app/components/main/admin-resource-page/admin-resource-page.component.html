@@ -15,17 +15,30 @@
 
   @if (loading) {
     <article class="resource-body orb-card loading-state">
+      <div class="state-hero">
+        <div class="state-icon state-icon-loading"></div>
+        <div class="state-copy">
+          <span class="state-eyebrow">Sincronizando módulo</span>
+          <strong>Carregando {{ title.toLowerCase() }}...</strong>
+          <span>Buscando registros, indicadores e contexto operacional desta área.</span>
+        </div>
+      </div>
       <div class="loading-skeleton">
         <span class="skeleton-line w-40"></span>
         <span class="skeleton-line w-70"></span>
         <span class="skeleton-line w-55"></span>
       </div>
-      <strong>Carregando {{ title.toLowerCase() }}...</strong>
     </article>
   } @else if (placeholder) {
     <article class="resource-body orb-card placeholder-state">
-      <strong>{{ title }}</strong>
-      <p>{{ placeholderMessage }}</p>
+      <div class="state-hero">
+        <div class="state-icon state-icon-placeholder">!</div>
+        <div class="state-copy">
+          <span class="state-eyebrow">Atenção operacional</span>
+          <strong>{{ title }}</strong>
+          <p>{{ placeholderMessage }}</p>
+        </div>
+      </div>
     </article>
   } @else {
     <article class="resource-body orb-card">
@@ -168,8 +181,17 @@
         </div>
       } @else {
         <div class="empty-grid-state">
-          <strong>Nenhum registro encontrado</strong>
-          <p>Ajuste a busca ou crie um novo cadastro para este módulo.</p>
+          <div class="state-hero">
+            <div class="state-icon state-icon-empty">+</div>
+            <div class="state-copy">
+              <span class="state-eyebrow">Base vazia</span>
+              <strong>Nenhum registro encontrado</strong>
+              <p>Ajuste a busca ou crie um novo cadastro para este módulo.</p>
+            </div>
+          </div>
+          @if (supportsCreate) {
+            <button ejs-button cssClass="dialog-primary" type="button" (click)="openCreateDialog()">Criar primeiro registro</button>
+          }
         </div>
       }
 
