@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
@@ -249,9 +249,9 @@ export class AdminOpsPageComponent {
     const productivity = projects.length ? Math.min(100, Math.max(42, Math.round((activities.length / Math.max(projects.length, 1)) * 11))) : 0;
 
     this.cards = [
-      { label: 'Obras analisadas', value: `${projects.length}`, detail: 'Base ativa para relat?rios' },
-      { label: 'Di?rios aprovados', value: `${approvedDiaries}`, detail: `${diaries.length} di?rios lan?ados`, tone: 'success' },
-      { label: 'Di?rios pendentes', value: `${pendingDiaries}`, detail: 'Aguardando fechamento ou aprova??o', tone: pendingDiaries ? 'warning' : 'success' },
+      { label: 'Obras analisadas', value: `${projects.length}`, detail: 'Base ativa para relatórios' },
+      { label: 'Diários aprovados', value: `${approvedDiaries}`, detail: `${diaries.length} diários lançados`, tone: 'success' },
+      { label: 'Diários pendentes', value: `${pendingDiaries}`, detail: 'Aguardando fechamento ou aprovação', tone: pendingDiaries ? 'warning' : 'success' },
       { label: 'Produtividade estimada', value: `${productivity}%`, detail: `${activities.length} atividades registradas` }
     ];
 
@@ -278,30 +278,30 @@ export class AdminOpsPageComponent {
 
     this.columns = [
       { field: 'obra', headerText: 'Obra', width: 260 },
-      { field: 'codigo', headerText: 'C?digo', width: 130 },
+      { field: 'codigo', headerText: 'Código', width: 130 },
       { field: 'cliente', headerText: 'Cliente', width: 220 },
-      { field: 'diarios', headerText: 'Di?rios', width: 110 },
+      { field: 'diarios', headerText: 'Diários', width: 110 },
       { field: 'atividades', headerText: 'Atividades', width: 120 },
-      { field: 'ocorrencias', headerText: 'Ocorr?ncias', width: 130 },
+      { field: 'ocorrencias', headerText: 'Ocorrências', width: 130 },
       { field: 'prazo', headerText: 'Prazo', width: 140 },
-      { field: 'situacao', headerText: 'Situa??o', width: 160, type: 'badge' }
+      { field: 'situacao', headerText: 'Situação', width: 160, type: 'badge' }
     ];
 
     this.panels = [
       {
         title: 'Resumo executivo',
         lines: [
-          `${users.filter((item) => this.toBoolean(item.active)).length} usu?rios ativos alimentam a opera??o`,
+          `${users.filter((item) => this.toBoolean(item.active)).length} usuários ativos alimentam a operação`,
           `${documents.length} documentos podem compor anexos e consolidados`,
-          `${activities.length} atividades formam a base para produtividade e avan?o f?sico`
+          `${activities.length} atividades formam a base para produtividade e avanço físico`
         ]
       },
       {
-        title: 'Leituras ?teis',
+        title: 'Leituras úteis',
         lines: [
-          approvedDiaries ? `${approvedDiaries} di?rios j? podem virar material de fechamento mensal` : 'Ainda n?o h? di?rios aprovados para fechamento',
-          openOccurrences ? `${openOccurrences} ocorr?ncias seguem abertas e devem entrar nos relat?rios de risco` : 'N?o h? ocorr?ncias abertas no momento',
-          productivity ? `A produtividade operacional estimada est? em ${productivity}%` : 'A produtividade ainda n?o tem base suficiente'
+          approvedDiaries ? `${approvedDiaries} diários já podem virar material de fechamento mensal` : 'Ainda não há diários aprovados para fechamento',
+          openOccurrences ? `${openOccurrences} ocorrências seguem abertas e devem entrar nos relatórios de risco` : 'Não há ocorrências abertas no momento',
+          productivity ? `A produtividade operacional estimada está em ${productivity}%` : 'A produtividade ainda não tem base suficiente'
         ]
       }
     ];
@@ -325,12 +325,12 @@ export class AdminOpsPageComponent {
       {
         label: 'Perfis cadastrados',
         value: `${roles.length}`,
-        detail: 'Perfis prontos para opera??o'
+        detail: 'Perfis prontos para operação'
       },
       {
-        label: 'Usu?rios ativos',
+        label: 'Usuários ativos',
         value: `${users.filter((item) => this.toBoolean(item.active)).length}`,
-        detail: `${users.length} usu?rios cadastrados`
+        detail: `${users.length} usuários cadastrados`
       },
       {
         label: 'Equipes vinculadas',
@@ -343,37 +343,37 @@ export class AdminOpsPageComponent {
       usuario: user.name,
       email: user.email,
       empresa: company?.fantasy_name || company?.corporate_name || 'Tenant principal',
-      perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usu?rio',
-      telefone: user.phone || 'N?o informado',
+      perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usuário',
+      telefone: user.phone || 'Não informado',
       situacao: this.toBoolean(user.active) ? 'Ativo' : 'Inativo'
     }));
 
     this.columns = [
-      { field: 'usuario', headerText: 'Usu?rio', width: 220 },
+      { field: 'usuario', headerText: 'Usuário', width: 220 },
       { field: 'email', headerText: 'E-mail', width: 280 },
       { field: 'empresa', headerText: 'Empresa', width: 220 },
       { field: 'perfil', headerText: 'Perfil', width: 180 },
       { field: 'telefone', headerText: 'Telefone', width: 160 },
-      { field: 'situacao', headerText: 'Situa??o', width: 140, type: 'badge' }
+      { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
     ];
 
     this.panels = [
       {
         title: 'Dados da empresa',
         lines: [
-          `Nome fantasia: ${company?.fantasy_name || 'N?o informado'}`,
-          `Raz?o social: ${company?.corporate_name || 'N?o informado'}`,
-          `Documento: ${company?.document || 'N?o informado'}`,
-          `Telefone: ${company?.phone || 'N?o informado'}`
+          `Nome fantasia: ${company?.fantasy_name || 'Não informado'}`,
+          `Razão social: ${company?.corporate_name || 'Não informado'}`,
+          `Documento: ${company?.document || 'Não informado'}`,
+          `Telefone: ${company?.phone || 'Não informado'}`
         ]
       },
       {
-        title: 'Padroniza??o recomendada',
+        title: 'Padronização recomendada',
         lines: roles.length
           ? [
               `Perfis atuais: ${roles.map((role) => role.name).join(', ')}`,
-              'Revise o logo, os dados da empresa e os padr?es para relat?rios oficiais.',
-              'Use esta base para alinhar comunica??o, acesso e branding do tenant.'
+              'Revise o logo, os dados da empresa e os padrões para relatórios oficiais.',
+              'Use esta base para alinhar comunicação, acesso e branding do tenant.'
             ]
           : ['Nenhum perfil retornado pela API tenant.']
       }
@@ -386,45 +386,45 @@ export class AdminOpsPageComponent {
     const roles = Array.isArray(metadata.roles) ? (metadata.roles as TenantMetadataRole[]) : [];
 
     this.cards = [
-      { label: 'Perfis dispon?veis', value: `${roles.length}`, detail: 'Perfis retornados pelo tenant' },
-      { label: 'Usu?rios com perfil', value: `${users.filter((item) => item.role_id).length}`, detail: 'Controle de autoriza??o j? vinculado' },
-      { label: 'Usu?rios ativos', value: `${users.filter((item) => this.toBoolean(item.active)).length}`, detail: 'Com acesso operacional', tone: 'success' },
-      { label: 'Fluxos de aprova??o', value: `${users.filter((item) => item.role_id).length}`, detail: 'Base para aprova??o e visibilidade' }
+      { label: 'Perfis disponíveis', value: `${roles.length}`, detail: 'Perfis retornados pelo tenant' },
+      { label: 'Usuários com perfil', value: `${users.filter((item) => item.role_id).length}`, detail: 'Controle de autorização já vinculado' },
+      { label: 'Usuários ativos', value: `${users.filter((item) => this.toBoolean(item.active)).length}`, detail: 'Com acesso operacional', tone: 'success' },
+      { label: 'Fluxos de aprovação', value: `${users.filter((item) => item.role_id).length}`, detail: 'Base para aprovação e visibilidade' }
     ];
 
     this.rows = users.map((user) => ({
       usuario: user.name,
       email: user.email,
-      perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usu?rio',
+      perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usuário',
       aprovacao: user.role_id ? 'Pode aprovar' : 'Consulta',
       edicao: this.toBoolean(user.active) ? 'Pode editar' : 'Somente leitura',
       situacao: this.toBoolean(user.active) ? 'Ativo' : 'Inativo'
     }));
 
     this.columns = [
-      { field: 'usuario', headerText: 'Usu?rio', width: 220 },
+      { field: 'usuario', headerText: 'Usuário', width: 220 },
       { field: 'email', headerText: 'E-mail', width: 260 },
       { field: 'perfil', headerText: 'Perfil', width: 180 },
-      { field: 'aprovacao', headerText: 'Aprova??o', width: 160, type: 'badge' },
-      { field: 'edicao', headerText: 'Edi??o', width: 160, type: 'badge' },
-      { field: 'situacao', headerText: 'Situa??o', width: 140, type: 'badge' }
+      { field: 'aprovacao', headerText: 'Aprovação', width: 160, type: 'badge' },
+      { field: 'edicao', headerText: 'Edição', width: 160, type: 'badge' },
+      { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
     ];
 
     this.panels = [
       {
-        title: 'Governan?a de acesso',
+        title: 'Governança de acesso',
         lines: [
-          'Perfis controlam visibilidade, edi??o e aprova??o dos fluxos de obra.',
-          'Usu?rios ativos entram na opera??o conforme o perfil vinculado.',
-          'Esta leitura ajuda a revisar governan?a antes de abrir novos acessos.'
+          'Perfis controlam visibilidade, edi??o e aprovação dos fluxos de obra.',
+          'Usuários ativos entram na operação conforme o perfil vinculado.',
+          'Esta leitura ajuda a revisar governança antes de abrir novos acessos.'
         ]
       },
       {
-        title: 'A??es recomendadas',
+        title: 'Ações recomendadas',
         lines: [
-          'Padronize perfis por fun??o: gestor, engenheiro, encarregado e campo.',
-          'Garanta aprova??o formal para di?rios cr?ticos e ocorr?ncias graves.',
-          'Revise usu?rios inativos antes de liberar novos acessos.'
+          'Padronize perfis por função: gestor, engenheiro, encarregado e campo.',
+          'Garanta aprovação formal para diários críticos e ocorrências graves.',
+          'Revise usuários inativos antes de liberar novos acessos.'
         ]
       }
     ];
@@ -437,16 +437,16 @@ export class AdminOpsPageComponent {
 
     this.cards = [
       { label: 'Fotos localizadas', value: `${imageDocs.length}`, detail: 'Arquivos com tipo de imagem' },
-      { label: 'Di?rios com foto', value: `${new Set(imageDocs.map((item) => item.daily_log_id)).size}`, detail: 'Base para galeria por di?rio', tone: 'success' },
+      { label: 'Diários com foto', value: `${new Set(imageDocs.map((item) => item.daily_log_id)).size}`, detail: 'Base para galeria por diário', tone: 'success' },
       { label: 'Obras com foto', value: `${new Set(imageDocs.map((item) => this.diaryProjectId(diaries, item.daily_log_id))).size}`, detail: 'Cobertura visual das obras' },
-      { label: '?ltimo upload', value: imageDocs[0] ? this.formatDate(imageDocs[0].created_at) : '-', detail: 'Data mais recente encontrada' }
+      { label: 'Último upload', value: imageDocs[0] ? this.formatDate(imageDocs[0].created_at) : '-', detail: 'Data mais recente encontrada' }
     ];
 
     this.rows = imageDocs.map((doc) => {
       const diary = diaries.find((item) => Number(item.id) === Number(doc.daily_log_id));
       return {
         arquivo: doc.file_name,
-        diario: diary ? this.formatDate(diary.work_date) : `Di?rio #${doc.daily_log_id}`,
+        diario: diary ? this.formatDate(diary.work_date) : `Diário #${doc.daily_log_id}`,
         obra: this.projectName(payload, diary?.project_id),
         tipo: this.labelize(doc.file_type || 'Imagem'),
         tamanho: this.formatFileSize(doc.file_size_bytes),
@@ -456,7 +456,7 @@ export class AdminOpsPageComponent {
 
     this.columns = [
       { field: 'arquivo', headerText: 'Arquivo', width: 240 },
-      { field: 'diario', headerText: 'Di?rio', width: 150 },
+      { field: 'diario', headerText: 'Diário', width: 150 },
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'tipo', headerText: 'Tipo', width: 140 },
       { field: 'tamanho', headerText: 'Tamanho', width: 140 },
@@ -467,9 +467,9 @@ export class AdminOpsPageComponent {
       {
         title: 'Galeria operacional',
         lines: [
-          'As fotos derivam dos anexos vinculados aos di?rios de obra.',
-          'A base atual permite consulta por obra, di?rio e data de registro.',
-          'A pr?xima evolu??o natural ? preview, organiza??o por ?lbum e upload dedicado.'
+          'As fotos derivam dos anexos vinculados aos diários de obra.',
+          'A base atual permite consulta por obra, diário e data de registro.',
+          'A próxima evolução natural é preview, organização por álbum e upload dedicado.'
         ]
       }
     ];
@@ -479,21 +479,21 @@ export class AdminOpsPageComponent {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
     const weatherGroups = new Map<string, number>();
     diaries.forEach((diary) => {
-      const key = diary.weather?.trim() || 'N?o informado';
+      const key = diary.weather?.trim() || 'Não informado';
       weatherGroups.set(key, (weatherGroups.get(key) || 0) + 1);
     });
 
     this.cards = [
-      { label: 'Di?rios com clima', value: `${diaries.filter((item) => !!item.weather).length}`, detail: `${diaries.length} di?rios avaliados` },
+      { label: 'Diários com clima', value: `${diaries.filter((item) => !!item.weather).length}`, detail: `${diaries.length} diários avaliados` },
       { label: 'Climas mapeados', value: `${weatherGroups.size}`, detail: 'Categorias encontradas' },
-      { label: 'Maior incid?ncia', value: Array.from(weatherGroups.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Sem dados', detail: 'Clima mais informado', tone: 'success' },
-      { label: 'Impacto potencial', value: `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length}`, detail: 'Di?rios com clima cr?tico', tone: 'warning' }
+      { label: 'Maior incidência', value: Array.from(weatherGroups.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Sem dados', detail: 'Clima mais informado', tone: 'success' },
+      { label: 'Impacto potencial', value: `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length}`, detail: 'Diários com clima crítico', tone: 'warning' }
     ];
 
     this.rows = diaries.map((diary) => ({
       data: this.formatDate(diary.work_date),
       obra: this.projectName(payload, diary.project_id),
-      clima: diary.weather || 'N?o informado',
+      clima: diary.weather || 'Não informado',
       resumo: diary.summary || 'Sem resumo',
       situacao: this.isCriticalWeather(diary.weather) ? 'Aten??o' : 'Est?vel'
     }));
@@ -503,16 +503,16 @@ export class AdminOpsPageComponent {
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'clima', headerText: 'Clima', width: 180 },
       { field: 'resumo', headerText: 'Resumo', width: 320 },
-      { field: 'situacao', headerText: 'Situa??o', width: 140, type: 'badge' }
+      { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
     ];
 
     this.panels = [
       {
-        title: 'Leitura clim?tica',
+        title: 'Leitura climática',
         lines: [
-          'O clima informado nos di?rios j? pode ser consolidado por obra e data.',
-          'Climas cr?ticos s?o marcados para apoiar produtividade e seguran?a.',
-          'Esta base tamb?m alimenta relat?rios e leitura de risco de prazo.'
+          'O clima informado nos diários já pode ser consolidado por obra e data.',
+          'Climas críticos s?o marcados para apoiar produtividade e seguran?a.',
+          'Esta base tamb?m alimenta relatórios e leitura de risco de prazo.'
         ]
       }
     ];
@@ -525,8 +525,8 @@ export class AdminOpsPageComponent {
     const pending = diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
 
     this.cards = [
-      { label: 'Aprovados', value: `${approved}`, detail: 'Di?rios com aceite operacional', tone: 'success' },
-      { label: 'Pendentes', value: `${pending}`, detail: 'Aguardando revis?o ou assinatura', tone: 'warning' },
+      { label: 'Aprovados', value: `${approved}`, detail: 'Diários com aceite operacional', tone: 'success' },
+      { label: 'Pendentes', value: `${pending}`, detail: 'Aguardando revisão ou assinatura', tone: 'warning' },
       { label: 'Reprovados', value: `${rejected}`, detail: 'Exigem ajuste ou reenvio', tone: 'danger' },
       { label: 'Cobertura', value: `${diaries.length}`, detail: 'Registros avaliados para assinatura' }
     ];
@@ -535,14 +535,14 @@ export class AdminOpsPageComponent {
       data: this.formatDate(diary.work_date),
       obra: this.projectName(payload, diary.project_id),
       status: this.diaryStatus(diary.status),
-      responsavel: `Usu?rio #${diary.created_by || '-'}`,
+      responsavel: `Usuário #${diary.created_by || '-'}`,
       assinatura: this.signatureStage(this.diaryStatus(diary.status))
     }));
 
     this.columns = [
       { field: 'data', headerText: 'Data', width: 140 },
       { field: 'obra', headerText: 'Obra', width: 240 },
-      { field: 'status', headerText: 'Status do di?rio', width: 160, type: 'badge' },
+      { field: 'status', headerText: 'Status do diário', width: 160, type: 'badge' },
       { field: 'responsavel', headerText: 'Respons?vel', width: 180 },
       { field: 'assinatura', headerText: 'Fluxo de assinatura', width: 200, type: 'badge' }
     ];
@@ -551,8 +551,8 @@ export class AdminOpsPageComponent {
       {
         title: 'Fluxo atual',
         lines: [
-          'A aprova??o do di?rio j? representa o est?gio operacional da assinatura.',
-          'Pend?ncias e reprova??es alimentam a fila de revis?o do respons?vel.',
+          'A aprovação do diário já representa o estágio operacional da assinatura.',
+          'Pendências e reprovações alimentam a fila de revisão do responsável.',
           'A base est? pronta para evoluir para assinatura digital formal.'
         ]
       }
@@ -566,9 +566,9 @@ export class AdminOpsPageComponent {
 
     this.cards = [
       { label: 'Obras planejadas', value: `${projects.length}`, detail: 'Obras com prazo definido' },
-      { label: 'Em andamento', value: `${projects.filter((item) => this.projectStatus(item.status) === 'Em andamento').length}`, detail: 'Execu??o ativa', tone: 'success' },
-      { label: 'Com prazo cr?tico', value: `${projects.filter((item) => this.projectNearDeadline(item.end_date)).length}`, detail: 'Prazo nos pr?ximos 45 dias', tone: 'warning' },
-      { label: 'Atividades vinculadas', value: `${activities.length}`, detail: `${diaries.length} di?rios alimentam o cronograma` }
+      { label: 'Em andamento', value: `${projects.filter((item) => this.projectStatus(item.status) === 'Em andamento').length}`, detail: 'Execução ativa', tone: 'success' },
+      { label: 'Com prazo crítico', value: `${projects.filter((item) => this.projectNearDeadline(item.end_date)).length}`, detail: 'Prazo nos próximos 45 dias', tone: 'warning' },
+      { label: 'Atividades vinculadas', value: `${activities.length}`, detail: `${diaries.length} diários alimentam o cronograma` }
     ];
 
     this.rows = projects.map((project) => ({
@@ -581,21 +581,21 @@ export class AdminOpsPageComponent {
     }));
 
     this.columns = [
-      { field: 'codigo', headerText: 'C?digo', width: 130 },
+      { field: 'codigo', headerText: 'Código', width: 130 },
       { field: 'obra', headerText: 'Obra', width: 240 },
-      { field: 'inicio', headerText: 'In?cio', width: 140 },
+      { field: 'inicio', headerText: 'Início', width: 140 },
       { field: 'fim', headerText: 'Fim', width: 140 },
       { field: 'progresso', headerText: 'Progresso', width: 140 },
-      { field: 'situacao', headerText: 'Situa??o', width: 150, type: 'badge' }
+      { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
     ];
 
     this.panels = [
       {
         title: 'Leitura do cronograma',
         lines: [
-          'As obras usam prazo cadastrado, di?rios e atividades para estimar avan?o operacional.',
-          'Os projetos com vencimento pr?ximo devem entrar na rotina semanal da gest?o.',
-          'Esta base j? sustenta a evolu??o para cronograma f?sico detalhado.'
+          'As obras usam prazo cadastrado, diários e atividades para estimar avanão operacional.',
+          'Os projetos com vencimento próximo devem entrar na rotina semanal da gestão.',
+          'Esta base já sustenta a evolução para cronograma físico detalhado.'
         ]
       }
     ];
@@ -827,9 +827,9 @@ export class AdminOpsPageComponent {
     const documents = this.items<BusinessDocument>(payload.documents?.data);
 
     this.cards = [
-      { label: 'Di?rios prontos', value: `${reportsBase.length}`, detail: 'Base eleg?vel para PDF' },
-      { label: 'Anexos existentes', value: `${documents.length}`, detail: 'Podem compor relat?rios', tone: 'success' },
-      { label: 'Pendentes', value: `${reportsBase.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Antes do envio autom?tico', tone: 'warning' },
+      { label: 'Diários prontos', value: `${reportsBase.length}`, detail: 'Base eleg?vel para PDF' },
+      { label: 'Anexos existentes', value: `${documents.length}`, detail: 'Podem compor relatórios', tone: 'success' },
+      { label: 'Pendentes', value: `${reportsBase.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Antes do envio automático', tone: 'warning' },
       { label: 'Cobertura mensal', value: `${new Set(reportsBase.map((item) => item.project_id)).size}`, detail: 'Obras com potencial de fechamento' }
     ];
 
@@ -851,11 +851,11 @@ export class AdminOpsPageComponent {
 
     this.panels = [
       {
-        title: 'Automa??o prevista',
+        title: 'Automação prevista',
         lines: [
-          'Di?rios aprovados j? est?o no melhor est?gio para virar PDF automaticamente.',
+          'Diários aprovados já estão no melhor estágio para virar PDF automaticamente.',
           'Os anexos existentes aumentam a qualidade do fechamento enviado por e-mail.',
-          'A pr?xima evolu??o ? agendamento por obra, respons?vel e per?odo.'
+          'A próxima evolução é agendamento por obra, responsável e período.'
         ]
       }
     ];
@@ -876,18 +876,18 @@ export class AdminOpsPageComponent {
     }));
 
     this.cards = [
-      { label: 'Obras monitoradas', value: `${projects.length}`, detail: 'Base anal?tica ativa' },
-      { label: 'Di?rios consolidados', value: `${diaries.length}`, detail: 'Dados para BI operacional', tone: 'success' },
+      { label: 'Obras monitoradas', value: `${projects.length}`, detail: 'Base analítica ativa' },
+      { label: 'Diários consolidados', value: `${diaries.length}`, detail: 'Dados para BI operacional', tone: 'success' },
       { label: 'Atividades registradas', value: `${activities.length}`, detail: 'Progresso executado' },
-      { label: 'Ocorr?ncias mapeadas', value: `${occurrences.length}`, detail: 'Leitura de risco e qualidade', tone: occurrences.length ? 'warning' : 'success' }
+      { label: 'Ocorrências mapeadas', value: `${occurrences.length}`, detail: 'Leitura de risco e qualidade', tone: occurrences.length ? 'warning' : 'success' }
     ];
 
     this.rows = topProjects;
     this.columns = [
       { field: 'obra', headerText: 'Obra', width: 240 },
-      { field: 'diarios', headerText: 'Di?rios', width: 120 },
+      { field: 'diarios', headerText: 'Diários', width: 120 },
       { field: 'atividades', headerText: 'Atividades', width: 130 },
-      { field: 'ocorrencias', headerText: 'Ocorr?ncias', width: 140 },
+      { field: 'ocorrencias', headerText: 'Ocorrências', width: 140 },
       { field: 'produtividade', headerText: 'Produtividade', width: 150, type: 'badge' }
     ];
 
@@ -895,9 +895,9 @@ export class AdminOpsPageComponent {
       {
         title: 'Indicadores imediatos',
         lines: [
-          'Esta vis?o cruza obras, di?rios, atividades e ocorr?ncias para leitura gerencial r?pida.',
-          'O pr?ximo passo natural ? separar indicadores por per?odo, obra e respons?vel.',
-          'A base atual j? sustenta pain?is executivos e comparativos entre obras.'
+          'Esta visão cruza obras, diários, atividades e ocorrências para leitura gerencial rápida.',
+          'O próximo passo natural ? separar indicadores por per?odo, obra e responsável.',
+          'A base atual já sustenta painéis executivos e comparativos entre obras.'
         ]
       }
     ];
@@ -907,15 +907,15 @@ export class AdminOpsPageComponent {
     const projects = this.items<BusinessProject>(payload.projects?.data);
     this.cards = [
       { label: 'Obras georreferenciadas', value: `${projects.filter((item) => item.latitude && item.longitude).length}`, detail: `${projects.length} obras cadastradas`, tone: 'success' },
-      { label: 'Com endere?o', value: `${projects.filter((item) => item.address || item.city).length}`, detail: 'Base para mapa operacional' },
+      { label: 'Com endereço', value: `${projects.filter((item) => item.address || item.city).length}`, detail: 'Base para mapa operacional' },
       { label: 'Cidades presentes', value: `${new Set(projects.map((item) => item.city).filter(Boolean)).size}`, detail: 'Cobertura territorial' },
-      { label: 'Coordenadas pendentes', value: `${projects.filter((item) => !item.latitude || !item.longitude).length}`, detail: 'Exigem geolocaliza??o', tone: 'warning' }
+      { label: 'Coordenadas pendentes', value: `${projects.filter((item) => !item.latitude || !item.longitude).length}`, detail: 'Exigem geolocalização', tone: 'warning' }
     ];
 
     this.rows = projects.map((project) => ({
       obra: project.name,
-      cidade: project.city || 'N?o informada',
-      endereco: [project.address, project.number, project.district].filter(Boolean).join(', ') || 'N?o informado',
+      cidade: project.city || 'Não informada',
+      endereco: [project.address, project.number, project.district].filter(Boolean).join(', ') || 'Não informado',
       coordenadas: project.latitude && project.longitude ? `${project.latitude}, ${project.longitude}` : 'Pendente',
       situacao: this.projectStatus(project.status)
     }));
@@ -923,17 +923,17 @@ export class AdminOpsPageComponent {
     this.columns = [
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'cidade', headerText: 'Cidade', width: 180 },
-      { field: 'endereco', headerText: 'Endere?o', width: 320 },
+      { field: 'endereco', headerText: 'Endereço', width: 320 },
       { field: 'coordenadas', headerText: 'Coordenadas', width: 220 },
-      { field: 'situacao', headerText: 'Situa??o', width: 150, type: 'badge' }
+      { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
     ];
 
     this.panels = [
       {
         title: 'Leitura territorial',
         lines: [
-          'O mapa das obras depende do endere?o e das coordenadas informadas em cada projeto.',
-          'Com essa base, a opera??o pode evoluir para visualiza??o geogr?fica e roteamento.',
+          'O mapa das obras depende do endereço e das coordenadas informadas em cada projeto.',
+          'Com essa base, a operação pode evoluir para visualiza??o geográfica e roteamento.',
           'As obras sem coordenadas devem entrar na rotina de saneamento cadastral.'
         ]
       }
@@ -944,8 +944,8 @@ export class AdminOpsPageComponent {
     const company = this.items<any>(payload.companies?.data)[0];
     const documents = this.items<BusinessDocument>(payload.documents?.data);
     this.cards = [
-      { label: 'Documentos com link', value: `${documents.filter((item) => !!item.file_url).length}`, detail: 'Base para integra??o em nuvem', tone: 'success' },
-      { label: 'Empresa conect?vel', value: company?.email ? 'Sim' : 'N?o', detail: 'Contato principal cadastrado' },
+      { label: 'Documentos com link', value: `${documents.filter((item) => !!item.file_url).length}`, detail: 'Base para integração em nuvem', tone: 'success' },
+      { label: 'Empresa conectável', value: company?.email ? 'Sim' : 'Não', detail: 'Contato principal cadastrado' },
       { label: 'Google Drive', value: 'Preparado', detail: 'Estrutura pronta para conector' },
       { label: 'OneDrive', value: 'Preparado', detail: 'Estrutura pronta para conector' }
     ];
@@ -954,7 +954,7 @@ export class AdminOpsPageComponent {
       arquivo: doc.file_name,
       tipo: this.labelize(doc.file_type || 'Arquivo'),
       link: doc.file_url || 'Sem link',
-      integracao: doc.file_url ? 'Eleg?vel' : 'Pendente'
+      integracao: doc.file_url ? 'Elegível' : 'Pendente'
     }));
 
     this.columns = [
@@ -968,9 +968,9 @@ export class AdminOpsPageComponent {
       {
         title: 'Conectores previstos',
         lines: [
-          'Documentos com URL j? t?m a base necess?ria para integra??o documental.',
+          'Documentos com URL já t?m a base necessária para integração documental.',
           'Google Drive e OneDrive podem ser conectados sem mudar a estrutura da tela.',
-          'O pr?ximo passo ? versionamento, sincroniza??o e regras por pasta ou obra.'
+          'O próximo passo ? versionamento, sincronização e regras por pasta ou obra.'
         ]
       }
     ];
@@ -979,17 +979,17 @@ export class AdminOpsPageComponent {
   private mapDigitalSignature(payload: SnapshotPayload): void {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
     this.cards = [
-      { label: 'Di?rios eleg?veis', value: `${diaries.length}`, detail: 'Base para assinatura avan?ada' },
-      { label: 'Prontos', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length}`, detail: 'Mais pr?ximos de assinatura digital', tone: 'success' },
-      { label: 'Pendentes', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Aguardando prepara??o', tone: 'warning' },
-      { label: 'Reprovados', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length}`, detail: 'Exigem corre??o', tone: 'danger' }
+      { label: 'Diários elegíveis', value: `${diaries.length}`, detail: 'Base para assinatura avançada' },
+      { label: 'Prontos', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length}`, detail: 'Mais próximos de assinatura digital', tone: 'success' },
+      { label: 'Pendentes', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Aguardando preparação', tone: 'warning' },
+      { label: 'Reprovados', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length}`, detail: 'Exigem correção', tone: 'danger' }
     ];
 
     this.rows = diaries.map((diary) => ({
       obra: this.projectName(payload, diary.project_id),
       data: this.formatDate(diary.work_date),
       status: this.diaryStatus(diary.status),
-      assinatura: this.diaryStatus(diary.status) === 'Aprovado' ? 'Pronta para assinatura' : 'Em prepara??o',
+      assinatura: this.diaryStatus(diary.status) === 'Aprovado' ? 'Pronta para assinatura' : 'Em preparação',
       rastreio: diary.id ? `TR-${diary.id}` : '-'
     }));
 
@@ -1003,11 +1003,11 @@ export class AdminOpsPageComponent {
 
     this.panels = [
       {
-        title: 'Prepara??o para assinatura digital',
+        title: 'Preparação para assinatura digital',
         lines: [
-          'Di?rios aprovados j? est?o no melhor est?gio para assinatura avan?ada.',
-          'Pend?ncias e reprova??es precisam ser resolvidas antes de formalizar a assinatura.',
-          'A pr?xima evolu??o ? integrar trilha de auditoria e provedores externos de assinatura.'
+          'Diários aprovados já estão no melhor estágio para assinatura avançada.',
+          'Pendências e reprovações precisam ser resolvidas antes de formalizar a assinatura.',
+          'A próxima evolução é integrar trilha de auditoria e provedores externos de assinatura.'
         ]
       }
     ];
@@ -1179,3 +1179,6 @@ export class AdminOpsPageComponent {
     queueMicrotask(() => this.cdr.detectChanges());
   }
 }
+
+
+
