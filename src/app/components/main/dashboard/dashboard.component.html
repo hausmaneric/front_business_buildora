@@ -1,70 +1,117 @@
 @if (loading) {
-  <section class="dashboard-loading orb-card">
-    <div class="loading-dot"></div>
-    <div class="loading-copy">
-      <strong>Carregando dashboard operacional...</strong>
-      <span>Consultando obras, diários, equipes e produtividade.</span>
+  <section class="dashboard-feedback orb-card">
+    <div class="feedback-icon pulse"></div>
+    <div class="feedback-copy">
+      <strong>Carregando visão operacional...</strong>
+      <span>Consultando obras, diários, equipes, materiais e produtividade da empresa.</span>
     </div>
   </section>
 } @else if (errorMessage) {
-  <section class="dashboard-loading orb-card error-state">
-    <div class="loading-copy">
+  <section class="dashboard-feedback orb-card error-state">
+    <div class="feedback-icon warning"></div>
+    <div class="feedback-copy">
       <strong>Não foi possível montar o dashboard</strong>
       <span>{{ errorMessage }}</span>
     </div>
   </section>
 } @else {
   <section class="dashboard-page">
-    <div class="stats-grid">
+    <section class="stats-grid">
       @for (card of viewModel.cards; track trackByTitle($index, card)) {
         <article class="stat-card orb-card" [class]="'tone-' + card.tone">
-          <div class="stat-head">
-            <span class="stat-icon"></span>
-            <div class="stat-copy">
-              <span class="stat-label">{{ card.title }}</span>
-              <h3>{{ card.value }}</h3>
-              <p>{{ card.delta }}</p>
-            </div>
+          <div class="stat-badge">
+            <span class="stat-icon">{{ statGlyph(card.title) }}</span>
+          </div>
+
+          <div class="stat-content">
+            <span class="stat-label">{{ card.title }}</span>
+            <strong class="stat-value">{{ card.value }}</strong>
+            <span class="stat-delta">{{ card.delta }}</span>
           </div>
 
           @if (card.progress !== undefined) {
-            <div class="progress-track">
-              <span class="progress-fill" [style.width.%]="card.progress"></span>
+            <div class="stat-progress">
+              <span [style.width.%]="card.progress"></span>
             </div>
           }
 
-          <svg class="sparkline" viewBox="0 0 188 52" preserveAspectRatio="none">
+          <svg class="stat-sparkline" viewBox="0 0 188 52" preserveAspectRatio="none">
             <polyline [attr.points]="linePoints(card.sparkline)" fill="none"></polyline>
           </svg>
         </article>
       }
-    </div>
+    </section>
 
-    <div class="chart-grid">
-      <article class="chart-card orb-card">
-        <div class="chart-header">
-          <h3>Obras por status</h3>
-        </div>
-        <div class="donut-layout">
-          <div class="donut" [style.background]="donutBackground(viewModel.planDistribution)"></div>
-          <div class="legend">
-            @for (item of viewModel.planDistribution; track item.label) {
-              <div class="legend-row">
-                <span class="legend-color" [style.background]="item.color"></span>
-                <span>{{ item.label }}</span>
-                <strong>{{ item.value }} ({{ distributionPercent(+viewModel.cards[0].value, item.value) }})</strong>
-              </div>
-            }
+    <section class="primary-grid">
+      <article class="panel-card orb-card wide-card">
+        <div class="panel-header">
+          <div>
+            <h3>Obras em andamento</h3>
+            <p>Panorama das frentes ativas, progresso físico e responsáveis do período.</p>
           </div>
+          <button type="button" class="panel-link" (click)="openSection('projects')">Ver todas as obras</button>
+        </div>
+
+        <div class="project-list">
+          @for (item of viewModel.recentAccess; track item.company + item.dateTime) {
+            <article class="project-row">
+              <div class="project-thumb">{{ item.company.charAt(0) }}</div>
+              <div class="project-main">
+                <strong>{{ item.company }}</strong>
+                <span>{{ item.badge }} · {{ item.ip }}</span>
+              </div>
+              <div class="project-progress">
+                <span class="progress-value">{{ distributionPercent(100, (($index + 2) * 15) % 85 + 10) }}</span>
+                <div class="progress-track">
+                  <span [style.width.%]="(($index + 2) * 15) % 85 + 10"></span>
+                </div>
+              </div>
+              <div class="project-meta">
+                <span>{{ item.dateTime }}</span>
+                <small>{{ item.user }}</small>
+              </div>
+              <span class="status-chip">Em andamento</span>
+            </article>
+          }
         </div>
       </article>
 
-      <article class="chart-card orb-card">
-        <div class="chart-header">
-          <h3>Ocorrências por tipo</h3>
+      <article class="panel-card orb-card">
+        <div class="panel-header">
+          <div>
+            <h3>Diários recentes</h3>
+            <p>Últimos registros operacionais com status de aprovação.</p>
+          </div>
+          <button type="button" class="panel-link" (click)="openSection('diaries')">Ver todos</button>
         </div>
-        <div class="donut-layout">
-          <div class="donut secondary" [style.background]="donutBackground(viewModel.subscriptionDistribution)"></div>
+
+        <div class="stacked-list">
+          @for (item of viewModel.recentLogs; track item.title + item.dateTime) {
+            <div class="stacked-row">
+              <div class="stacked-copy">
+                <strong>{{ item.title }}</strong>
+                <span>{{ item.dateTime }}</span>
+              </div>
+              <span class="status-inline" [class]="'tone-' + item.tone">
+                {{ item.toneLabel }}
+              </span>
+            </div>
+          }
+        </div>
+      </article>
+    </section>
+
+    <section class="secondary-grid">
+      <article class="panel-card orb-card compact-card">
+        <div class="panel-header">
+          <div>
+            <h3>Ocorrências por tipo</h3>
+            <p>Distribuição resumida das ocorrências abertas e tratadas.</p>
+          </div>
+        </div>
+
+        <div class="donut-layout compact">
+          <div class="donut" [style.background]="donutBackground(viewModel.subscriptionDistribution)"></div>
           <div class="legend">
             @for (item of viewModel.subscriptionDistribution; track item.label) {
               <div class="legend-row">
@@ -77,128 +124,97 @@
         </div>
       </article>
 
-      <article class="chart-card trend-card orb-card">
-        <div class="chart-header">
-          <h3>Uso de armazenamento</h3>
-        </div>
-        <div class="trend-visual">
-          <svg viewBox="0 0 420 240" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="areaFillBusiness" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="rgba(16,185,129,0.26)"></stop>
-                <stop offset="100%" stop-color="rgba(16,185,129,0.02)"></stop>
-              </linearGradient>
-            </defs>
-            <path [attr.d]="areaPath()" fill="url(#areaFillBusiness)"></path>
-            <path [attr.d]="areaLine()" class="trend-line"></path>
-          </svg>
-
-          <div class="trend-axis">
-            @for (point of viewModel.storageTrend; track point.label) {
-              <span>{{ point.label }}</span>
-            }
+      <article class="panel-card orb-card compact-card">
+        <div class="panel-header">
+          <div>
+            <h3>Atividades recentes</h3>
+            <p>Execuções e movimentações reportadas pela equipe.</p>
           </div>
-        </div>
-      </article>
-    </div>
-
-    <div class="data-grid">
-      <article class="data-card orb-card">
-        <div class="data-card-header">
-          <h3>Últimos acessos</h3>
-          <button type="button" (click)="openSection('projects')">Ver tudo</button>
-        </div>
-        <div class="dashboard-table-shell">
-          <table class="dashboard-table access-table">
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Usuário</th>
-                <th>Data e hora</th>
-                <th>IP</th>
-                <th>Conta</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (viewModel.recentAccess.length) {
-                @for (item of viewModel.recentAccess; track item.company + item.dateTime) {
-                  <tr>
-                    <td>{{ item.company }}</td>
-                    <td>{{ item.user }}</td>
-                    <td>{{ item.dateTime }}</td>
-                    <td>{{ item.ip }}</td>
-                    <td>{{ item.badge }}</td>
-                  </tr>
-                }
-              } @else {
-                <tr>
-                  <td colspan="5" class="empty-cell">Nenhum acesso recente registrado.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="data-card orb-card">
-        <div class="data-card-header">
-          <h3>Logs recentes</h3>
-          <button type="button" (click)="openSection('reports')">Ver tudo</button>
-        </div>
-        <div class="dashboard-table-shell">
-          <table class="dashboard-table logs-table">
-            <thead>
-              <tr>
-                <th>Evento</th>
-                <th>Data e hora</th>
-                <th>Categoria</th>
-                <th>Prioridade</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (viewModel.recentLogs.length) {
-                @for (item of viewModel.recentLogs; track item.title + item.dateTime) {
-                  <tr>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.dateTime }}</td>
-                    <td>{{ item.type }}</td>
-                    <td>{{ item.toneLabel }}</td>
-                  </tr>
-                }
-              } @else {
-                <tr>
-                  <td colspan="4" class="empty-cell">Nenhum log recente disponível.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="alerts-card orb-card">
-        <div class="data-card-header">
-          <h3>Alertas e avisos</h3>
-          <button type="button" (click)="openSection('occurrences')">Ver tudo</button>
+          <button type="button" class="panel-link" (click)="openSection('reports')">Ver todas</button>
         </div>
 
-        <div class="alerts-list">
-          @for (alert of viewModel.alerts; track alert.title) {
-            <div class="alert-row" [class]="'alert-' + alert.tone">
-              <div class="alert-copy">
-                <strong>{{ alert.title }}</strong>
-                <span>{{ alert.message }}</span>
-                <small>{{ alert.secondary }}</small>
-                @if (alert.percent !== undefined) {
-                  <div class="alert-progress">
-                    <span [style.width.%]="alert.percent"></span>
-                  </div>
-                }
+        <div class="activity-list">
+          @for (item of viewModel.recentLogs; track item.title + item.type) {
+            <div class="activity-row">
+              <span class="activity-mark"></span>
+              <div class="activity-copy">
+                <strong>{{ item.title }}</strong>
+                <span>{{ item.type }}</span>
               </div>
-              <div class="alert-indicator"></div>
+              <small>{{ item.dateTime }}</small>
             </div>
           }
         </div>
       </article>
-    </div>
+
+      <article class="panel-card orb-card compact-card">
+        <div class="panel-header">
+          <div>
+            <h3>Fotos recentes</h3>
+            <p>Últimos registros visuais enviados pelas obras.</p>
+          </div>
+          <button type="button" class="panel-link" (click)="openSection('documents')">Ver todas</button>
+        </div>
+
+        <div class="photo-grid">
+          @for (item of viewModel.recentAccess; track item.company + '-photo') {
+            <div class="photo-tile">
+              <span>{{ item.company }}</span>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="panel-card orb-card compact-card storage-card">
+        <div class="panel-header">
+          <div>
+            <h3>Uso de armazenamento</h3>
+            <p>Capacidade usada por fotos, documentos e registros.</p>
+          </div>
+        </div>
+
+        <div class="storage-layout">
+          <div class="storage-donut">
+            <div class="storage-ring" [style.background]="donutBackground(viewModel.planDistribution)"></div>
+            <div class="storage-hole">
+              <strong>1,48 TB</strong>
+              <span>de 5 TB</span>
+            </div>
+          </div>
+
+          <div class="legend">
+            @for (item of viewModel.planDistribution; track item.label) {
+              <div class="legend-row">
+                <span class="legend-color" [style.background]="item.color"></span>
+                <span>{{ item.label }}</span>
+                <strong>{{ item.value }}</strong>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="alerts-band orb-card">
+      <div class="alerts-header">
+        <div>
+          <h3>Alertas e avisos</h3>
+          <p>Acompanhamento rápido das pendências que exigem atenção.</p>
+        </div>
+        <button type="button" class="panel-link" (click)="openSection('occurrences')">Ver todos os alertas</button>
+      </div>
+
+      <div class="alerts-strip">
+        @for (alert of viewModel.alerts; track alert.title) {
+          <div class="alert-pill" [class]="'alert-' + alert.tone">
+            <span class="alert-pill-icon"></span>
+            <div class="alert-pill-copy">
+              <strong>{{ alert.title }}</strong>
+              <span>{{ alert.message }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
   </section>
 }

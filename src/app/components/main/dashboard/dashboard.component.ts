@@ -72,6 +72,26 @@ export class DashboardComponent {
     return item.title;
   }
 
+  statGlyph(title: string): string {
+    const normalized = title.toLowerCase();
+    if (normalized.includes('obra')) {
+      return '▥';
+    }
+    if (normalized.includes('diário')) {
+      return '☰';
+    }
+    if (normalized.includes('ocorr')) {
+      return '!';
+    }
+    if (normalized.includes('funcion') || normalized.includes('usu')) {
+      return '◔';
+    }
+    if (normalized.includes('produt')) {
+      return '↗';
+    }
+    return '•';
+  }
+
   openSection(section: 'projects' | 'diaries' | 'occurrences' | 'reports' | 'documents'): void {
     if (section === 'projects') {
       void this.router.navigate(['/main/projects']);
