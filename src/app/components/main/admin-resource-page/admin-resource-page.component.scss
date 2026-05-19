@@ -216,16 +216,6 @@
   min-width: 184px;
   max-width: 184px;
   text-align: center;
-  position: sticky;
-  right: 0;
-  z-index: 2;
-  background: #fff;
-  box-shadow: -1px 0 0 rgba(100, 116, 139, 0.08);
-}
-
-.resource-grid th.actions-column {
-  z-index: 3;
-  background: #f8fafc;
 }
 
 .status-badge {
