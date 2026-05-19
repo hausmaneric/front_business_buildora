@@ -1212,14 +1212,61 @@ export class AdminResourcePageComponent {
       }
       case 'users': {
         this.overviewCards = [
-          { label: 'Usuários cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
-          { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
+          { label: 'Usu?rios cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
+          { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribui??o de permiss?es' },
           { label: 'Empresas cobertas', value: String(new Set(rows.map((row) => row.company_id)).size), detail: 'Entidades operacionais' },
-          { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato rápido disponível' }
+          { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato r?pido dispon?vel' }
         ];
         this.insightPanels = [
-          { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
-          { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) }
+          { title: 'Perfis atribu?dos', lines: rows.slice(0, 5).map((row) => `${row.name} ? ${row.roleDisplay}`) },
+          { title: 'Usu?rios ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} ? ${row.email}`) }
+        ];
+        break;
+      }
+      case 'materials': {
+        const entradas = rows.filter((row) => String(row.movementDisplay || '').toLowerCase().includes('entrada')).length;
+        const consumo = rows.filter((row) => String(row.movementDisplay || '').toLowerCase().includes('consumo')).length;
+        const quantidade = rows.reduce((sum, row) => sum + Number(row.quantity || 0), 0);
+        this.overviewCards = [
+          { label: 'Movimentos lan?ados', value: String(total), detail: `${entradas} entradas registradas` },
+          { label: 'Consumos apontados', value: String(consumo), detail: 'Sa?das e uso na frente', tone: consumo ? 'warning' : 'success' },
+          { label: 'Itens distintos', value: String(new Set(rows.map((row) => row.material_name)).size), detail: 'Cat?logo em uso' },
+          { label: 'Quantidade total', value: this.formatNumber(quantidade), detail: 'Volume apontado nos di?rios', tone: 'success' }
+        ];
+        this.insightPanels = [
+          { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} ? ${row.quantityDisplay}`) },
+          { title: '?ltimas movimenta??es', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} ? ${row.movementDisplay}`) }
+        ];
+        break;
+      }
+      case 'equipments': {
+        const emUso = rows.filter((row) => String(row.equipmentStatusDisplay || '').toLowerCase().includes('uso') || String(row.equipmentStatusDisplay || '').toLowerCase().includes('opera')).length;
+        const manutencao = rows.filter((row) => String(row.maintenanceDisplay || '').toLowerCase().includes('manuten')).length;
+        const horas = rows.reduce((sum, row) => sum + Number(row.hours_used || 0), 0);
+        this.overviewCards = [
+          { label: 'Equipamentos lan?ados', value: String(total), detail: `${emUso} em opera??o` },
+          { label: 'Horas registradas', value: `${this.formatNumber(horas)} h`, detail: 'Uso acumulado no per?odo', tone: 'success' },
+          { label: 'Em manuten??o', value: String(manutencao), detail: 'Acompanhar disponibilidade', tone: manutencao ? 'warning' : 'success' },
+          { label: 'Di?rios impactados', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Cobertura operacional' }
+        ];
+        this.insightPanels = [
+          { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} ? ${row.hoursUsedDisplay}`) },
+          { title: 'Situa??o operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} ? ${row.equipmentStatusDisplay}`) }
+        ];
+        break;
+      }
+      case 'occurrences': {
+        const abertas = rows.filter((row) => row.resolvedDisplay === 'Aberta').length;
+        const graves = rows.filter((row) => String(row.severityDisplay || '').toLowerCase().includes('alta')).length;
+        this.overviewCards = [
+          { label: 'Ocorr?ncias abertas', value: String(abertas), detail: 'Demandam acompanhamento', tone: abertas ? 'warning' : 'success' },
+          { label: 'Resolvidas', value: String(rows.filter((row) => row.resolvedDisplay === 'Resolvida').length), detail: 'Fechadas com registro', tone: 'success' },
+          { label: 'Alta gravidade', value: String(graves), detail: 'Aten??o imediata', tone: graves ? 'danger' : 'success' },
+          { label: 'Tipos distintos', value: String(new Set(rows.map((row) => row.occurrenceTypeDisplay)).size), detail: 'Mapa de desvios' }
+        ];
+        this.insightPanels = [
+          { title: 'Pend?ncias cr?ticas', lines: rows.filter((row) => row.resolvedDisplay === 'Aberta').slice(0, 5).map((row) => `${row.title} ? ${row.severityDisplay}`) },
+          { title: 'Distribui??o por di?rio', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} ? ${row.occurrenceTypeDisplay}`) }
         ];
         break;
       }
