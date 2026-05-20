@@ -142,6 +142,7 @@ export class AdminResourcePageComponent {
   insightPanels: ResourceInsightPanel[] = [];
   quickFilters: QuickFilterChip[] = [];
   activeQuickFilter = 'all';
+  selectedRow: any = null;
 
   readonly pageSizeOptions = [
     { id: 10, text: '10 por página' },
@@ -406,6 +407,15 @@ export class AdminResourcePageComponent {
     return row?.id || row?.code || index;
   }
 
+  selectRow(row: any): void {
+    this.selectedRow = row;
+    this.flushView();
+  }
+
+  isSelectedRow(row: any): boolean {
+    return this.trackRow(this.selectedRow, -1) === this.trackRow(row, -2);
+  }
+
   displayCell(row: any, field: string): string {
     const value = row?.[field];
     return value === null || value === undefined || value === '' ? '-' : String(value);
@@ -440,6 +450,58 @@ export class AdminResourcePageComponent {
       return `Duplicar ${this.title}`;
     }
     return `Novo cadastro de ${this.title}`;
+  }
+
+  showDetailPanel(): boolean {
+    return !!this.selectedRow && (this.resource === 'projects' || this.resource === 'diaries');
+  }
+
+  detailPanelTitle(): string {
+    if (!this.selectedRow) return '';
+    return this.resource === 'projects'
+      ? this.selectedRow.name || 'Obra selecionada'
+      : `${this.selectedRow.projectDisplay} • ${this.selectedRow.workDateDisplay}`;
+  }
+
+  detailPanelSubtitle(): string {
+    if (!this.selectedRow) return '';
+    return this.resource === 'projects'
+      ? `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay}`
+      : `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay}`;
+  }
+
+  detailHighlights(): Array<{ label: string; value: string }> {
+    if (!this.selectedRow) return [];
+    if (this.resource === 'projects') {
+      return [
+        { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
+        { label: 'Responsável', value: this.selectedRow.engineerDisplay || 'Não definido' },
+        { label: 'Prazo', value: this.selectedRow.periodDisplay || '-' },
+        { label: 'Orçamento', value: this.selectedRow.budgetDisplay || '-' }
+      ];
+    }
+    return [
+      { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
+      { label: 'Obra', value: this.selectedRow.projectDisplay || '-' },
+      { label: 'Clima', value: this.selectedRow.weatherDisplay || '-' },
+      { label: 'Responsável', value: this.selectedRow.createdByDisplay || 'Sem responsável' }
+    ];
+  }
+
+  detailNotes(): string[] {
+    if (!this.selectedRow) return [];
+    if (this.resource === 'projects') {
+      return [
+        `Código da obra: ${this.selectedRow.code || '-'}`,
+        `Endereço base: ${[this.selectedRow.address, this.selectedRow.number, this.selectedRow.district].filter(Boolean).join(', ') || 'Não informado'}`,
+        `Cidade / UF: ${this.selectedRow.locationDisplay || 'Não informado'}`
+      ];
+    }
+    return [
+      `Resumo: ${this.selectedRow.summaryDisplay || 'Sem resumo'}`,
+      `Ocorrências: ${this.selectedRow.occurrences || 'Sem ocorrências registradas'}`,
+      `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`
+    ];
   }
 
   fieldError(controlName: string): string {
@@ -990,6 +1052,10 @@ export class AdminResourcePageComponent {
 
     this.rows = rows;
     this.filteredRows = rows.slice(start, end);
+    this.selectedRow =
+      this.filteredRows.find((row) => this.trackRow(row, -1) === this.trackRow(this.selectedRow, -2)) ||
+      this.filteredRows[0] ||
+      null;
     this.flushView();
   }
 

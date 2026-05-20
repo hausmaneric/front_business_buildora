@@ -147,7 +147,7 @@
             </thead>
             <tbody>
               @for (row of filteredRows; track trackRow(row, $index)) {
-                <tr>
+                <tr [class.selected-row]="isSelectedRow(row)" (click)="selectRow(row)">
                   @for (column of columns; track column.field) {
                     <td [title]="displayCell(row, column.field)">
                       @if (isBadgeField(column)) {
@@ -223,6 +223,31 @@
             </article>
           }
         </div>
+      }
+
+      @if (showDetailPanel()) {
+        <section class="detail-spotlight">
+          <div class="detail-spotlight-copy">
+            <span class="detail-eyebrow">{{ resource === 'projects' ? 'Obra selecionada' : 'Diário selecionado' }}</span>
+            <h4>{{ detailPanelTitle() }}</h4>
+            <p>{{ detailPanelSubtitle() }}</p>
+          </div>
+
+          <div class="detail-highlight-grid">
+            @for (item of detailHighlights(); track item.label) {
+              <article class="detail-highlight-card">
+                <span>{{ item.label }}</span>
+                <strong>{{ item.value }}</strong>
+              </article>
+            }
+          </div>
+
+          <div class="detail-note-list">
+            @for (note of detailNotes(); track note) {
+              <div class="detail-note-item">{{ note }}</div>
+            }
+          </div>
+        </section>
       }
     </article>
   }
