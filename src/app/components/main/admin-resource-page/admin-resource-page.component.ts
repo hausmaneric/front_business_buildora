@@ -1559,7 +1559,15 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Pendências do dia', lines: rows.filter((row) => row.statusDisplay === 'Pendente').slice(0, 5).map((row) => `${row.workDateDisplay} • ${row.projectDisplay}`) },
-          { title: 'Condições de clima', lines: rows.slice(0, 4).map((row) => `${row.workDateDisplay} • ${row.weatherDisplay}`) }
+          { title: 'Condições de clima', lines: rows.slice(0, 4).map((row) => `${row.workDateDisplay} • ${row.weatherDisplay}`) },
+          {
+            title: 'Próximas ações',
+            lines: [
+              `${pending} diários ainda precisam de revisão ou aprovação formal`,
+              `${rows.filter((row) => String(row.weatherDisplay || '').toLowerCase().includes('chuva') || String(row.weatherDisplay || '').toLowerCase().includes('tempestade')).length} registros têm clima com potencial de impacto`,
+              approved ? `${approved} diários já podem seguir para histórico, assinatura ou fechamento` : 'Ainda não há diários prontos para fechamento'
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
@@ -1643,7 +1651,15 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Tipos mais presentes', lines: rows.slice(0, 5).map((row) => `${row.file_name} • ${row.fileTypeDisplay}`) },
-          { title: 'Últimos anexos', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.fileSizeDisplay}`) }
+          { title: 'Últimos anexos', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.fileSizeDisplay}`) },
+          {
+            title: 'Organização recomendada',
+            lines: [
+              `${rows.filter((row) => !row.urlDisplay || row.urlDisplay === 'Sem link').length} arquivos ainda precisam de publicação ou vínculo`,
+              `${rows.filter((row) => String(row.fileTypeDisplay || '').toLowerCase().includes('pdf')).length} documentos já estão prontos para leitura formal`,
+              `${new Set(rows.map((row) => row.daily_log_id)).size} diários já contam com base documental associada`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
@@ -1711,7 +1727,15 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Pendências críticas', lines: rows.filter((row) => row.resolvedDisplay === 'Aberta').slice(0, 5).map((row) => `${row.title} • ${row.severityDisplay}`) },
-          { title: 'Distribuição por diário', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.occurrenceTypeDisplay}`) }
+          { title: 'Distribuição por diário', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.occurrenceTypeDisplay}`) },
+          {
+            title: 'Próximos tratamentos',
+            lines: [
+              `${abertas} ocorrências abertas ainda exigem resposta da equipe`,
+              `${graves} ocorrências de alta gravidade devem entrar na pauta imediata`,
+              `${rows.filter((row) => row.resolvedDisplay === 'Resolvida').length} registros já têm fechamento operacional`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todas'],
