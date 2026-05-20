@@ -456,6 +456,98 @@ export class AdminResourcePageComponent {
     return !!this.selectedRow && ['projects', 'diaries', 'activities', 'teams', 'users', 'materials', 'equipments', 'occurrences', 'documents'].includes(this.resource);
   }
 
+  detailPrimaryActionLabel(): string {
+    switch (this.resource) {
+      case 'documents':
+        return 'Abrir arquivo';
+      case 'users':
+        return 'Enviar e-mail';
+      case 'projects':
+        return 'Editar obra';
+      case 'diaries':
+        return 'Editar diário';
+      default:
+        return 'Abrir detalhe';
+    }
+  }
+
+  detailSecondaryActionLabel(): string {
+    switch (this.resource) {
+      case 'documents':
+        return 'Copiar link';
+      case 'users':
+        return 'Copiar contato';
+      case 'projects':
+        return 'Duplicar obra';
+      case 'diaries':
+        return 'Duplicar diário';
+      default:
+        return 'Copiar referência';
+    }
+  }
+
+  canUseDetailPrimaryAction(): boolean {
+    if (!this.selectedRow) return false;
+    switch (this.resource) {
+      case 'documents':
+        return !!this.selectedRow.file_url;
+      case 'users':
+        return !!this.selectedRow.email;
+      case 'projects':
+      case 'diaries':
+        return this.canEdit(this.selectedRow);
+      default:
+        return false;
+    }
+  }
+
+  canUseDetailSecondaryAction(): boolean {
+    if (!this.selectedRow) return false;
+    switch (this.resource) {
+      case 'documents':
+        return !!this.selectedRow.file_url;
+      case 'users':
+        return !!(this.selectedRow.phone || this.selectedRow.email);
+      case 'projects':
+      case 'diaries':
+        return this.canDuplicate(this.selectedRow);
+      default:
+        return false;
+    }
+  }
+
+  runDetailPrimaryAction(): void {
+    if (!this.selectedRow) return;
+    switch (this.resource) {
+      case 'documents':
+        this.openExternalUrl(this.selectedRow.file_url);
+        return;
+      case 'users':
+        this.openExternalUrl(`mailto:${this.selectedRow.email}`);
+        return;
+      case 'projects':
+      case 'diaries':
+        this.openEditDialog(this.selectedRow);
+        return;
+    }
+  }
+
+  runDetailSecondaryAction(): void {
+    if (!this.selectedRow) return;
+    switch (this.resource) {
+      case 'documents':
+        void this.copyToClipboard(this.selectedRow.file_url, 'Link copiado', 'O link do arquivo foi copiado.');
+        return;
+      case 'users':
+        void this.copyToClipboard(this.selectedRow.phone || this.selectedRow.email, 'Contato copiado', 'O contato do usuário foi copiado.');
+        return;
+      case 'projects':
+      case 'diaries':
+        this.openDuplicateDialog(this.selectedRow);
+        return;
+    }
+  }
+
   detailEyebrow(): string {
     switch (this.resource) {
       case 'projects':
@@ -2042,6 +2134,27 @@ export class AdminResourcePageComponent {
 
   private flushView(): void {
     queueMicrotask(() => this.cdr.detectChanges());
+  }
+
+  private openExternalUrl(url?: string): void {
+    if (!url) {
+      this.pushToast('error', 'Link indisponível', 'Não há um link válido para abrir neste registro.');
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  private async copyToClipboard(value: string | undefined, title: string, message: string): Promise<void> {
+    if (!value) {
+      this.pushToast('error', 'Cópia indisponível', 'Não há conteúdo válido para copiar neste registro.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(String(value));
+      this.pushToast('success', title, message);
+    } catch {
+      this.pushToast('error', 'Falha ao copiar', 'Não foi possível copiar o conteúdo deste registro.');
+    }
   }
 }
 
