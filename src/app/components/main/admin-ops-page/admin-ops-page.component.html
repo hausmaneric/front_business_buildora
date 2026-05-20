@@ -42,6 +42,21 @@
             <p>{{ totalRowsLabel() }}</p>
           </div>
 
+          @if (quickFilters.length) {
+            <div class="ops-quick-filters">
+              @for (filter of quickFilters; track filter.id) {
+                <button
+                  type="button"
+                  class="ops-chip"
+                  [class.active]="isActiveQuickFilter(filter.id)"
+                  (click)="applyQuickFilter(filter.id)">
+                  <span>{{ filter.label }}</span>
+                  <strong>{{ filter.count }}</strong>
+                </button>
+              }
+            </div>
+          }
+
           <div class="ops-grid-toolbar">
             <div class="ops-grid-search">
               <ejs-textbox

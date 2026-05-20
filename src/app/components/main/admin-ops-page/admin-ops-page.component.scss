@@ -126,9 +126,9 @@
 }
 
 .ops-grid-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(220px, auto) 1fr minmax(280px, 360px);
+  align-items: start;
   gap: 16px;
   margin-bottom: 16px;
 }
@@ -154,12 +154,71 @@
 
 .ops-grid-toolbar {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .ops-grid-search {
-  width: min(360px, 100%);
+  width: 100%;
+}
+
+.ops-quick-filters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ops-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(248, 250, 252, 0.92);
+  color: #475569;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.ops-chip span {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.ops-chip strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.95);
+  color: #0f172a;
+  font-size: 0.8rem;
+}
+
+.ops-chip:hover {
+  border-color: rgba(16, 185, 129, 0.28);
+  background: rgba(236, 253, 245, 0.88);
+  color: #059669;
+}
+
+.ops-chip.active {
+  border-color: rgba(16, 185, 129, 0.24);
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.98) 0%, rgba(220, 252, 231, 0.96) 100%);
+  color: #047857;
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.12);
+}
+
+.ops-chip.active strong {
+  background: rgba(16, 185, 129, 0.14);
+  color: #047857;
 }
 
 .ops-grid-shell {
@@ -405,11 +464,18 @@
 }
 
 @media (max-width: 860px) {
-  .ops-grid-header,
+  .ops-grid-header {
+    grid-template-columns: 1fr;
+  }
+
   .ops-grid-toolbar,
   .ops-state {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .ops-quick-filters {
+    justify-content: flex-start;
   }
 
   .ops-grid-search {

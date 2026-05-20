@@ -55,6 +55,12 @@ interface SnapshotPayload {
   members: any;
 }
 
+interface OpsQuickFilterChip {
+  id: string;
+  label: string;
+  count: number;
+}
+
 @Component({
   selector: 'app-admin-ops-page',
   standalone: true,
@@ -73,6 +79,8 @@ export class AdminOpsPageComponent {
   filteredRows: any[] = [];
   columns: Array<{ field: string; headerText: string; width?: number; type?: 'badge' }> = [];
   panels: Array<{ title: string; lines: string[] }> = [];
+  quickFilters: OpsQuickFilterChip[] = [];
+  activeQuickFilter = 'all';
   searchTerm = '';
   selectedRow: any = null;
 
@@ -124,6 +132,15 @@ export class AdminOpsPageComponent {
   onSearch(term: string): void {
     this.searchTerm = term ?? '';
     this.applyFilter();
+  }
+
+  applyQuickFilter(filterId: string): void {
+    this.activeQuickFilter = filterId;
+    this.applyFilter();
+  }
+
+  isActiveQuickFilter(filterId: string): boolean {
+    return this.activeQuickFilter === filterId;
   }
 
   totalRowsLabel(): string {
@@ -452,6 +469,8 @@ export class AdminOpsPageComponent {
     this.filteredRows = [];
     this.columns = [];
     this.panels = [];
+    this.quickFilters = [];
+    this.activeQuickFilter = 'all';
 
     switch (this.resource) {
       case 'reports':
@@ -568,6 +587,13 @@ export class AdminOpsPageComponent {
       { field: 'prazo', headerText: 'Prazo', width: 140 },
       { field: 'situacao', headerText: 'Situação', width: 160, type: 'badge' }
     ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Com aprovação'],
+      ['pending', 'Pendentes'],
+      ['attention', 'Com atenção']
+    ]);
 
     this.panels = [
       {
@@ -694,6 +720,13 @@ export class AdminOpsPageComponent {
       { field: 'valor', headerText: 'Valor atual', width: 320 },
       { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
     ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['configured', 'Configurados'],
+      ['pending', 'Pendentes'],
+      ['attention', 'Atenção']
+    ]);
 
     this.panels = [
       {
@@ -848,6 +881,13 @@ export class AdminOpsPageComponent {
       { field: 'disponibilidade', headerText: 'Disponibilidade', width: 170, type: 'badge' }
     ];
 
+    this.buildQuickFilters([
+      ['all', 'Todas'],
+      ['available', 'Disponíveis'],
+      ['pending', 'Pendentes'],
+      ['large', 'Arquivos grandes']
+    ]);
+
     this.panels = [
       {
         title: 'Galeria operacional',
@@ -919,6 +959,13 @@ export class AdminOpsPageComponent {
       { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
     ];
 
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['critical', 'Clima crítico'],
+      ['stable', 'Estáveis'],
+      ['attention', 'Atenção']
+    ]);
+
     this.panels = [
       {
         title: 'Leitura climática',
@@ -989,6 +1036,13 @@ export class AdminOpsPageComponent {
       { field: 'assinatura', headerText: 'Fluxo de assinatura', width: 200, type: 'badge' },
       { field: 'bloqueio', headerText: 'Bloqueio atual', width: 180, type: 'badge' }
     ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Aprovados'],
+      ['pending', 'Pendentes'],
+      ['blocked', 'Bloqueados']
+    ]);
 
     this.panels = [
       {
@@ -1499,15 +1553,71 @@ export class AdminOpsPageComponent {
     ];
   }
 
+  private buildQuickFilters(filters: Array<[string, string]>): void {
+    this.quickFilters = filters.map(([id, label]) => ({
+      id,
+      label,
+      count: this.countQuickFilter(id)
+    }));
+  }
+
+  private countQuickFilter(filterId: string): number {
+    if (filterId === 'all') {
+      return this.rows.length;
+    }
+
+    return this.rows.filter((row) => this.matchesQuickFilter(row, filterId)).length;
+  }
+
+  private matchesQuickFilter(row: any, filterId: string): boolean {
+    if (filterId === 'all') {
+      return true;
+    }
+
+    const status = String(row?.status || row?.situacao || '').toLowerCase();
+    const approval = String(row?.aprovacao || '').toLowerCase();
+    const availability = String(row?.disponibilidade || '').toLowerCase();
+    const size = String(row?.tamanho || '').toLowerCase();
+    const value = String(row?.valor || '').toLowerCase();
+    const pdf = String(row?.pdf || '').toLowerCase();
+    const signature = String(row?.assinatura || '').toLowerCase();
+    const blockage = String(row?.bloqueio || '').toLowerCase();
+    const weather = String(row?.clima || '').toLowerCase();
+
+    switch (filterId) {
+      case 'approved':
+        return status.includes('aprov') || approval.includes('sim') || signature.includes('conclu');
+      case 'pending':
+        return status.includes('pend') || status.includes('aguard') || availability.includes('pend') || pdf.includes('aguard');
+      case 'attention':
+        return status.includes('aten') || status.includes('alert') || status.includes('crít') || status.includes('crit');
+      case 'configured':
+        return !(value.includes('não informado') || value.includes('nao informado') || value.includes('logo pendente') || status.includes('pend'));
+      case 'available':
+        return availability.includes('dispon');
+      case 'large':
+        return size.includes('mb') || size.includes('gb');
+      case 'critical':
+        return weather.includes('chuva') || weather.includes('tempestade') || weather.includes('vento') || status.includes('aten');
+      case 'stable':
+        return status.includes('estável') || status.includes('estavel') || status.includes('ok') || status.includes('normal');
+      case 'blocked':
+        return blockage.includes('bloque') || status.includes('bloque');
+      default:
+        return true;
+    }
+  }
+
   private applyFilter(): void {
     const term = this.searchTerm.trim().toLowerCase();
+    const quickFiltered = this.rows.filter((row) => this.matchesQuickFilter(row, this.activeQuickFilter));
     if (!term) {
-      this.filteredRows = [...this.rows];
+      this.filteredRows = [...quickFiltered];
       this.syncSelection();
       return;
     }
 
-    this.filteredRows = this.rows.filter((row) =>
+    this.filteredRows = quickFiltered.filter((row) =>
       Object.values(row).some((value) => String(value ?? '').toLowerCase().includes(term))
     );
     this.syncSelection();
