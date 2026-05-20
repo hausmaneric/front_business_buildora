@@ -347,22 +347,70 @@ export class AdminOpsPageComponent {
       }
     ];
 
-    this.rows = users.map((user) => ({
-      usuario: user.name,
-      email: user.email,
-      empresa: company?.fantasy_name || company?.corporate_name || 'Tenant principal',
-      perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usuário',
-      telefone: user.phone || 'Não informado',
-      situacao: this.toBoolean(user.active) ? 'Ativo' : 'Inativo'
-    }));
+    const settingsRows = [
+      {
+        grupo: 'Empresa',
+        configuracao: 'Nome fantasia',
+        valor: company?.fantasy_name || company?.corporate_name || 'Não informado',
+        situacao: company?.fantasy_name || company?.corporate_name ? 'Configurado' : 'Pendente'
+      },
+      {
+        grupo: 'Empresa',
+        configuracao: 'Documento',
+        valor: company?.document || 'Não informado',
+        situacao: company?.document ? 'Configurado' : 'Pendente'
+      },
+      {
+        grupo: 'Contato',
+        configuracao: 'E-mail principal',
+        valor: company?.email || 'Não informado',
+        situacao: company?.email ? 'Configurado' : 'Pendente'
+      },
+      {
+        grupo: 'Contato',
+        configuracao: 'Telefone principal',
+        valor: company?.phone || 'Não informado',
+        situacao: company?.phone ? 'Configurado' : 'Pendente'
+      },
+      {
+        grupo: 'Governança',
+        configuracao: 'Perfis ativos',
+        valor: `${roles.length} perfil${roles.length === 1 ? '' : 'is'}`,
+        situacao: roles.length ? 'Configurado' : 'Pendente'
+      },
+      {
+        grupo: 'Governança',
+        configuracao: 'Usuários ativos',
+        valor: `${users.filter((item) => this.toBoolean(item.active)).length}`,
+        situacao: users.some((item) => this.toBoolean(item.active)) ? 'Operacional' : 'Atenção'
+      },
+      {
+        grupo: 'Operação',
+        configuracao: 'Equipes vinculadas',
+        valor: `${teams.length}`,
+        situacao: teams.length ? 'Operacional' : 'Atenção'
+      },
+      {
+        grupo: 'Operação',
+        configuracao: 'Obras vinculadas',
+        valor: `${projects.length}`,
+        situacao: projects.length ? 'Operacional' : 'Atenção'
+      },
+      {
+        grupo: 'Identidade',
+        configuracao: 'Logo e branding',
+        valor: company?.logo_url ? 'Logo cadastrada' : 'Logo pendente',
+        situacao: company?.logo_url ? 'Configurado' : 'Pendente'
+      }
+    ];
+
+    this.rows = settingsRows;
 
     this.columns = [
-      { field: 'usuario', headerText: 'Usuário', width: 220 },
-      { field: 'email', headerText: 'E-mail', width: 280 },
-      { field: 'empresa', headerText: 'Empresa', width: 220 },
-      { field: 'perfil', headerText: 'Perfil', width: 180 },
-      { field: 'telefone', headerText: 'Telefone', width: 160 },
-      { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
+      { field: 'grupo', headerText: 'Grupo', width: 160 },
+      { field: 'configuracao', headerText: 'Configuração', width: 240 },
+      { field: 'valor', headerText: 'Valor atual', width: 320 },
+      { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
     ];
 
     this.panels = [
@@ -392,6 +440,13 @@ export class AdminOpsPageComponent {
           `${teams.length} equipes estão vinculadas ao tenant`,
           `${users.filter((item) => this.toBoolean(item.active)).length} usuários ativos podem refletir mudanças de configuração`
         ]
+      },
+      {
+        title: 'Prioridades de ajuste',
+        lines: settingsRows
+          .filter((row) => row.situacao === 'Pendente' || row.situacao === 'Atenção')
+          .slice(0, 4)
+          .map((row) => `${row.grupo} • ${row.configuracao} • ${row.valor}`)
       }
     ];
   }
@@ -473,12 +528,13 @@ export class AdminOpsPageComponent {
     const documents = this.items<BusinessDocument>(payload.documents?.data);
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
     const imageDocs = documents.filter((doc) => this.isImage(doc.file_name, doc.file_type, doc.file_url));
+    const totalImageBytes = imageDocs.reduce((sum, item) => sum + Number(item.file_size_bytes || 0), 0);
 
     this.cards = [
       { label: 'Fotos localizadas', value: `${imageDocs.length}`, detail: 'Arquivos com tipo de imagem' },
       { label: 'Diários com foto', value: `${new Set(imageDocs.map((item) => item.daily_log_id)).size}`, detail: 'Base para galeria por diário', tone: 'success' },
       { label: 'Obras com foto', value: `${new Set(imageDocs.map((item) => this.diaryProjectId(diaries, item.daily_log_id))).size}`, detail: 'Cobertura visual das obras' },
-      { label: 'Último upload', value: imageDocs[0] ? this.formatDate(imageDocs[0].created_at) : '-', detail: 'Data mais recente encontrada' }
+      { label: 'Volume em fotos', value: this.formatFileSize(totalImageBytes), detail: 'Armazenamento visual ocupado' }
     ];
 
     this.rows = imageDocs.map((doc) => {
@@ -489,7 +545,7 @@ export class AdminOpsPageComponent {
         obra: this.projectName(payload, diary?.project_id),
         tipo: this.labelize(doc.file_type || 'Imagem'),
         tamanho: this.formatFileSize(doc.file_size_bytes),
-        link: doc.file_url || 'Sem link'
+        disponibilidade: doc.file_url ? 'Disponível' : 'Pendente'
       };
     });
 
@@ -499,7 +555,7 @@ export class AdminOpsPageComponent {
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'tipo', headerText: 'Tipo', width: 140 },
       { field: 'tamanho', headerText: 'Tamanho', width: 140 },
-      { field: 'link', headerText: 'Link', width: 260 }
+      { field: 'disponibilidade', headerText: 'Disponibilidade', width: 170, type: 'badge' }
     ];
 
     this.panels = [
@@ -516,6 +572,20 @@ export class AdminOpsPageComponent {
         lines: this.rows
           .slice(0, 5)
           .map((row) => `${row.obra} • ${row.arquivo} • ${row.tamanho}`)
+      },
+      {
+        title: 'Cobertura visual por obra',
+        lines: Array.from(
+          imageDocs.reduce((map, doc) => {
+            const diary = diaries.find((item) => Number(item.id) === Number(doc.daily_log_id));
+            const projectName = this.projectName(payload, diary?.project_id);
+            map.set(projectName, (map.get(projectName) || 0) + 1);
+            return map;
+          }, new Map<string, number>()).entries()
+        )
+          .sort((left, right) => right[1] - left[1])
+          .slice(0, 4)
+          .map(([project, count]) => `${project} • ${count} foto${count > 1 ? 's' : ''}`)
       }
     ];
   }
@@ -596,7 +666,13 @@ export class AdminOpsPageComponent {
       obra: this.projectName(payload, diary.project_id),
       status: this.diaryStatus(diary.status),
       responsavel: this.userName(payload, diary.created_by),
-      assinatura: this.signatureStage(this.diaryStatus(diary.status))
+      assinatura: this.signatureStage(this.diaryStatus(diary.status)),
+      bloqueio:
+        this.diaryStatus(diary.status) === 'Reprovado'
+          ? 'Correção necessária'
+          : this.diaryStatus(diary.status) === 'Pendente'
+            ? 'Aguardando validação'
+            : 'Liberado'
     }));
 
     this.columns = [
@@ -604,7 +680,8 @@ export class AdminOpsPageComponent {
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'status', headerText: 'Status do diário', width: 160, type: 'badge' },
       { field: 'responsavel', headerText: 'Responsável', width: 220 },
-      { field: 'assinatura', headerText: 'Fluxo de assinatura', width: 200, type: 'badge' }
+      { field: 'assinatura', headerText: 'Fluxo de assinatura', width: 200, type: 'badge' },
+      { field: 'bloqueio', headerText: 'Bloqueio atual', width: 180, type: 'badge' }
     ];
 
     this.panels = [
@@ -629,6 +706,13 @@ export class AdminOpsPageComponent {
           .filter((row) => row.status === 'Aprovado')
           .slice(0, 4)
           .map((row) => `${row.obra} • ${row.data} • ${row.responsavel}`)
+      },
+      {
+        title: 'Bloqueios atuais',
+        lines: this.rows
+          .filter((row) => row.bloqueio !== 'Liberado')
+          .slice(0, 5)
+          .map((row) => `${row.obra} • ${row.data} • ${row.bloqueio}`)
       }
     ];
   }
