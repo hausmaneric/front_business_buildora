@@ -297,6 +297,14 @@ export class AdminOpsPageComponent {
         ]
       },
       {
+        title: 'Obras com maior volume operacional',
+        lines: this.rows
+          .slice()
+          .sort((left, right) => Number(right.diarios || 0) - Number(left.diarios || 0))
+          .slice(0, 4)
+          .map((row) => `${row.obra} • ${row.diarios} diários • ${row.ocorrencias} ocorrências`)
+      },
+      {
         title: 'Leituras úteis',
         lines: [
           approvedDiaries ? `${approvedDiaries} diários já podem virar material de fechamento mensal` : 'Ainda não há diários aprovados para fechamento',
@@ -376,6 +384,14 @@ export class AdminOpsPageComponent {
               'Use esta base para alinhar comunicação, acesso e branding do tenant.'
             ]
           : ['Nenhum perfil retornado pela API tenant.']
+      },
+      {
+        title: 'Cobertura operacional',
+        lines: [
+          `${projects.length} obras usam esta empresa como base operacional`,
+          `${teams.length} equipes estão vinculadas ao tenant`,
+          `${users.filter((item) => this.toBoolean(item.active)).length} usuários ativos podem refletir mudanças de configuração`
+        ]
       }
     ];
   }
@@ -494,6 +510,12 @@ export class AdminOpsPageComponent {
           'A base atual permite consulta por obra, diário e data de registro.',
           'A próxima evolução natural é preview, organização por álbum e upload dedicado.'
         ]
+      },
+      {
+        title: 'Últimos registros visuais',
+        lines: this.rows
+          .slice(0, 5)
+          .map((row) => `${row.obra} • ${row.arquivo} • ${row.tamanho}`)
       }
     ];
   }
@@ -534,8 +556,23 @@ export class AdminOpsPageComponent {
         title: 'Leitura climática',
         lines: [
           'O clima informado nos diários já pode ser consolidado por obra e data.',
-          'Climas críticos s?o marcados para apoiar produtividade e seguran?a.',
-          'Esta base tamb?m alimenta relatórios e leitura de risco de prazo.'
+          'Climas críticos são marcados para apoiar produtividade e segurança.',
+          'Esta base também alimenta relatórios e leitura de risco de prazo.'
+        ]
+      },
+      {
+        title: 'Condições mais recorrentes',
+        lines: Array.from(weatherGroups.entries())
+          .sort((left, right) => right[1] - left[1])
+          .slice(0, 4)
+          .map(([weather, count]) => `${weather} • ${count} diário${count > 1 ? 's' : ''}`)
+      },
+      {
+        title: 'Impacto operacional',
+        lines: [
+          `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length} diários exigem atenção de clima`,
+          `${weatherGroups.size} variações climáticas já podem alimentar análises mensais`,
+          'Use a leitura climática para cruzar produtividade, atraso e segurança'
         ]
       }
     ];
@@ -558,7 +595,7 @@ export class AdminOpsPageComponent {
       data: this.formatDate(diary.work_date),
       obra: this.projectName(payload, diary.project_id),
       status: this.diaryStatus(diary.status),
-      responsavel: `Usuário #${diary.created_by || '-'}`,
+      responsavel: this.userName(payload, diary.created_by),
       assinatura: this.signatureStage(this.diaryStatus(diary.status))
     }));
 
@@ -566,7 +603,7 @@ export class AdminOpsPageComponent {
       { field: 'data', headerText: 'Data', width: 140 },
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'status', headerText: 'Status do diário', width: 160, type: 'badge' },
-      { field: 'responsavel', headerText: 'Respons?vel', width: 180 },
+      { field: 'responsavel', headerText: 'Responsável', width: 220 },
       { field: 'assinatura', headerText: 'Fluxo de assinatura', width: 200, type: 'badge' }
     ];
 
@@ -576,8 +613,22 @@ export class AdminOpsPageComponent {
         lines: [
           'A aprovação do diário já representa o estágio operacional da assinatura.',
           'Pendências e reprovações alimentam a fila de revisão do responsável.',
-          'A base est? pronta para evoluir para assinatura digital formal.'
+          'A base está pronta para evoluir para assinatura digital formal.'
         ]
+      },
+      {
+        title: 'Fila de aprovação',
+        lines: this.rows
+          .filter((row) => row.status === 'Pendente' || row.status === 'Reprovado')
+          .slice(0, 5)
+          .map((row) => `${row.obra} • ${row.data} • ${row.assinatura}`)
+      },
+      {
+        title: 'Diários prontos para assinatura',
+        lines: this.rows
+          .filter((row) => row.status === 'Aprovado')
+          .slice(0, 4)
+          .map((row) => `${row.obra} • ${row.data} • ${row.responsavel}`)
       }
     ];
   }
@@ -1058,6 +1109,14 @@ export class AdminOpsPageComponent {
     }
     const projects = this.items<BusinessProject>(payload.projects?.data);
     return projects.find((item) => Number(item.id) === Number(projectId))?.name || `Obra #${projectId}`;
+  }
+
+  private userName(payload: SnapshotPayload, userId?: number | null): string {
+    if (!userId) {
+      return 'Sem responsável definido';
+    }
+    const users = this.items<BusinessUser>(payload.users?.data);
+    return users.find((item) => Number(item.id) === Number(userId))?.name || `Usuário #${userId}`;
   }
 
   private diaryProjectId(diaries: BusinessDiary[], dailyLogId?: number | null): number | null {
