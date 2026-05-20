@@ -729,6 +729,14 @@ export class AdminOpsPageComponent {
           .filter((row) => row.situacao === 'Pendente' || row.situacao === 'Atenção')
           .slice(0, 4)
           .map((row) => `${row.grupo} • ${row.configuracao} • ${row.valor}`)
+      },
+      {
+        title: 'Base pronta para homologação',
+        lines: [
+          `${roles.length} perfis sustentam a governança operacional atual`,
+          `${projects.length} obras e ${teams.length} equipes dependem dessas configurações`,
+          'Priorize identidade visual, contato e regras de governança antes de expandir acessos'
+        ]
       }
     ];
   }
@@ -1017,6 +1025,14 @@ export class AdminOpsPageComponent {
         lines: this.rows
           .slice(0, 5)
           .map((row) => `${row.obra} • ${row.responsavel} • ${row.assinatura}`)
+      },
+      {
+        title: 'Leitura de maturidade',
+        lines: [
+          `${approved} diários já atingiram o estágio ideal para assinatura formal`,
+          `${pending} registros ainda exigem validação antes de liberar a próxima etapa`,
+          'Esta base já suporta a evolução para assinatura digital e trilha de auditoria'
+        ]
       }
     ];
   }
@@ -1318,6 +1334,14 @@ export class AdminOpsPageComponent {
           'Diários aprovados já estão no melhor estágio para virar PDF automaticamente.',
           'Os anexos existentes aumentam a qualidade do fechamento enviado por e-mail.',
           'A próxima evolução é agendamento por obra, responsável e período.'
+        ]
+      },
+      {
+        title: 'Prontidão para envio',
+        lines: [
+          `${reportsBase.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length} diários já podem compor fechamento automático`,
+          `${documents.length} anexos enriquecem o conteúdo enviado`,
+          `${new Set(reportsBase.map((item) => item.project_id)).size} obras já têm base para rotinas mensais`
         ]
       }
     ];

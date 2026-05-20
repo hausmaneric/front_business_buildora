@@ -594,10 +594,10 @@ export class AdminResourcePageComponent {
         ];
       case 'documents':
         return [
+          { label: 'Arquivo', value: this.selectedRow.file_name || '-' },
           { label: 'Tipo', value: this.selectedRow.fileTypeDisplay || '-' },
           { label: 'Tamanho', value: this.selectedRow.fileSizeDisplay || '-' },
-          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' },
-          { label: 'Link', value: this.selectedRow.urlDisplay || '-' }
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' }
         ];
       default:
         return [];
@@ -667,7 +667,8 @@ export class AdminResourcePageComponent {
           `Arquivo registrado: ${this.selectedRow.file_name || 'Não informado'}`,
           `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
           `URL disponível: ${this.selectedRow.urlDisplay || 'Sem link'}`,
-          `Vínculo operacional: ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`
+          `Vínculo operacional: ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`,
+          `Tipo documental: ${this.selectedRow.fileTypeDisplay || 'Não informado'}`
         ];
       default:
         return [];
