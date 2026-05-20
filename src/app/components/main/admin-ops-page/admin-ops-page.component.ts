@@ -217,15 +217,15 @@ export class AdminOpsPageComponent {
       case 'reports':
         return 'Base consolidada para acompanhamento, fechamento e indicadores.';
       case 'settings':
-        return 'Use este registro para revisar governança, branding e operação do tenant.';
+        return 'Use este registro para revisar governança, branding, identidade e operação do tenant.';
       case 'permissions':
         return 'Visibilidade, edição e aprovação concentradas em um único ponto.';
       case 'photos':
-        return 'Cobertura visual por diário, obra e tipo de arquivo.';
+        return 'Cobertura visual por diário, obra, disponibilidade e tipo de arquivo.';
       case 'climate':
-        return 'Leitura de clima para produtividade, prazo e segurança.';
+        return 'Leitura de clima para produtividade, prazo, risco e segurança.';
       case 'signatures':
-        return 'Estado atual do aceite operacional e do bloqueio de assinatura.';
+        return 'Estado atual do aceite operacional, validação e bloqueio de assinatura.';
       case 'schedule':
         return 'Marco de cronograma usado para leitura de prazo e avanço da obra.';
       case 'measurements':
@@ -269,13 +269,15 @@ export class AdminOpsPageComponent {
         return [
           { label: 'Código', value: row.codigo || '-' },
           { label: 'Prazo', value: row.prazo || '-' },
-          { label: 'Situação', value: row.situacao || '-' }
+          { label: 'Situação', value: row.situacao || '-' },
+          { label: 'Obra', value: row.obra || '-' }
         ];
       case 'settings':
         return [
           { label: 'Grupo', value: row.grupo || '-' },
           { label: 'Valor', value: row.valor || '-' },
-          { label: 'Situação', value: row.situacao || '-' }
+          { label: 'Situação', value: row.situacao || '-' },
+          { label: 'Configuração', value: row.configuracao || '-' }
         ];
       case 'permissions':
         return [
@@ -287,19 +289,22 @@ export class AdminOpsPageComponent {
         return [
           { label: 'Obra', value: row.obra || '-' },
           { label: 'Diário', value: row.diario || '-' },
-          { label: 'Tamanho', value: row.tamanho || '-' }
+          { label: 'Tamanho', value: row.tamanho || '-' },
+          { label: 'Disponibilidade', value: row.disponibilidade || '-' }
         ];
       case 'climate':
         return [
           { label: 'Obra', value: row.obra || '-' },
           { label: 'Clima', value: row.clima || '-' },
-          { label: 'Situação', value: row.situacao || '-' }
+          { label: 'Situação', value: row.situacao || '-' },
+          { label: 'Data', value: row.data || '-' }
         ];
       case 'signatures':
         return [
           { label: 'Responsável', value: row.responsavel || '-' },
           { label: 'Fluxo', value: row.assinatura || '-' },
-          { label: 'Bloqueio', value: row.bloqueio || '-' }
+          { label: 'Bloqueio', value: row.bloqueio || '-' },
+          { label: 'Status do diário', value: row.status || '-' }
         ];
       case 'schedule':
         return [
@@ -402,6 +407,12 @@ export class AdminOpsPageComponent {
     if (row.obra && row.data && (this.resource === 'climate' || this.resource === 'signatures' || this.resource === 'approval-flow')) {
       notes.push(`Registro vinculado à obra ${row.obra} em ${row.data}.`);
     }
+    if (this.resource === 'reports' && row.obra) notes.push(`Fechamento consolidado para a obra ${row.obra}.`);
+    if (this.resource === 'settings' && row.configuracao) notes.push(`Configuração tratada: ${row.configuracao}.`);
+    if (this.resource === 'photos' && row.arquivo) notes.push(`Arquivo visual registrado: ${row.arquivo}.`);
+    if (this.resource === 'photos' && row.obra) notes.push(`Cobertura visual vinculada à obra ${row.obra}.`);
+    if (this.resource === 'climate' && row.clima) notes.push(`Condição climática observada: ${row.clima}.`);
+    if (this.resource === 'signatures' && row.responsavel) notes.push(`Responsável atual pelo fluxo: ${row.responsavel}.`);
 
     return notes.length ? notes : ['Registro pronto para acompanhamento operacional.'];
   }
@@ -857,6 +868,14 @@ export class AdminOpsPageComponent {
           .sort((left, right) => right[1] - left[1])
           .slice(0, 4)
           .map(([project, count]) => `${project} • ${count} foto${count > 1 ? 's' : ''}`)
+      },
+      {
+        title: 'Disponibilidade dos arquivos',
+        lines: [
+          `${imageDocs.filter((item) => !!item.file_url).length} fotos já estão com link disponível`,
+          `${imageDocs.filter((item) => !item.file_url).length} registros ainda exigem publicação ou vínculo`,
+          `${new Set(imageDocs.map((item) => item.daily_log_id)).size} diários já contam com cobertura visual`
+        ]
       }
     ];
   }
@@ -914,6 +933,14 @@ export class AdminOpsPageComponent {
           `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length} diários exigem atenção de clima`,
           `${weatherGroups.size} variações climáticas já podem alimentar análises mensais`,
           'Use a leitura climática para cruzar produtividade, atraso e segurança'
+        ]
+      },
+      {
+        title: 'Janelas de operação',
+        lines: [
+          `${diaries.filter((item) => !this.isCriticalWeather(item.weather)).length} diários estão em condição operacional estável`,
+          `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length} registros podem impactar prazo e produtividade`,
+          'Cruze essa base com ocorrências e atividades para antecipar desvios'
         ]
       }
     ];
@@ -984,6 +1011,12 @@ export class AdminOpsPageComponent {
           .filter((row) => row.bloqueio !== 'Liberado')
           .slice(0, 5)
           .map((row) => `${row.obra} • ${row.data} • ${row.bloqueio}`)
+      },
+      {
+        title: 'Responsáveis no fluxo',
+        lines: this.rows
+          .slice(0, 5)
+          .map((row) => `${row.obra} • ${row.responsavel} • ${row.assinatura}`)
       }
     ];
   }
