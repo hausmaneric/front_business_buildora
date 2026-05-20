@@ -71,7 +71,7 @@
               </thead>
               <tbody>
                 @for (row of filteredRows; track $index) {
-                  <tr>
+                  <tr [class.selected-row]="isSelectedRow(row)" (click)="selectRow(row)">
                     @for (column of columns; track column.field) {
                       <td [title]="row?.[column.field] ?? ''">
                         @if (isBadgeField(column)) {
@@ -100,6 +100,31 @@
           </div>
         }
       </article>
+
+      @if (showDetailPanel()) {
+        <article class="ops-detail orb-card">
+          <div class="ops-detail-copy">
+            <span class="ops-eyebrow">{{ detailEyebrow() }}</span>
+            <h4>{{ detailTitle() }}</h4>
+            <p>{{ detailSubtitle() }}</p>
+          </div>
+
+          <div class="ops-detail-highlights">
+            @for (highlight of detailHighlights(); track highlight.label) {
+              <article class="ops-detail-highlight">
+                <span>{{ highlight.label }}</span>
+                <strong>{{ highlight.value }}</strong>
+              </article>
+            }
+          </div>
+
+          <div class="ops-detail-notes">
+            @for (note of detailNotes(); track note) {
+              <div class="ops-detail-note">{{ note }}</div>
+            }
+          </div>
+        </article>
+      }
     }
 
     @if (panels.length) {

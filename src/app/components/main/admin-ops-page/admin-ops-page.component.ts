@@ -74,6 +74,7 @@ export class AdminOpsPageComponent {
   columns: Array<{ field: string; headerText: string; width?: number; type?: 'badge' }> = [];
   panels: Array<{ title: string; lines: string[] }> = [];
   searchTerm = '';
+  selectedRow: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -133,6 +134,276 @@ export class AdminOpsPageComponent {
 
   totalRowsMinWidth(): number {
     return this.columns.reduce((sum, column) => sum + Number(column.width || 180), 0);
+  }
+
+  selectRow(row: any): void {
+    this.selectedRow = row;
+    this.flushView();
+  }
+
+  isSelectedRow(row: any): boolean {
+    return this.trackRow(this.selectedRow) === this.trackRow(row);
+  }
+
+  showDetailPanel(): boolean {
+    return !!this.selectedRow;
+  }
+
+  detailEyebrow(): string {
+    switch (this.resource) {
+      case 'reports':
+        return 'Leitura consolidada';
+      case 'settings':
+        return 'Configuração selecionada';
+      case 'permissions':
+        return 'Permissão selecionada';
+      case 'photos':
+        return 'Registro visual';
+      case 'climate':
+        return 'Leitura climática';
+      case 'signatures':
+        return 'Assinatura selecionada';
+      case 'schedule':
+        return 'Marco do cronograma';
+      case 'measurements':
+        return 'Medição consolidada';
+      case 'budget':
+        return 'Planejamento orçamentário';
+      case 'finance':
+        return 'Leitura financeira';
+      case 'safety':
+        return 'Item de segurança';
+      case 'epi':
+        return 'Cobertura de EPI';
+      case 'whatsapp':
+        return 'Contato operacional';
+      case 'approval-flow':
+        return 'Fluxo de aprovação';
+      case 'pdf-automation':
+        return 'Automação PDF';
+      case 'bi':
+        return 'Indicador gerencial';
+      case 'map':
+        return 'Visão territorial';
+      case 'integrations':
+        return 'Conector previsto';
+      case 'digital-signature':
+        return 'Assinatura avançada';
+      default:
+        return 'Registro operacional';
+    }
+  }
+
+  detailTitle(): string {
+    if (!this.selectedRow) {
+      return '';
+    }
+
+    const candidates: Array<any> = [
+      this.selectedRow.obra,
+      this.selectedRow.configuracao,
+      this.selectedRow.usuario,
+      this.selectedRow.arquivo,
+      this.selectedRow.data,
+      this.selectedRow.titulo,
+      this.selectedRow.equipe
+    ];
+
+    return candidates.find((value) => !!value) || 'Registro operacional';
+  }
+
+  detailSubtitle(): string {
+    switch (this.resource) {
+      case 'reports':
+        return 'Base consolidada para acompanhamento, fechamento e indicadores.';
+      case 'settings':
+        return 'Use este registro para revisar governança, branding e operação do tenant.';
+      case 'permissions':
+        return 'Visibilidade, edição e aprovação concentradas em um único ponto.';
+      case 'photos':
+        return 'Cobertura visual por diário, obra e tipo de arquivo.';
+      case 'climate':
+        return 'Leitura de clima para produtividade, prazo e segurança.';
+      case 'signatures':
+        return 'Estado atual do aceite operacional e do bloqueio de assinatura.';
+      case 'schedule':
+        return 'Marco de cronograma usado para leitura de prazo e avanço da obra.';
+      case 'measurements':
+        return 'Consolidação de quantitativos lançados por obra e diário.';
+      case 'budget':
+        return 'Referência para evolução de orçamento x execução da obra.';
+      case 'finance':
+        return 'Leitura rápida de orçamento, custo projetado e saldo.';
+      case 'safety':
+        return 'Acompanhamento de risco, gravidade e situação operacional.';
+      case 'epi':
+        return 'Cobertura de proteção por equipe e frente de obra.';
+      case 'whatsapp':
+        return 'Base de comunicação operacional e disponibilidade de contato.';
+      case 'approval-flow':
+        return 'Etapa atual de aprovação vinculada ao diário e à obra.';
+      case 'pdf-automation':
+        return 'Estado de automação para geração e envio de PDF.';
+      case 'bi':
+        return 'Indicador consolidado para leitura gerencial rápida.';
+      case 'map':
+        return 'Geolocalização e leitura territorial da carteira de obras.';
+      case 'integrations':
+        return 'Base disponível para evoluir integrações documentais e operacionais.';
+      case 'digital-signature':
+        return 'Preparação para trilha de auditoria e assinatura avançada.';
+      default:
+        return 'Registro operacional selecionado.';
+    }
+  }
+
+  detailHighlights(): Array<{ label: string; value: string }> {
+    if (!this.selectedRow) {
+      return [];
+    }
+
+    const row = this.selectedRow;
+
+    switch (this.resource) {
+      case 'reports':
+        return [
+          { label: 'Código', value: row.codigo || '-' },
+          { label: 'Prazo', value: row.prazo || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'settings':
+        return [
+          { label: 'Grupo', value: row.grupo || '-' },
+          { label: 'Valor', value: row.valor || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'permissions':
+        return [
+          { label: 'Perfil', value: row.perfil || '-' },
+          { label: 'Aprovação', value: row.aprovacao || '-' },
+          { label: 'Edição', value: row.edicao || '-' }
+        ];
+      case 'photos':
+        return [
+          { label: 'Obra', value: row.obra || '-' },
+          { label: 'Diário', value: row.diario || '-' },
+          { label: 'Tamanho', value: row.tamanho || '-' }
+        ];
+      case 'climate':
+        return [
+          { label: 'Obra', value: row.obra || '-' },
+          { label: 'Clima', value: row.clima || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'signatures':
+        return [
+          { label: 'Responsável', value: row.responsavel || '-' },
+          { label: 'Fluxo', value: row.assinatura || '-' },
+          { label: 'Bloqueio', value: row.bloqueio || '-' }
+        ];
+      case 'schedule':
+        return [
+          { label: 'Início', value: row.inicio || '-' },
+          { label: 'Fim', value: row.fim || '-' },
+          { label: 'Progresso', value: row.progresso || '-' }
+        ];
+      case 'measurements':
+        return [
+          { label: 'Quantidade', value: row.quantidade || '-' },
+          { label: 'Registros', value: row.registros || '-' },
+          { label: 'Situação', value: row.medicao || '-' }
+        ];
+      case 'budget':
+        return [
+          { label: 'Orçamento', value: row.orcamento || '-' },
+          { label: 'Materiais', value: row.materiais || '-' },
+          { label: 'Equipamentos', value: row.equipamentos || '-' }
+        ];
+      case 'finance':
+        return [
+          { label: 'Orçamento', value: row.orcamento || '-' },
+          { label: 'Custo', value: row.custo || '-' },
+          { label: 'Saldo', value: row.saldo || '-' }
+        ];
+      case 'safety':
+        return [
+          { label: 'Tipo', value: row.tipo || '-' },
+          { label: 'Gravidade', value: row.gravidade || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'epi':
+        return [
+          { label: 'Equipe', value: row.equipe || '-' },
+          { label: 'Obra', value: row.obra || '-' },
+          { label: 'Cobertura', value: row.cobertura || '-' }
+        ];
+      case 'whatsapp':
+        return [
+          { label: 'E-mail', value: row.email || '-' },
+          { label: 'Telefone', value: row.telefone || '-' },
+          { label: 'Canal', value: row.canal || '-' }
+        ];
+      case 'approval-flow':
+        return [
+          { label: 'Obra', value: row.obra || '-' },
+          { label: 'Etapa', value: row.fluxo || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'pdf-automation':
+        return [
+          { label: 'Status', value: row.status || '-' },
+          { label: 'PDF', value: row.pdf || '-' },
+          { label: 'Anexos', value: row.anexos || '-' }
+        ];
+      case 'bi':
+        return [
+          { label: 'Diários', value: row.diarios || '-' },
+          { label: 'Atividades', value: row.atividades || '-' },
+          { label: 'Produtividade', value: row.produtividade || '-' }
+        ];
+      case 'map':
+        return [
+          { label: 'Cidade', value: row.cidade || '-' },
+          { label: 'Coordenadas', value: row.coordenadas || '-' },
+          { label: 'Situação', value: row.situacao || '-' }
+        ];
+      case 'integrations':
+        return [
+          { label: 'Tipo', value: row.tipo || '-' },
+          { label: 'Link', value: row.link || '-' },
+          { label: 'Integração', value: row.integracao || '-' }
+        ];
+      case 'digital-signature':
+        return [
+          { label: 'Data', value: row.data || '-' },
+          { label: 'Assinatura', value: row.assinatura || '-' },
+          { label: 'Rastreio', value: row.rastreio || '-' }
+        ];
+      default:
+        return [];
+    }
+  }
+
+  detailNotes(): string[] {
+    if (!this.selectedRow) {
+      return [];
+    }
+
+    const row = this.selectedRow;
+    const notes: string[] = [];
+
+    if (row.resumo) notes.push(`Resumo: ${row.resumo}`);
+    if (row.valor && this.resource === 'settings') notes.push(`Valor atual: ${row.valor}`);
+    if (row.disponibilidade) notes.push(`Disponibilidade: ${row.disponibilidade}`);
+    if (row.situacao) notes.push(`Situação atual: ${row.situacao}`);
+    if (row.link) notes.push(`Link relacionado: ${row.link}`);
+    if (row.endereco) notes.push(`Endereço: ${row.endereco}`);
+    if (row.arquivo && row.tipo) notes.push(`Arquivo ${row.arquivo} classificado como ${row.tipo}.`);
+    if (row.obra && row.data && (this.resource === 'climate' || this.resource === 'signatures' || this.resource === 'approval-flow')) {
+      notes.push(`Registro vinculado à obra ${row.obra} em ${row.data}.`);
+    }
+
+    return notes.length ? notes : ['Registro pronto para acompanhamento operacional.'];
   }
 
   isBadgeField(column: { type?: string }): boolean {
@@ -751,7 +1022,7 @@ export class AdminOpsPageComponent {
       {
         title: 'Leitura do cronograma',
         lines: [
-          'As obras usam prazo cadastrado, diários e atividades para estimar avanão operacional.',
+          'As obras usam prazo cadastrado, diários e atividades para estimar avanço operacional.',
           'Os projetos com vencimento próximo devem entrar na rotina semanal da gestão.',
           'Esta base já sustenta a evolução para cronograma físico detalhado.'
         ]
@@ -1054,7 +1325,7 @@ export class AdminOpsPageComponent {
         title: 'Indicadores imediatos',
         lines: [
           'Esta visão cruza obras, diários, atividades e ocorrências para leitura gerencial rápida.',
-          'O próximo passo natural ? separar indicadores por per?odo, obra e responsável.',
+          'O próximo passo natural é separar indicadores por período, obra e responsável.',
           'A base atual já sustenta painéis executivos e comparativos entre obras.'
         ]
       }
@@ -1119,16 +1390,16 @@ export class AdminOpsPageComponent {
       { field: 'arquivo', headerText: 'Arquivo', width: 260 },
       { field: 'tipo', headerText: 'Tipo', width: 150 },
       { field: 'link', headerText: 'Link', width: 300 },
-      { field: 'integracao', headerText: 'Integra??o', width: 160, type: 'badge' }
+      { field: 'integracao', headerText: 'Integração', width: 160, type: 'badge' }
     ];
 
     this.panels = [
       {
         title: 'Conectores previstos',
         lines: [
-          'Documentos com URL já t?m a base necessária para integração documental.',
+          'Documentos com URL já têm a base necessária para integração documental.',
           'Google Drive e OneDrive podem ser conectados sem mudar a estrutura da tela.',
-          'O próximo passo ? versionamento, sincronização e regras por pasta ou obra.'
+          'O próximo passo é versionamento, sincronização e regras por pasta ou obra.'
         ]
       }
     ];
@@ -1175,12 +1446,24 @@ export class AdminOpsPageComponent {
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
       this.filteredRows = [...this.rows];
+      this.syncSelection();
       return;
     }
 
     this.filteredRows = this.rows.filter((row) =>
       Object.values(row).some((value) => String(value ?? '').toLowerCase().includes(term))
     );
+    this.syncSelection();
+  }
+
+  private syncSelection(): void {
+    if (!this.filteredRows.length) {
+      this.selectedRow = null;
+      return;
+    }
+
+    const match = this.filteredRows.find((row) => this.trackRow(row) === this.trackRow(this.selectedRow));
+    this.selectedRow = match || this.filteredRows[0];
   }
 
   private items<T>(data: T[] | null | undefined): T[] {
@@ -1318,6 +1601,17 @@ export class AdminOpsPageComponent {
     return value === true || value === 1 || value === '1' || String(value).toLowerCase() === 'true';
   }
 
+  private trackRow(row: any): string {
+    if (!row) {
+      return '';
+    }
+
+    return (
+      [row.codigo, row.obra, row.usuario, row.arquivo, row.data, row.configuracao, row.titulo, row.equipe].find((value) => !!value) ||
+      JSON.stringify(row)
+    );
+  }
+
   private isAuthenticationFailure(message?: string): boolean {
     const normalized = String(message ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     return normalized.includes('autentic') || normalized.includes('sessao') || normalized.includes('token');
@@ -1338,6 +1632,7 @@ export class AdminOpsPageComponent {
     this.columns = [];
     this.panels = [];
     this.searchTerm = '';
+    this.selectedRow = null;
     this.flushView();
   }
 
