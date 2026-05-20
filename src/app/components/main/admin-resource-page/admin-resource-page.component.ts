@@ -453,55 +453,122 @@ export class AdminResourcePageComponent {
   }
 
   showDetailPanel(): boolean {
-    return !!this.selectedRow && (this.resource === 'projects' || this.resource === 'diaries');
+    return !!this.selectedRow && ['projects', 'diaries', 'teams', 'users'].includes(this.resource);
+  }
+
+  detailEyebrow(): string {
+    switch (this.resource) {
+      case 'projects':
+        return 'Obra selecionada';
+      case 'diaries':
+        return 'Diário selecionado';
+      case 'teams':
+        return 'Equipe selecionada';
+      case 'users':
+        return 'Usuário selecionado';
+      default:
+        return 'Registro selecionado';
+    }
   }
 
   detailPanelTitle(): string {
     if (!this.selectedRow) return '';
-    return this.resource === 'projects'
-      ? this.selectedRow.name || 'Obra selecionada'
-      : `${this.selectedRow.projectDisplay} • ${this.selectedRow.workDateDisplay}`;
+    switch (this.resource) {
+      case 'projects':
+        return this.selectedRow.name || 'Obra selecionada';
+      case 'diaries':
+        return `${this.selectedRow.projectDisplay} • ${this.selectedRow.workDateDisplay}`;
+      case 'teams':
+        return this.selectedRow.name || 'Equipe selecionada';
+      case 'users':
+        return this.selectedRow.name || 'Usuário selecionado';
+      default:
+        return '';
+    }
   }
 
   detailPanelSubtitle(): string {
     if (!this.selectedRow) return '';
-    return this.resource === 'projects'
-      ? `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay}`
-      : `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay}`;
+    switch (this.resource) {
+      case 'projects':
+        return `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay}`;
+      case 'diaries':
+        return `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay}`;
+      case 'teams':
+        return `${this.selectedRow.projectDisplay || 'Sem obra vinculada'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
+      case 'users':
+        return `${this.selectedRow.roleDisplay || 'Perfil não definido'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
+      default:
+        return '';
+    }
   }
 
   detailHighlights(): Array<{ label: string; value: string }> {
     if (!this.selectedRow) return [];
-    if (this.resource === 'projects') {
-      return [
-        { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
-        { label: 'Responsável', value: this.selectedRow.engineerDisplay || 'Não definido' },
-        { label: 'Prazo', value: this.selectedRow.periodDisplay || '-' },
-        { label: 'Orçamento', value: this.selectedRow.budgetDisplay || '-' }
-      ];
+    switch (this.resource) {
+      case 'projects':
+        return [
+          { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
+          { label: 'Responsável', value: this.selectedRow.engineerDisplay || 'Não definido' },
+          { label: 'Prazo', value: this.selectedRow.periodDisplay || '-' },
+          { label: 'Orçamento', value: this.selectedRow.budgetDisplay || '-' }
+        ];
+      case 'diaries':
+        return [
+          { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
+          { label: 'Obra', value: this.selectedRow.projectDisplay || '-' },
+          { label: 'Clima', value: this.selectedRow.weatherDisplay || '-' },
+          { label: 'Responsável', value: this.selectedRow.createdByDisplay || 'Sem responsável' }
+        ];
+      case 'teams':
+        return [
+          { label: 'Situação', value: this.selectedRow.activeDisplay || '-' },
+          { label: 'Obra', value: this.selectedRow.projectDisplay || '-' },
+          { label: 'Integrantes', value: `${this.selectedRow.memberCountDisplay || '0'}` },
+          { label: 'Alocação', value: this.selectedRow.allocationDisplay || '-' }
+        ];
+      case 'users':
+        return [
+          { label: 'Perfil', value: this.selectedRow.roleDisplay || '-' },
+          { label: 'Situação', value: this.selectedRow.activeDisplay || '-' },
+          { label: 'Empresa', value: this.selectedRow.companyDisplay || '-' },
+          { label: 'Telefone', value: this.selectedRow.phoneDisplay || 'Não informado' }
+        ];
+      default:
+        return [];
     }
-    return [
-      { label: 'Situação', value: this.selectedRow.statusDisplay || '-' },
-      { label: 'Obra', value: this.selectedRow.projectDisplay || '-' },
-      { label: 'Clima', value: this.selectedRow.weatherDisplay || '-' },
-      { label: 'Responsável', value: this.selectedRow.createdByDisplay || 'Sem responsável' }
-    ];
   }
 
   detailNotes(): string[] {
     if (!this.selectedRow) return [];
-    if (this.resource === 'projects') {
-      return [
-        `Código da obra: ${this.selectedRow.code || '-'}`,
-        `Endereço base: ${[this.selectedRow.address, this.selectedRow.number, this.selectedRow.district].filter(Boolean).join(', ') || 'Não informado'}`,
-        `Cidade / UF: ${this.selectedRow.locationDisplay || 'Não informado'}`
-      ];
+    switch (this.resource) {
+      case 'projects':
+        return [
+          `Código da obra: ${this.selectedRow.code || '-'}`,
+          `Endereço base: ${[this.selectedRow.address, this.selectedRow.number, this.selectedRow.district].filter(Boolean).join(', ') || 'Não informado'}`,
+          `Cidade / UF: ${this.selectedRow.locationDisplay || 'Não informado'}`
+        ];
+      case 'diaries':
+        return [
+          `Resumo: ${this.selectedRow.summaryDisplay || 'Sem resumo'}`,
+          `Ocorrências: ${this.selectedRow.occurrences || 'Sem ocorrências registradas'}`,
+          `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`
+        ];
+      case 'teams':
+        return [
+          `Descrição: ${this.selectedRow.descriptionDisplay || 'Sem descrição cadastrada'}`,
+          `Equipe vinculada à obra: ${this.selectedRow.projectDisplay || 'Não vinculada'}`,
+          `Integrantes mapeados nesta composição: ${this.selectedRow.memberCountDisplay || '0'}`
+        ];
+      case 'users':
+        return [
+          `E-mail principal: ${this.selectedRow.email || 'Não informado'}`,
+          `Perfil operacional: ${this.selectedRow.roleDisplay || 'Não definido'}`,
+          `Empresa vinculada: ${this.selectedRow.companyDisplay || 'Não informada'}`
+        ];
+      default:
+        return [];
     }
-    return [
-      `Resumo: ${this.selectedRow.summaryDisplay || 'Sem resumo'}`,
-      `Ocorrências: ${this.selectedRow.occurrences || 'Sem ocorrências registradas'}`,
-      `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`
-    ];
   }
 
   fieldError(controlName: string): string {
@@ -1084,6 +1151,8 @@ export class AdminResourcePageComponent {
         return false;
       case 'users':
         return this.matchText(row?.activeDisplay, filterId);
+      case 'teams':
+        return this.matchText(row?.activeDisplay, filterId);
       default:
         return true;
     }
@@ -1349,6 +1418,11 @@ export class AdminResourcePageComponent {
           { title: 'Equipes com maior composição', lines: [...rows].sort((a, b) => Number(b.memberCountDisplay || 0) - Number(a.memberCountDisplay || 0)).slice(0, 4).map((row) => `${row.name} • ${row.memberCountDisplay} integrantes`) },
           { title: 'Distribuição por obra', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.projectDisplay}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todas'],
+          ['ativo', 'Ativas'],
+          ['inativo', 'Inativas']
+        ]);
         break;
       }
       case 'users': {

@@ -228,7 +228,7 @@
       @if (showDetailPanel()) {
         <section class="detail-spotlight">
           <div class="detail-spotlight-copy">
-            <span class="detail-eyebrow">{{ resource === 'projects' ? 'Obra selecionada' : 'Diário selecionado' }}</span>
+            <span class="detail-eyebrow">{{ detailEyebrow() }}</span>
             <h4>{{ detailPanelTitle() }}</h4>
             <p>{{ detailPanelSubtitle() }}</p>
           </div>
