@@ -424,6 +424,13 @@
   line-height: 1.55;
 }
 
+.detail-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 .insight-panel {
   border-radius: 18px;
   border: 1px solid rgba(100, 116, 139, 0.12);

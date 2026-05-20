@@ -247,6 +247,22 @@
               <div class="detail-note-item">{{ note }}</div>
             }
           </div>
+
+          @if (canUseDetailPrimaryAction() || canUseDetailSecondaryAction()) {
+            <div class="detail-action-bar">
+              @if (canUseDetailPrimaryAction()) {
+                <button ejs-button cssClass="dialog-primary" type="button" (click)="runDetailPrimaryAction()">
+                  {{ detailPrimaryActionLabel() }}
+                </button>
+              }
+
+              @if (canUseDetailSecondaryAction()) {
+                <button ejs-button cssClass="dialog-secondary" type="button" (click)="runDetailSecondaryAction()">
+                  {{ detailSecondaryActionLabel() }}
+                </button>
+              }
+            </div>
+          }
         </section>
       }
     </article>
