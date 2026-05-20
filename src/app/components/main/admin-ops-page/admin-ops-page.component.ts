@@ -383,13 +383,30 @@ export class AdminOpsPageComponent {
   private mapPermissions(payload: SnapshotPayload): void {
     const metadata = payload.metadata?.data ?? {};
     const users = this.items<BusinessUser>(payload.users?.data);
+    const companies = this.items<any>(payload.companies?.data);
     const roles = Array.isArray(metadata.roles) ? (metadata.roles as TenantMetadataRole[]) : [];
+    const company = companies[0];
+    const roleDistribution = new Map<string, number>();
+
+    users.forEach((user) => {
+      const roleName = roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usuário';
+      roleDistribution.set(roleName, (roleDistribution.get(roleName) || 0) + 1);
+    });
+
+    const activeUsers = users.filter((item) => this.toBoolean(item.active));
+    const approvers = users.filter((item) => item.role_id);
+    const editEnabled = activeUsers.length;
+    const topRoles = [...roleDistribution.entries()]
+      .sort((left, right) => right[1] - left[1])
+      .slice(0, 4)
+      .map(([role, count]) => `${role} • ${count} usuário${count > 1 ? 's' : ''}`);
 
     this.cards = [
       { label: 'Perfis disponíveis', value: `${roles.length}`, detail: 'Perfis retornados pelo tenant' },
-      { label: 'Usuários com perfil', value: `${users.filter((item) => item.role_id).length}`, detail: 'Controle de autorização já vinculado' },
-      { label: 'Usuários ativos', value: `${users.filter((item) => this.toBoolean(item.active)).length}`, detail: 'Com acesso operacional', tone: 'success' },
-      { label: 'Fluxos de aprovação', value: `${users.filter((item) => item.role_id).length}`, detail: 'Base para aprovação e visibilidade' }
+      { label: 'Usuários com perfil', value: `${approvers.length}`, detail: 'Controle de autorização já vinculado' },
+      { label: 'Usuários ativos', value: `${activeUsers.length}`, detail: 'Com acesso operacional', tone: 'success' },
+      { label: 'Fluxos de aprovação', value: `${approvers.length}`, detail: 'Base para aprovação e visibilidade' },
+      { label: 'Edição habilitada', value: `${editEnabled}`, detail: 'Usuários aptos a atuar no tenant' }
     ];
 
     this.rows = users.map((user) => ({
@@ -398,12 +415,14 @@ export class AdminOpsPageComponent {
       perfil: roles.find((role) => Number(role.id) === Number(user.role_id))?.name || 'Usuário',
       aprovacao: user.role_id ? 'Pode aprovar' : 'Consulta',
       edicao: this.toBoolean(user.active) ? 'Pode editar' : 'Somente leitura',
-      situacao: this.toBoolean(user.active) ? 'Ativo' : 'Inativo'
+      situacao: this.toBoolean(user.active) ? 'Ativo' : 'Inativo',
+      empresa: company?.fantasy_name || company?.corporate_name || 'Tenant principal'
     }));
 
     this.columns = [
       { field: 'usuario', headerText: 'Usuário', width: 220 },
       { field: 'email', headerText: 'E-mail', width: 260 },
+      { field: 'empresa', headerText: 'Empresa', width: 220 },
       { field: 'perfil', headerText: 'Perfil', width: 180 },
       { field: 'aprovacao', headerText: 'Aprovação', width: 160, type: 'badge' },
       { field: 'edicao', headerText: 'Edição', width: 160, type: 'badge' },
@@ -418,6 +437,10 @@ export class AdminOpsPageComponent {
           'Usuários ativos entram na operação conforme o perfil vinculado.',
           'Esta leitura ajuda a revisar governança antes de abrir novos acessos.'
         ]
+      },
+      {
+        title: 'Distribuição por perfil',
+        lines: topRoles.length ? topRoles : ['Nenhum perfil distribuído entre os usuários atuais.']
       },
       {
         title: 'Ações recomendadas',
