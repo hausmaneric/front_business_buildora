@@ -453,7 +453,7 @@ export class AdminResourcePageComponent {
   }
 
   showDetailPanel(): boolean {
-    return !!this.selectedRow && ['projects', 'diaries', 'teams', 'users', 'materials', 'equipments', 'occurrences', 'documents'].includes(this.resource);
+    return !!this.selectedRow && ['projects', 'diaries', 'activities', 'teams', 'users', 'materials', 'equipments', 'occurrences', 'documents'].includes(this.resource);
   }
 
   detailEyebrow(): string {
@@ -462,6 +462,8 @@ export class AdminResourcePageComponent {
         return 'Obra selecionada';
       case 'diaries':
         return 'Diário selecionado';
+      case 'activities':
+        return 'Atividade selecionada';
       case 'teams':
         return 'Equipe selecionada';
       case 'users':
@@ -486,6 +488,8 @@ export class AdminResourcePageComponent {
         return this.selectedRow.name || 'Obra selecionada';
       case 'diaries':
         return `${this.selectedRow.projectDisplay} • ${this.selectedRow.workDateDisplay}`;
+      case 'activities':
+        return this.selectedRow.service_name || 'Atividade selecionada';
       case 'teams':
         return this.selectedRow.name || 'Equipe selecionada';
       case 'users':
@@ -510,6 +514,8 @@ export class AdminResourcePageComponent {
         return `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay}`;
       case 'diaries':
         return `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay}`;
+      case 'activities':
+        return `${this.selectedRow.diaryDisplay || 'Sem diário vinculado'} • ${this.selectedRow.workflowDisplay || 'Fluxo não informado'}`;
       case 'teams':
         return `${this.selectedRow.projectDisplay || 'Sem obra vinculada'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
       case 'users':
@@ -543,6 +549,13 @@ export class AdminResourcePageComponent {
           { label: 'Obra', value: this.selectedRow.projectDisplay || '-' },
           { label: 'Clima', value: this.selectedRow.weatherDisplay || '-' },
           { label: 'Responsável', value: this.selectedRow.createdByDisplay || 'Sem responsável' }
+        ];
+      case 'activities':
+        return [
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' },
+          { label: 'Etapa', value: this.selectedRow.stageDisplay || '-' },
+          { label: 'Quantidade', value: this.selectedRow.quantityDisplay || '-' },
+          { label: 'Fluxo', value: this.selectedRow.workflowDisplay || '-' }
         ];
       case 'teams':
         return [
@@ -605,6 +618,12 @@ export class AdminResourcePageComponent {
           `Resumo: ${this.selectedRow.summaryDisplay || 'Sem resumo'}`,
           `Ocorrências: ${this.selectedRow.occurrences || 'Sem ocorrências registradas'}`,
           `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`
+        ];
+      case 'activities':
+        return [
+          `Serviço executado: ${this.selectedRow.service_name || 'Não informado'}`,
+          `Local informado: ${this.selectedRow.locationDisplay || 'Não informado'}`,
+          `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`
         ];
       case 'teams':
         return [
@@ -1366,6 +1385,8 @@ export class AdminResourcePageComponent {
         return rows.map((row: BusinessActivity) => ({
           ...row,
           diaryDisplay: this.optionLabel('diaries', row.daily_log_id, `Diário #${row.daily_log_id}`),
+          stageDisplay: this.inferActivityStage(row.service_name),
+          workflowDisplay: this.inferActivityWorkflow(row.service_name, row.notes),
           quantityDisplay: row.quantity ? `${this.formatNumber(row.quantity)} ${row.unit || ''}`.trim() : 'Não informado',
           unitDisplay: row.unit || 'Unidade',
           locationDisplay: row.location || 'Não informado'
@@ -1649,7 +1670,8 @@ export class AdminResourcePageComponent {
       return mapped.map((row: any) => ({
         ...row,
         memberCountDisplay: `${this.teamMembersCache.filter((item) => Number(item.team_id) === Number(row.id)).length}`,
-        allocationDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`)
+        allocationDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`),
+        compositionDisplay: `${this.teamMembersCache.filter((item) => Number(item.team_id) === Number(row.id)).length} integrantes ativos`
       }));
     }
 
@@ -1684,11 +1706,45 @@ export class AdminResourcePageComponent {
     if (this.resource === 'users') {
       return mapped.map((row: any) => ({
         ...row,
-        phoneDisplay: row.phone || 'Não informado'
+        phoneDisplay: row.phone || 'Não informado',
+        approvalDisplay: this.userApprovalDisplay(row.roleDisplay),
+        editDisplay: this.userEditDisplay(row.roleDisplay)
       }));
     }
 
     return mapped;
+  }
+
+  private inferActivityStage(serviceName: string | undefined): string {
+    const label = String(serviceName || '').toLowerCase();
+    if (label.includes('concret')) return 'Execução estrutural';
+    if (label.includes('instala')) return 'Instalações';
+    if (label.includes('montag')) return 'Montagem';
+    if (label.includes('alvenar')) return 'Vedação';
+    return 'Frente operacional';
+  }
+
+  private inferActivityWorkflow(serviceName: string | undefined, notes: string | undefined): string {
+    const content = `${serviceName || ''} ${notes || ''}`.toLowerCase();
+    if (content.includes('final') || content.includes('entreg')) return 'Concluída';
+    if (content.includes('aguard') || content.includes('pend')) return 'Aguardando liberação';
+    return 'Em execução';
+  }
+
+  private userApprovalDisplay(roleDisplay: string | undefined): string {
+    const role = String(roleDisplay || '').toLowerCase();
+    if (role.includes('admin') || role.includes('gestor') || role.includes('engenheiro')) {
+      return 'Pode aprovar';
+    }
+    return 'Sem aprovação';
+  }
+
+  private userEditDisplay(roleDisplay: string | undefined): string {
+    const role = String(roleDisplay || '').toLowerCase();
+    if (role.includes('admin') || role.includes('gestor') || role.includes('engenheiro') || role.includes('técnico')) {
+      return 'Pode editar';
+    }
+    return 'Consulta';
   }
 
   private equipmentMaintenanceLabel(status: string | undefined, hoursUsed: number | null | undefined): string {
