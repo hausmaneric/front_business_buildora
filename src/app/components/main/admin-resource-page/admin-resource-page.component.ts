@@ -453,7 +453,7 @@ export class AdminResourcePageComponent {
   }
 
   showDetailPanel(): boolean {
-    return !!this.selectedRow && ['projects', 'diaries', 'teams', 'users'].includes(this.resource);
+    return !!this.selectedRow && ['projects', 'diaries', 'teams', 'users', 'materials', 'equipments', 'occurrences', 'documents'].includes(this.resource);
   }
 
   detailEyebrow(): string {
@@ -466,6 +466,14 @@ export class AdminResourcePageComponent {
         return 'Equipe selecionada';
       case 'users':
         return 'Usuário selecionado';
+      case 'materials':
+        return 'Material selecionado';
+      case 'equipments':
+        return 'Equipamento selecionado';
+      case 'occurrences':
+        return 'Ocorrência selecionada';
+      case 'documents':
+        return 'Documento selecionado';
       default:
         return 'Registro selecionado';
     }
@@ -482,6 +490,14 @@ export class AdminResourcePageComponent {
         return this.selectedRow.name || 'Equipe selecionada';
       case 'users':
         return this.selectedRow.name || 'Usuário selecionado';
+      case 'materials':
+        return this.selectedRow.material_name || 'Material selecionado';
+      case 'equipments':
+        return this.selectedRow.equipment_name || 'Equipamento selecionado';
+      case 'occurrences':
+        return this.selectedRow.title || 'Ocorrência selecionada';
+      case 'documents':
+        return this.selectedRow.file_name || 'Documento selecionado';
       default:
         return '';
     }
@@ -498,6 +514,14 @@ export class AdminResourcePageComponent {
         return `${this.selectedRow.projectDisplay || 'Sem obra vinculada'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
       case 'users':
         return `${this.selectedRow.roleDisplay || 'Perfil não definido'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
+      case 'materials':
+        return `${this.selectedRow.movementDisplay || 'Movimentação não informada'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
+      case 'equipments':
+        return `${this.selectedRow.equipmentStatusDisplay || 'Situação não informada'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
+      case 'occurrences':
+        return `${this.selectedRow.severityDisplay || 'Gravidade não informada'} • ${this.selectedRow.resolvedDisplay || 'Situação não informada'}`;
+      case 'documents':
+        return `${this.selectedRow.fileTypeDisplay || 'Tipo não informado'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
       default:
         return '';
     }
@@ -534,6 +558,34 @@ export class AdminResourcePageComponent {
           { label: 'Empresa', value: this.selectedRow.companyDisplay || '-' },
           { label: 'Telefone', value: this.selectedRow.phoneDisplay || 'Não informado' }
         ];
+      case 'materials':
+        return [
+          { label: 'Movimento', value: this.selectedRow.movementDisplay || '-' },
+          { label: 'Quantidade', value: this.selectedRow.quantityDisplay || '-' },
+          { label: 'Unidade', value: this.selectedRow.unitDisplay || '-' },
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' }
+        ];
+      case 'equipments':
+        return [
+          { label: 'Situação', value: this.selectedRow.equipmentStatusDisplay || '-' },
+          { label: 'Horas de uso', value: this.selectedRow.hoursUsedDisplay || '-' },
+          { label: 'Manutenção', value: this.selectedRow.maintenanceDisplay || '-' },
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' }
+        ];
+      case 'occurrences':
+        return [
+          { label: 'Tipo', value: this.selectedRow.occurrenceTypeDisplay || '-' },
+          { label: 'Gravidade', value: this.selectedRow.severityDisplay || '-' },
+          { label: 'Situação', value: this.selectedRow.resolvedDisplay || '-' },
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' }
+        ];
+      case 'documents':
+        return [
+          { label: 'Tipo', value: this.selectedRow.fileTypeDisplay || '-' },
+          { label: 'Tamanho', value: this.selectedRow.fileSizeDisplay || '-' },
+          { label: 'Diário', value: this.selectedRow.diaryDisplay || '-' },
+          { label: 'Link', value: this.selectedRow.urlDisplay || '-' }
+        ];
       default:
         return [];
     }
@@ -565,6 +617,30 @@ export class AdminResourcePageComponent {
           `E-mail principal: ${this.selectedRow.email || 'Não informado'}`,
           `Perfil operacional: ${this.selectedRow.roleDisplay || 'Não definido'}`,
           `Empresa vinculada: ${this.selectedRow.companyDisplay || 'Não informada'}`
+        ];
+      case 'materials':
+        return [
+          `Material: ${this.selectedRow.material_name || 'Não informado'}`,
+          `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
+          `Movimentação associada ao diário: ${this.selectedRow.diaryDisplay || 'Não vinculada'}`
+        ];
+      case 'equipments':
+        return [
+          `Equipamento: ${this.selectedRow.equipment_name || 'Não informado'}`,
+          `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
+          `Status de manutenção: ${this.selectedRow.maintenanceDisplay || 'Sem alerta'}`
+        ];
+      case 'occurrences':
+        return [
+          `Descrição: ${this.selectedRow.descriptionDisplay || 'Sem descrição cadastrada'}`,
+          `Registro diário: ${this.selectedRow.diaryDisplay || 'Não vinculado'}`,
+          `Fechamento operacional: ${this.selectedRow.resolvedDisplay || 'Sem situação'}`
+        ];
+      case 'documents':
+        return [
+          `Arquivo registrado: ${this.selectedRow.file_name || 'Não informado'}`,
+          `URL disponível: ${this.selectedRow.urlDisplay || 'Sem link'}`,
+          `Vínculo operacional: ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`
         ];
       default:
         return [];
@@ -1144,6 +1220,8 @@ export class AdminResourcePageComponent {
         return this.matchText(row?.movementDisplay, filterId);
       case 'equipments':
         return this.matchText(row?.equipmentStatusDisplay, filterId);
+      case 'documents':
+        return this.matchText(row?.fileTypeDisplay, filterId);
       case 'occurrences':
         if (filterId === 'aberta') return this.matchText(row?.resolvedDisplay, 'aberta');
         if (filterId === 'resolvida') return this.matchText(row?.resolvedDisplay, 'resolvida');
@@ -1404,6 +1482,12 @@ export class AdminResourcePageComponent {
           { title: 'Últimos serviços', lines: rows.slice(0, 5).map((row) => `${row.service_name} • ${row.diaryDisplay}`) },
           { title: 'Observações recentes', lines: rows.filter((row) => row.notes).slice(0, 4).map((row) => `${row.service_name} • ${row.notes}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todas'],
+          ['instalacao', 'Instalações'],
+          ['montagem', 'Montagens'],
+          ['concretagem', 'Concretagens']
+        ]);
         break;
       }
       case 'teams': {
@@ -1440,6 +1524,25 @@ export class AdminResourcePageComponent {
           ['all', 'Todos'],
           ['ativo', 'Ativos'],
           ['inativo', 'Inativos']
+        ]);
+        break;
+      }
+      case 'documents': {
+        this.overviewCards = [
+          { label: 'Documentos cadastrados', value: String(total), detail: `${new Set(rows.map((row) => row.fileTypeDisplay)).size} tipos distintos` },
+          { label: 'Com link válido', value: String(rows.filter((row) => row.urlDisplay && row.urlDisplay !== 'Sem link').length), detail: 'Prontos para consulta', tone: 'success' },
+          { label: 'Diários com anexo', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Base documental da obra' },
+          { label: 'Volume total', value: this.formatFileSize(rows.reduce((sum, row) => sum + Number(row.file_size_bytes || 0), 0)), detail: 'Armazenamento catalogado' }
+        ];
+        this.insightPanels = [
+          { title: 'Tipos mais presentes', lines: rows.slice(0, 5).map((row) => `${row.file_name} • ${row.fileTypeDisplay}`) },
+          { title: 'Últimos anexos', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.fileSizeDisplay}`) }
+        ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todos'],
+          ['pdf', 'PDF'],
+          ['jpg', 'Imagens'],
+          ['png', 'PNG']
         ]);
         break;
       }
