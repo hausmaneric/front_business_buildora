@@ -629,13 +629,15 @@ export class AdminResourcePageComponent {
         return [
           `Descrição: ${this.selectedRow.descriptionDisplay || 'Sem descrição cadastrada'}`,
           `Equipe vinculada à obra: ${this.selectedRow.projectDisplay || 'Não vinculada'}`,
-          `Integrantes mapeados nesta composição: ${this.selectedRow.memberCountDisplay || '0'}`
+          `Integrantes mapeados nesta composição: ${this.selectedRow.memberCountDisplay || '0'}`,
+          `Composição atual: ${this.selectedRow.compositionDisplay || 'Não informada'}`
         ];
       case 'users':
         return [
           `E-mail principal: ${this.selectedRow.email || 'Não informado'}`,
           `Perfil operacional: ${this.selectedRow.roleDisplay || 'Não definido'}`,
-          `Empresa vinculada: ${this.selectedRow.companyDisplay || 'Não informada'}`
+          `Empresa vinculada: ${this.selectedRow.companyDisplay || 'Não informada'}`,
+          `Nível de aprovação: ${this.selectedRow.approvalDisplay || 'Não informado'}`
         ];
       case 'materials':
         return [
@@ -800,14 +802,16 @@ export class AdminResourcePageComponent {
       activities: [
         { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
         { field: 'service_name', headerText: 'Serviço', width: 260 },
+        { field: 'stageDisplay', headerText: 'Etapa', width: 200 },
         { field: 'quantityDisplay', headerText: 'Quantidade', width: 150 },
-        { field: 'unitDisplay', headerText: 'Unidade', width: 120 },
-        { field: 'locationDisplay', headerText: 'Local', width: 200 }
+        { field: 'workflowDisplay', headerText: 'Fluxo', width: 180, type: 'badge' as const },
+        { field: 'locationDisplay', headerText: 'Local', width: 220 }
       ],
       teams: [
         { field: 'projectDisplay', headerText: 'Obra', width: 240 },
         { field: 'name', headerText: 'Equipe', width: 220 },
-        { field: 'descriptionDisplay', headerText: 'Descrição', width: 320 },
+        { field: 'memberCountDisplay', headerText: 'Integrantes', width: 140, type: 'number' as const },
+        { field: 'compositionDisplay', headerText: 'Composição', width: 240 },
         { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
       ],
       materials: [
@@ -841,8 +845,10 @@ export class AdminResourcePageComponent {
       users: [
         { field: 'companyDisplay', headerText: 'Empresa', width: 240 },
         { field: 'name', headerText: 'Usuário', width: 220 },
-        { field: 'email', headerText: 'E-mail', width: 260 },
+        { field: 'email', headerText: 'E-mail', width: 280 },
         { field: 'roleDisplay', headerText: 'Perfil', width: 180 },
+        { field: 'approvalDisplay', headerText: 'Aprovação', width: 160, type: 'badge' as const },
+        { field: 'editDisplay', headerText: 'Edição', width: 150, type: 'badge' as const },
         { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
       ]
     };
@@ -1247,8 +1253,10 @@ export class AdminResourcePageComponent {
         if (filterId === 'critica') return this.matchText(row?.severityDisplay, 'critica');
         return false;
       case 'users':
+        if (filterId === 'aprovador') return this.matchText(row?.approvalDisplay, 'pode aprovar');
         return this.matchText(row?.activeDisplay, filterId);
       case 'teams':
+        if (filterId === 'grande') return Number(row?.memberCountDisplay || 0) >= 5;
         return this.matchText(row?.activeDisplay, filterId);
       default:
         return true;
@@ -1513,38 +1521,45 @@ export class AdminResourcePageComponent {
       }
       case 'teams': {
         const members = rows.reduce((sum, row) => sum + Number(row.memberCountDisplay || 0), 0);
+        const activeTeams = rows.filter((row) => row.activeDisplay === 'Ativo').length;
         this.overviewCards = [
-          { label: 'Equipes cadastradas', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} ativas` },
+          { label: 'Equipes cadastradas', value: String(total), detail: `${activeTeams} ativas` },
           { label: 'Integrantes alocados', value: String(members), detail: 'Vínculos ativos nas equipes', tone: 'success' },
           { label: 'Média por equipe', value: total ? this.formatNumber(members / total) : '0', detail: 'Composição média' },
           { label: 'Obras atendidas', value: String(new Set(rows.map((row) => row.project_id)).size), detail: 'Frentes com equipe formada' }
         ];
         this.insightPanels = [
           { title: 'Equipes com maior composição', lines: [...rows].sort((a, b) => Number(b.memberCountDisplay || 0) - Number(a.memberCountDisplay || 0)).slice(0, 4).map((row) => `${row.name} • ${row.memberCountDisplay} integrantes`) },
-          { title: 'Distribuição por obra', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.projectDisplay}`) }
+          { title: 'Distribuição por obra', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.projectDisplay}`) },
+          { title: 'Equipes ativas', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 4).map((row) => `${row.name} • ${row.compositionDisplay}`) }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todas'],
           ['ativo', 'Ativas'],
-          ['inativo', 'Inativas']
+          ['inativo', 'Inativas'],
+          ['grande', 'Com 5+ membros']
         ]);
         break;
       }
       case 'users': {
+        const activeUsers = rows.filter((row) => row.activeDisplay === 'Ativo').length;
+        const approvers = rows.filter((row) => row.approvalDisplay === 'Pode aprovar').length;
         this.overviewCards = [
-          { label: 'Usuários cadastrados', value: String(total), detail: `${rows.filter((row) => row.activeDisplay === 'Ativo').length} com acesso ativo` },
+          { label: 'Usuários cadastrados', value: String(total), detail: `${activeUsers} com acesso ativo` },
           { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
-          { label: 'Empresas cobertas', value: String(new Set(rows.map((row) => row.company_id)).size), detail: 'Entidades operacionais' },
+          { label: 'Aprovadores', value: String(approvers), detail: 'Capacidade de validação', tone: approvers ? 'success' : 'warning' },
           { label: 'Com telefone', value: String(rows.filter((row) => row.phone).length), detail: 'Contato rápido disponível' }
         ];
         this.insightPanels = [
           { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
-          { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) }
+          { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) },
+          { title: 'Permissão de aprovação', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.approvalDisplay}`) }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
           ['ativo', 'Ativos'],
-          ['inativo', 'Inativos']
+          ['inativo', 'Inativos'],
+          ['aprovador', 'Aprovadores']
         ]);
         break;
       }
