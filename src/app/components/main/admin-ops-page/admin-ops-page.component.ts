@@ -287,7 +287,8 @@ export class AdminOpsPageComponent {
           { label: 'Código', value: row.codigo || '-' },
           { label: 'Prazo', value: row.prazo || '-' },
           { label: 'Situação', value: row.situacao || '-' },
-          { label: 'Obra', value: row.obra || '-' }
+          { label: 'Obra', value: row.obra || '-' },
+          { label: 'Cliente', value: row.cliente || '-' }
         ];
       case 'settings':
         return [
@@ -307,21 +308,24 @@ export class AdminOpsPageComponent {
           { label: 'Obra', value: row.obra || '-' },
           { label: 'Diário', value: row.diario || '-' },
           { label: 'Tamanho', value: row.tamanho || '-' },
-          { label: 'Disponibilidade', value: row.disponibilidade || '-' }
+          { label: 'Disponibilidade', value: row.disponibilidade || '-' },
+          { label: 'Tipo', value: row.tipo || '-' }
         ];
       case 'climate':
         return [
           { label: 'Obra', value: row.obra || '-' },
           { label: 'Clima', value: row.clima || '-' },
           { label: 'Situação', value: row.situacao || '-' },
-          { label: 'Data', value: row.data || '-' }
+          { label: 'Data', value: row.data || '-' },
+          { label: 'Resumo', value: row.resumo || '-' }
         ];
       case 'signatures':
         return [
           { label: 'Responsável', value: row.responsavel || '-' },
           { label: 'Fluxo', value: row.assinatura || '-' },
           { label: 'Bloqueio', value: row.bloqueio || '-' },
-          { label: 'Status do diário', value: row.status || '-' }
+          { label: 'Status do diário', value: row.status || '-' },
+          { label: 'Obra', value: row.obra || '-' }
         ];
       case 'schedule':
         return [
@@ -375,7 +379,8 @@ export class AdminOpsPageComponent {
         return [
           { label: 'Status', value: row.status || '-' },
           { label: 'PDF', value: row.pdf || '-' },
-          { label: 'Anexos', value: row.anexos || '-' }
+          { label: 'Anexos', value: row.anexos || '-' },
+          { label: 'Obra', value: row.obra || '-' }
         ];
       case 'bi':
         return [
@@ -393,7 +398,8 @@ export class AdminOpsPageComponent {
         return [
           { label: 'Tipo', value: row.tipo || '-' },
           { label: 'Link', value: row.link || '-' },
-          { label: 'Integração', value: row.integracao || '-' }
+          { label: 'Integração', value: row.integracao || '-' },
+          { label: 'Empresa', value: row.empresa || '-' }
         ];
       case 'digital-signature':
         return [
@@ -425,11 +431,18 @@ export class AdminOpsPageComponent {
       notes.push(`Registro vinculado à obra ${row.obra} em ${row.data}.`);
     }
     if (this.resource === 'reports' && row.obra) notes.push(`Fechamento consolidado para a obra ${row.obra}.`);
+    if (this.resource === 'reports' && row.cliente) notes.push(`Cliente relacionado: ${row.cliente}.`);
     if (this.resource === 'settings' && row.configuracao) notes.push(`Configuração tratada: ${row.configuracao}.`);
+    if (this.resource === 'settings' && row.grupo) notes.push(`Grupo operacional: ${row.grupo}.`);
     if (this.resource === 'photos' && row.arquivo) notes.push(`Arquivo visual registrado: ${row.arquivo}.`);
     if (this.resource === 'photos' && row.obra) notes.push(`Cobertura visual vinculada à obra ${row.obra}.`);
+    if (this.resource === 'photos' && row.tipo) notes.push(`Tipo de ativo visual: ${row.tipo}.`);
     if (this.resource === 'climate' && row.clima) notes.push(`Condição climática observada: ${row.clima}.`);
+    if (this.resource === 'climate' && row.resumo) notes.push(`Resumo operacional: ${row.resumo}.`);
     if (this.resource === 'signatures' && row.responsavel) notes.push(`Responsável atual pelo fluxo: ${row.responsavel}.`);
+    if (this.resource === 'signatures' && row.bloqueio) notes.push(`Bloqueio atual do fluxo: ${row.bloqueio}.`);
+    if (this.resource === 'pdf-automation' && row.pdf) notes.push(`Condição atual do PDF: ${row.pdf}.`);
+    if (this.resource === 'integrations' && row.integracao) notes.push(`Conector em foco: ${row.integracao}.`);
 
     return notes.length ? notes : ['Registro pronto para acompanhamento operacional.'];
   }
