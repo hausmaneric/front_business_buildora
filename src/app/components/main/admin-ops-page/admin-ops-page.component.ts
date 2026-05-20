@@ -166,6 +166,98 @@ export class AdminOpsPageComponent {
     return !!this.selectedRow;
   }
 
+  detailPrimaryActionLabel(): string {
+    switch (this.resource) {
+      case 'photos':
+        return 'Abrir arquivo';
+      case 'integrations':
+        return 'Abrir link';
+      case 'settings':
+        return 'Abrir configurações';
+      case 'reports':
+        return 'Ver obra';
+      default:
+        return 'Abrir detalhe';
+    }
+  }
+
+  detailSecondaryActionLabel(): string {
+    switch (this.resource) {
+      case 'photos':
+        return 'Copiar link';
+      case 'integrations':
+        return 'Copiar link';
+      case 'settings':
+        return 'Copiar valor';
+      case 'reports':
+        return 'Copiar obra';
+      default:
+        return 'Copiar referência';
+    }
+  }
+
+  canUseDetailPrimaryAction(): boolean {
+    if (!this.selectedRow) return false;
+    switch (this.resource) {
+      case 'photos':
+      case 'integrations':
+        return !!(this.selectedRow.link || this.selectedRow.file_url);
+      case 'settings':
+        return true;
+      case 'reports':
+        return !!this.selectedRow.obra;
+      default:
+        return false;
+    }
+  }
+
+  canUseDetailSecondaryAction(): boolean {
+    if (!this.selectedRow) return false;
+    switch (this.resource) {
+      case 'photos':
+      case 'integrations':
+        return !!(this.selectedRow.link || this.selectedRow.file_url);
+      case 'settings':
+        return !!(this.selectedRow.valor || this.selectedRow.configuracao);
+      case 'reports':
+        return !!this.selectedRow.obra;
+      default:
+        return false;
+    }
+  }
+
+  runDetailPrimaryAction(): void {
+    if (!this.selectedRow) return;
+    switch (this.resource) {
+      case 'photos':
+      case 'integrations':
+        this.openExternalUrl(this.selectedRow.link || this.selectedRow.file_url);
+        return;
+      case 'settings':
+        void this.router.navigate(['/main/settings']);
+        return;
+      case 'reports':
+        void this.router.navigate(['/main/projects']);
+        return;
+    }
+  }
+
+  runDetailSecondaryAction(): void {
+    if (!this.selectedRow) return;
+    switch (this.resource) {
+      case 'photos':
+      case 'integrations':
+        void this.copyToClipboard(this.selectedRow.link || this.selectedRow.file_url, 'Link copiado', 'O link foi copiado com sucesso.');
+        return;
+      case 'settings':
+        void this.copyToClipboard(this.selectedRow.valor || this.selectedRow.configuracao, 'Valor copiado', 'O valor da configuração foi copiado.');
+        return;
+      case 'reports':
+        void this.copyToClipboard(this.selectedRow.obra, 'Obra copiada', 'O nome da obra foi copiado.');
+        return;
+    }
+  }
+
   detailEyebrow(): string {
     switch (this.resource) {
       case 'reports':
@@ -1825,6 +1917,24 @@ export class AdminOpsPageComponent {
     this.adminDataService.clearCache();
     this.loginService.clearToken();
     void this.router.navigate(['/login']);
+  }
+
+  private openExternalUrl(url?: string): void {
+    if (!url) {
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  private async copyToClipboard(value: string | undefined, title: string, message: string): Promise<void> {
+    if (!value) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(String(value));
+    } catch {
+      return;
+    }
   }
 
   private resetState(): void {

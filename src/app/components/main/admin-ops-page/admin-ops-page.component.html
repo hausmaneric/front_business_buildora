@@ -138,6 +138,21 @@
               <div class="ops-detail-note">{{ note }}</div>
             }
           </div>
+
+          @if (canUseDetailPrimaryAction() || canUseDetailSecondaryAction()) {
+            <div class="ops-detail-actions">
+              @if (canUseDetailPrimaryAction()) {
+                <button ejs-button cssClass="dialog-primary" type="button" (click)="runDetailPrimaryAction()">
+                  {{ detailPrimaryActionLabel() }}
+                </button>
+              }
+              @if (canUseDetailSecondaryAction()) {
+                <button ejs-button cssClass="dialog-secondary" type="button" (click)="runDetailSecondaryAction()">
+                  {{ detailSecondaryActionLabel() }}
+                </button>
+              }
+            </div>
+          }
         </article>
       }
     }
