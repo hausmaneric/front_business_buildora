@@ -71,6 +71,21 @@
         }
       </div>
 
+      @if (quickFilters.length > 1) {
+        <div class="quick-filter-rail">
+          @for (filter of quickFilters; track filter.id) {
+            <button
+              type="button"
+              class="quick-filter-chip"
+              [class.active]="activeQuickFilter === filter.id"
+              (click)="applyQuickFilter(filter.id)">
+              <span>{{ filter.label }}</span>
+              <strong>{{ filter.count }}</strong>
+            </button>
+          }
+        </div>
+      }
+
       <div class="toolbar-shell">
         <div class="resource-toolbar">
           <div class="resource-search">

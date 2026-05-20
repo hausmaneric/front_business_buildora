@@ -98,6 +98,12 @@ interface ResourceInsightPanel {
   lines: string[];
 }
 
+interface QuickFilterChip {
+  id: string;
+  label: string;
+  count: number;
+}
+
 @Component({
   selector: 'app-admin-resource-page',
   standalone: true,
@@ -134,6 +140,8 @@ export class AdminResourcePageComponent {
   toasts: ToastMessage[] = [];
   overviewCards: ResourceOverviewCard[] = [];
   insightPanels: ResourceInsightPanel[] = [];
+  quickFilters: QuickFilterChip[] = [];
+  activeQuickFilter = 'all';
 
   readonly pageSizeOptions = [
     { id: 10, text: '10 por página' },
@@ -387,6 +395,12 @@ export class AdminResourcePageComponent {
     this.applyGridState();
   }
 
+  applyQuickFilter(filterId: string): void {
+    this.activeQuickFilter = filterId;
+    this.currentPage = 1;
+    this.applyGridState();
+  }
+
 
   trackRow(row: any, index: number): any {
     return row?.id || row?.code || index;
@@ -534,6 +548,7 @@ export class AdminResourcePageComponent {
     this.currentPage = 1;
     this.searchTerm = '';
     this.appliedSearch = '';
+    this.activeQuickFilter = 'all';
     this.supportLoaded = false;
     this.createForm = this.buildForm();
     this.ensureSupportOptions();
@@ -956,6 +971,10 @@ export class AdminResourcePageComponent {
   private applyGridState(): void {
     let rows = [...this.allRows];
 
+    if (this.activeQuickFilter !== 'all') {
+      rows = rows.filter((row) => this.matchesQuickFilter(row, this.activeQuickFilter));
+    }
+
     if (this.appliedSearch) {
       const term = this.appliedSearch.toLowerCase();
       rows = rows.filter((row) => Object.values(row).some((value) => String(value ?? '').toLowerCase().includes(term)));
@@ -972,6 +991,49 @@ export class AdminResourcePageComponent {
     this.rows = rows;
     this.filteredRows = rows.slice(start, end);
     this.flushView();
+  }
+
+  private buildQuickFilters(filters: Array<[string, string]>): QuickFilterChip[] {
+    return filters.map(([id, label]) => ({
+      id,
+      label,
+      count: id === 'all' ? this.allRows.length : this.allRows.filter((row) => this.matchesQuickFilter(row, id)).length
+    }));
+  }
+
+  private matchesQuickFilter(row: any, filterId: string): boolean {
+    switch (this.resource) {
+      case 'projects':
+        return this.matchText(row?.statusDisplay, filterId);
+      case 'diaries':
+        return this.matchText(row?.statusDisplay, filterId);
+      case 'materials':
+        return this.matchText(row?.movementDisplay, filterId);
+      case 'equipments':
+        return this.matchText(row?.equipmentStatusDisplay, filterId);
+      case 'occurrences':
+        if (filterId === 'aberta') return this.matchText(row?.resolvedDisplay, 'aberta');
+        if (filterId === 'resolvida') return this.matchText(row?.resolvedDisplay, 'resolvida');
+        if (filterId === 'critica') return this.matchText(row?.severityDisplay, 'critica');
+        return false;
+      case 'users':
+        return this.matchText(row?.activeDisplay, filterId);
+      default:
+        return true;
+    }
+  }
+
+  private matchText(value: any, term: string): boolean {
+    return String(value ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .includes(
+        String(term)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+      );
   }
 
   private buildForm(): FormGroup {
@@ -1165,6 +1227,13 @@ export class AdminResourcePageComponent {
           { title: 'Obras com prazo sensível', lines: rows.filter((row) => this.isDueSoon(row.end_date)).slice(0, 4).map((row) => `${row.name} • ${this.formatDate(row.end_date)}`) },
           { title: 'Responsáveis', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.engineerDisplay || 'Não definido'}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todas'],
+          ['andamento', 'Em andamento'],
+          ['planejada', 'Planejadas'],
+          ['concluida', 'Concluídas'],
+          ['pausada', 'Pausadas']
+        ]);
         break;
       }
       case 'diaries': {
@@ -1180,6 +1249,12 @@ export class AdminResourcePageComponent {
           { title: 'Pendências do dia', lines: rows.filter((row) => row.statusDisplay === 'Pendente').slice(0, 5).map((row) => `${row.workDateDisplay} • ${row.projectDisplay}`) },
           { title: 'Condições de clima', lines: rows.slice(0, 4).map((row) => `${row.workDateDisplay} • ${row.weatherDisplay}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todos'],
+          ['pendente', 'Pendentes'],
+          ['aprovado', 'Aprovados'],
+          ['reprovado', 'Reprovados']
+        ]);
         break;
       }
       case 'activities': {
@@ -1221,6 +1296,11 @@ export class AdminResourcePageComponent {
           { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
           { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todos'],
+          ['ativo', 'Ativos'],
+          ['inativo', 'Inativos']
+        ]);
         break;
       }
       case 'materials': {
@@ -1237,6 +1317,12 @@ export class AdminResourcePageComponent {
           { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} • ${row.quantityDisplay}`) },
           { title: 'Últimas movimentações', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.movementDisplay}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todos'],
+          ['entrada', 'Entradas'],
+          ['saida', 'Saídas'],
+          ['consumo', 'Consumos']
+        ]);
         break;
       }
       case 'equipments': {
@@ -1253,6 +1339,12 @@ export class AdminResourcePageComponent {
           { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.hoursUsedDisplay}`) },
           { title: 'Situação operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.equipmentStatusDisplay}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todos'],
+          ['em_uso', 'Em uso'],
+          ['disponivel', 'Disponíveis'],
+          ['manutencao', 'Manutenção']
+        ]);
         break;
       }
       case 'occurrences': {
@@ -1268,11 +1360,18 @@ export class AdminResourcePageComponent {
           { title: 'Pendências críticas', lines: rows.filter((row) => row.resolvedDisplay === 'Aberta').slice(0, 5).map((row) => `${row.title} • ${row.severityDisplay}`) },
           { title: 'Distribuição por diário', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.occurrenceTypeDisplay}`) }
         ];
+        this.quickFilters = this.buildQuickFilters([
+          ['all', 'Todas'],
+          ['aberta', 'Abertas'],
+          ['resolvida', 'Resolvidas'],
+          ['critica', 'Críticas']
+        ]);
         break;
       }
       default:
         this.overviewCards = [{ label: 'Registros carregados', value: String(total), detail: 'Base ativa neste módulo' }];
         this.insightPanels = [];
+        this.quickFilters = this.buildQuickFilters([['all', 'Todos']]);
         break;
     }
 

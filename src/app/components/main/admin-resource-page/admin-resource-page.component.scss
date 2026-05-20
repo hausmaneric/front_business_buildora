@@ -63,7 +63,6 @@
 .resource-hero-copy {
   display: grid;
   gap: 8px;
-  text-align: left;
 }
 
 .resource-eyebrow {
@@ -122,11 +121,6 @@
   color: #0f172a;
 }
 
-.overview-label,
-.overview-card small {
-  color: #64748b;
-}
-
 .overview-card.tone-success {
   background: rgba(236, 253, 245, 0.95);
   border-color: rgba(16, 185, 129, 0.2);
@@ -142,6 +136,42 @@
   border-color: rgba(220, 38, 38, 0.16);
 }
 
+.quick-filter-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.quick-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.quick-filter-chip strong {
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: #0f172a;
+  font-size: 0.8rem;
+}
+
+.quick-filter-chip.active {
+  background: rgba(5, 150, 105, 0.1);
+  border-color: rgba(5, 150, 105, 0.24);
+  color: #065f46;
+}
+
 .metric-pill {
   display: inline-flex;
   align-items: center;
@@ -153,10 +183,6 @@
   border: 1px solid rgba(100, 116, 139, 0.12);
   color: #64748b;
   font-size: 0.88rem;
-}
-
-.metric-pill strong {
-  color: #0f172a;
 }
 
 .resource-toolbar {
@@ -379,18 +405,6 @@
   animation: orb-spin 0.9s linear infinite;
 }
 
-.state-icon-placeholder {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.16);
-}
-
-.state-icon-empty {
-  color: #2563eb;
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.16);
-}
-
 .state-copy {
   display: grid;
   gap: 6px;
@@ -406,21 +420,6 @@
   margin: 0;
   color: #64748b;
   line-height: 1.6;
-}
-
-.state-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(16, 185, 129, 0.08);
-  color: #059669;
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .loading-skeleton {
