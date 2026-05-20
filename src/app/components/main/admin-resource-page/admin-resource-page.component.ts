@@ -521,13 +521,13 @@ export class AdminResourcePageComponent {
       case 'users':
         return `${this.selectedRow.roleDisplay || 'Perfil não definido'} • ${this.selectedRow.activeDisplay || 'Situação não informada'}`;
       case 'materials':
-        return `${this.selectedRow.movementDisplay || 'Movimentação não informada'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
+        return `${this.selectedRow.movementDisplay || 'Movimentação não informada'} • ${this.selectedRow.quantityDisplay || 'Quantidade não informada'} ${this.selectedRow.unitDisplay || ''}`.trim();
       case 'equipments':
-        return `${this.selectedRow.equipmentStatusDisplay || 'Situação não informada'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
+        return `${this.selectedRow.equipmentStatusDisplay || 'Situação não informada'} • ${this.selectedRow.hoursUsedDisplay || 'Horas não informadas'} • ${this.selectedRow.maintenanceDisplay || 'Sem alerta de manutenção'}`;
       case 'occurrences':
-        return `${this.selectedRow.severityDisplay || 'Gravidade não informada'} • ${this.selectedRow.resolvedDisplay || 'Situação não informada'}`;
+        return `${this.selectedRow.occurrenceTypeDisplay || 'Tipo não informado'} • ${this.selectedRow.severityDisplay || 'Gravidade não informada'} • ${this.selectedRow.resolvedDisplay || 'Situação não informada'}`;
       case 'documents':
-        return `${this.selectedRow.fileTypeDisplay || 'Tipo não informado'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
+        return `${this.selectedRow.fileTypeDisplay || 'Tipo não informado'} • ${this.selectedRow.fileSizeDisplay || 'Tamanho não informado'} • ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`;
       default:
         return '';
     }
@@ -642,17 +642,20 @@ export class AdminResourcePageComponent {
       case 'materials':
         return [
           `Material: ${this.selectedRow.material_name || 'Não informado'}`,
+          `Quantidade lançada: ${this.selectedRow.quantityDisplay || 'Não informada'} ${this.selectedRow.unitDisplay || ''}`.trim(),
           `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
           `Movimentação associada ao diário: ${this.selectedRow.diaryDisplay || 'Não vinculada'}`
         ];
       case 'equipments':
         return [
           `Equipamento: ${this.selectedRow.equipment_name || 'Não informado'}`,
+          `Horas registradas: ${this.selectedRow.hoursUsedDisplay || 'Não informadas'}`,
           `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
           `Status de manutenção: ${this.selectedRow.maintenanceDisplay || 'Sem alerta'}`
         ];
       case 'occurrences':
         return [
+          `Título operacional: ${this.selectedRow.title || 'Sem título cadastrado'}`,
           `Descrição: ${this.selectedRow.descriptionDisplay || 'Sem descrição cadastrada'}`,
           `Registro diário: ${this.selectedRow.diaryDisplay || 'Não vinculado'}`,
           `Fechamento operacional: ${this.selectedRow.resolvedDisplay || 'Sem situação'}`
@@ -660,6 +663,7 @@ export class AdminResourcePageComponent {
       case 'documents':
         return [
           `Arquivo registrado: ${this.selectedRow.file_name || 'Não informado'}`,
+          `Observações: ${this.selectedRow.notesDisplay || 'Sem observações'}`,
           `URL disponível: ${this.selectedRow.urlDisplay || 'Sem link'}`,
           `Vínculo operacional: ${this.selectedRow.diaryDisplay || 'Sem diário vinculado'}`
         ];
@@ -817,8 +821,9 @@ export class AdminResourcePageComponent {
       materials: [
         { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
         { field: 'material_name', headerText: 'Material', width: 260 },
-        { field: 'movementDisplay', headerText: 'Movimento', width: 160 },
+        { field: 'movementDisplay', headerText: 'Movimento', width: 170, type: 'badge' as const },
         { field: 'quantityDisplay', headerText: 'Quantidade', width: 150 },
+        { field: 'unitDisplay', headerText: 'Unidade', width: 130 },
         { field: 'notesDisplay', headerText: 'Observações', width: 280 }
       ],
       equipments: [
@@ -826,6 +831,7 @@ export class AdminResourcePageComponent {
         { field: 'equipment_name', headerText: 'Equipamento', width: 240 },
         { field: 'equipmentStatusDisplay', headerText: 'Situação', width: 160, type: 'badge' as const },
         { field: 'hoursUsedDisplay', headerText: 'Horas de uso', width: 150 },
+        { field: 'maintenanceDisplay', headerText: 'Manutenção', width: 180, type: 'badge' as const },
         { field: 'notesDisplay', headerText: 'Observações', width: 280 }
       ],
       occurrences: [
@@ -833,13 +839,15 @@ export class AdminResourcePageComponent {
         { field: 'title', headerText: 'Título', width: 240 },
         { field: 'occurrenceTypeDisplay', headerText: 'Tipo', width: 160 },
         { field: 'severityDisplay', headerText: 'Gravidade', width: 150, type: 'badge' as const },
-        { field: 'resolvedDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+        { field: 'resolvedDisplay', headerText: 'Situação', width: 150, type: 'badge' as const },
+        { field: 'descriptionDisplay', headerText: 'Descrição', width: 320 }
       ],
       documents: [
         { field: 'diaryDisplay', headerText: 'Diário', width: 220 },
         { field: 'file_name', headerText: 'Arquivo', width: 260 },
-        { field: 'fileTypeDisplay', headerText: 'Tipo', width: 150 },
+        { field: 'fileTypeDisplay', headerText: 'Tipo', width: 150, type: 'badge' as const },
         { field: 'fileSizeDisplay', headerText: 'Tamanho', width: 150, type: 'storage' as const },
+        { field: 'notesDisplay', headerText: 'Observações', width: 260 },
         { field: 'urlDisplay', headerText: 'Link', width: 320 }
       ],
       users: [
@@ -1242,15 +1250,37 @@ export class AdminResourcePageComponent {
       case 'diaries':
         return this.matchText(row?.statusDisplay, filterId);
       case 'materials':
+        if (filterId === 'saida') {
+          return this.matchText(row?.movementDisplay, 'saida') || this.matchText(row?.movementDisplay, 'consumo');
+        }
+        if (filterId === 'alto_volume') {
+          return Number(row?.quantity || 0) >= 100;
+        }
         return this.matchText(row?.movementDisplay, filterId);
       case 'equipments':
+        if (filterId === 'uso_intenso') {
+          return Number(row?.hours_used || 0) >= 100;
+        }
+        if (filterId === 'manutencao') {
+          return this.matchText(row?.maintenanceDisplay, 'manuten');
+        }
         return this.matchText(row?.equipmentStatusDisplay, filterId);
       case 'documents':
+        if (filterId === 'jpg') {
+          return this.matchText(row?.fileTypeDisplay, 'jpg') || this.matchText(row?.fileTypeDisplay, 'jpeg') || this.matchText(row?.fileTypeDisplay, 'png');
+        }
+        if (filterId === 'com_link') {
+          return !!row?.urlDisplay && row.urlDisplay !== 'Sem link';
+        }
+        if (filterId === 'grande') {
+          return Number(row?.file_size_bytes || 0) >= 5 * 1024 * 1024;
+        }
         return this.matchText(row?.fileTypeDisplay, filterId);
       case 'occurrences':
         if (filterId === 'aberta') return this.matchText(row?.resolvedDisplay, 'aberta');
         if (filterId === 'resolvida') return this.matchText(row?.resolvedDisplay, 'resolvida');
         if (filterId === 'critica') return this.matchText(row?.severityDisplay, 'critica');
+        if (filterId === 'alta') return this.matchText(row?.severityDisplay, 'alta');
         return false;
       case 'users':
         if (filterId === 'aprovador') return this.matchText(row?.approvalDisplay, 'pode aprovar');
@@ -1578,7 +1608,8 @@ export class AdminResourcePageComponent {
           ['all', 'Todos'],
           ['pdf', 'PDF'],
           ['jpg', 'Imagens'],
-          ['png', 'PNG']
+          ['com_link', 'Com link'],
+          ['grande', 'Arquivos grandes']
         ]);
         break;
       }
@@ -1600,7 +1631,8 @@ export class AdminResourcePageComponent {
           ['all', 'Todos'],
           ['entrada', 'Entradas'],
           ['saida', 'Saídas'],
-          ['consumo', 'Consumos']
+          ['consumo', 'Consumos'],
+          ['alto_volume', 'Alto volume']
         ]);
         break;
       }
@@ -1622,7 +1654,8 @@ export class AdminResourcePageComponent {
           ['all', 'Todos'],
           ['em_uso', 'Em uso'],
           ['disponivel', 'Disponíveis'],
-          ['manutencao', 'Manutenção']
+          ['manutencao', 'Manutenção'],
+          ['uso_intenso', 'Uso intenso']
         ]);
         break;
       }
@@ -1643,7 +1676,8 @@ export class AdminResourcePageComponent {
           ['all', 'Todas'],
           ['aberta', 'Abertas'],
           ['resolvida', 'Resolvidas'],
-          ['critica', 'Críticas']
+          ['critica', 'Críticas'],
+          ['alta', 'Alta gravidade']
         ]);
         break;
       }
