@@ -310,7 +310,7 @@ export class AdminResourcePageComponent {
       return;
     }
 
-    if (!confirm(`Deseja remover este registro de ${this.title.toLowerCase()}?`)) {
+    if (!confirm(`Deseja remover ${this.rowIdentityLabel(row)} de ${this.title.toLowerCase()}? Esta ação não poderá ser desfeita.`)) {
       return;
     }
 
@@ -680,6 +680,7 @@ export class AdminResourcePageComponent {
     if (control.errors['required']) return 'Campo obrigatório.';
     if (control.errors['email']) return 'Informe um e-mail válido.';
     if (control.errors['min']) return 'Valor abaixo do mínimo permitido.';
+    if (control.errors['pattern']) return this.patternErrorMessage(controlName);
     return 'Valor inválido.';
   }
 
@@ -1313,11 +1314,42 @@ export class AdminResourcePageComponent {
       if (field.required) validators.push(Validators.required);
       if (field.min !== undefined) validators.push(Validators.min(field.min));
       if (field.controlName === 'email') validators.push(Validators.email);
+      if (field.controlName === 'file_url') validators.push(Validators.pattern(/^https?:\/\/.+/i));
+      if (field.controlName === 'phone') validators.push(Validators.pattern(/^[0-9()+\-\s]{8,20}$/));
+      if (field.controlName === 'document') validators.push(Validators.pattern(/^[0-9./-]{8,20}$/));
+      if (field.controlName === 'zipcode') validators.push(Validators.pattern(/^[0-9-]{8,10}$/));
       const initial = field.type === 'checkbox' ? false : '';
       group[field.controlName] = new FormControl(initial, validators);
     }
     group['id'] = new FormControl(null);
     return this.fb.group(group);
+  }
+
+  private patternErrorMessage(controlName: string): string {
+    switch (controlName) {
+      case 'file_url':
+        return 'Informe uma URL válida iniciando com http:// ou https://.';
+      case 'phone':
+        return 'Informe um telefone válido.';
+      case 'document':
+        return 'Informe um documento válido.';
+      case 'zipcode':
+        return 'Informe um CEP válido.';
+      default:
+        return 'Formato inválido.';
+    }
+  }
+
+  private rowIdentityLabel(row: any): string {
+    const label =
+      row?.name ||
+      row?.title ||
+      row?.material_name ||
+      row?.equipment_name ||
+      row?.file_name ||
+      row?.code ||
+      row?.id;
+    return label ? `"${label}"` : 'este registro';
   }
 
   private createPayload(): Record<string, any> {
