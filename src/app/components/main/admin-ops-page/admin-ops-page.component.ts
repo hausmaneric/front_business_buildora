@@ -619,6 +619,14 @@ export class AdminOpsPageComponent {
           openOccurrences ? `${openOccurrences} ocorrências seguem abertas e devem entrar nos relatórios de risco` : 'Não há ocorrências abertas no momento',
           productivity ? `A produtividade operacional estimada está em ${productivity}%` : 'A produtividade ainda não tem base suficiente'
         ]
+      },
+      {
+        title: 'Próximos passos recomendados',
+        lines: [
+          pendingDiaries ? `Priorize ${pendingDiaries} diários pendentes para acelerar fechamento e histórico` : 'Os diários já estão em estágio saudável para fechamento',
+          openOccurrences ? `Inclua ${openOccurrences} ocorrências abertas no resumo gerencial da semana` : 'Não há desvios críticos pressionando o relatório atual',
+          documents.length ? `${documents.length} documentos podem enriquecer relatórios e entregas formais` : 'A base documental ainda precisa amadurecer para relatórios mais ricos'
+        ]
       }
     ];
   }
@@ -769,6 +777,14 @@ export class AdminOpsPageComponent {
           `${roles.length} perfis sustentam a governança operacional atual`,
           `${projects.length} obras e ${teams.length} equipes dependem dessas configurações`,
           'Priorize identidade visual, contato e regras de governança antes de expandir acessos'
+        ]
+      },
+      {
+        title: 'Próximas ações',
+        lines: [
+          company?.logo_url ? 'A identidade visual principal já está registrada no tenant' : 'Cadastre a logo oficial para padronizar relatórios e telas',
+          company?.email ? 'O e-mail principal já pode receber notificações e automações' : 'Defina um e-mail principal para comunicação e alertas',
+          roles.length ? 'Os perfis existentes já permitem avançar na governança de usuários' : 'Crie perfis mínimos de gestor, engenharia e campo antes de expandir acessos'
         ]
       }
     ];
@@ -1086,6 +1102,14 @@ export class AdminOpsPageComponent {
           `${approved} diários já atingiram o estágio ideal para assinatura formal`,
           `${pending} registros ainda exigem validação antes de liberar a próxima etapa`,
           'Esta base já suporta a evolução para assinatura digital e trilha de auditoria'
+        ]
+      },
+      {
+        title: 'Próximos passos',
+        lines: [
+          approved ? `${approved} diários já podem seguir para assinatura formal ou fluxo digital avançado` : 'Ainda não há diários aprovados prontos para assinatura formal',
+          pending ? `${pending} registros precisam de revisão para liberar o aceite operacional` : 'A fila de pendências está controlada no momento',
+          rejected ? `${rejected} reprovações exigem correção antes da assinatura` : 'Não há reprovações bloqueando o fluxo atual'
         ]
       }
     ];
