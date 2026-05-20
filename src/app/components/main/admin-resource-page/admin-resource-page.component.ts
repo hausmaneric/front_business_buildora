@@ -511,9 +511,9 @@ export class AdminResourcePageComponent {
     if (!this.selectedRow) return '';
     switch (this.resource) {
       case 'projects':
-        return `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay}`;
+        return `${this.selectedRow.clientDisplay} • ${this.selectedRow.locationDisplay} • ${this.selectedRow.statusDisplay || 'Situação não informada'}`;
       case 'diaries':
-        return `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay}`;
+        return `${this.selectedRow.statusDisplay} • ${this.selectedRow.weatherDisplay} • ${this.selectedRow.projectDisplay || 'Sem obra vinculada'}`;
       case 'activities':
         return `${this.selectedRow.diaryDisplay || 'Sem diário vinculado'} • ${this.selectedRow.workflowDisplay || 'Fluxo não informado'}`;
       case 'teams':
@@ -611,13 +611,15 @@ export class AdminResourcePageComponent {
         return [
           `Código da obra: ${this.selectedRow.code || '-'}`,
           `Endereço base: ${[this.selectedRow.address, this.selectedRow.number, this.selectedRow.district].filter(Boolean).join(', ') || 'Não informado'}`,
-          `Cidade / UF: ${this.selectedRow.locationDisplay || 'Não informado'}`
+          `Cidade / UF: ${this.selectedRow.locationDisplay || 'Não informado'}`,
+          `Cliente vinculado: ${this.selectedRow.clientDisplay || 'Não informado'}`
         ];
       case 'diaries':
         return [
           `Resumo: ${this.selectedRow.summaryDisplay || 'Sem resumo'}`,
           `Ocorrências: ${this.selectedRow.occurrences || 'Sem ocorrências registradas'}`,
-          `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`
+          `Data de trabalho: ${this.selectedRow.workDateDisplay || '-'}`,
+          `Fluxo atual: ${this.selectedRow.statusDisplay || 'Não informado'}`
         ];
       case 'activities':
         return [
@@ -1247,8 +1249,11 @@ export class AdminResourcePageComponent {
   private matchesQuickFilter(row: any, filterId: string): boolean {
     switch (this.resource) {
       case 'projects':
+        if (filterId === 'prazo') return this.isDueSoon(row?.end_date);
+        if (filterId === 'orcada') return Number(row?.budget_amount || 0) > 0;
         return this.matchText(row?.statusDisplay, filterId);
       case 'diaries':
+        if (filterId === 'clima_critico') return this.matchText(row?.weatherDisplay, 'chuva') || this.matchText(row?.weatherDisplay, 'tempestade') || this.matchText(row?.weatherDisplay, 'vento');
         return this.matchText(row?.statusDisplay, filterId);
       case 'materials':
         if (filterId === 'saida') {
@@ -1536,7 +1541,9 @@ export class AdminResourcePageComponent {
           ['andamento', 'Em andamento'],
           ['planejada', 'Planejadas'],
           ['concluida', 'Concluídas'],
-          ['pausada', 'Pausadas']
+          ['pausada', 'Pausadas'],
+          ['prazo', 'Prazo próximo'],
+          ['orcada', 'Com orçamento']
         ]);
         break;
       }
@@ -1557,7 +1564,8 @@ export class AdminResourcePageComponent {
           ['all', 'Todos'],
           ['pendente', 'Pendentes'],
           ['aprovado', 'Aprovados'],
-          ['reprovado', 'Reprovados']
+          ['reprovado', 'Reprovados'],
+          ['clima_critico', 'Clima crítico']
         ]);
         break;
       }
