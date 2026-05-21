@@ -1388,6 +1388,20 @@ export class AdminResourcePageComponent {
       case 'diaries':
         if (filterId === 'clima_critico') return this.matchText(row?.weatherDisplay, 'chuva') || this.matchText(row?.weatherDisplay, 'tempestade') || this.matchText(row?.weatherDisplay, 'vento');
         return this.matchText(row?.statusDisplay, filterId);
+      case 'activities':
+        if (filterId === 'instalacoes') {
+          return this.matchText(row?.stageDisplay, 'instala');
+        }
+        if (filterId === 'execucao') {
+          return this.matchText(row?.workflowDisplay, 'execu');
+        }
+        if (filterId === 'aguardando') {
+          return this.matchText(row?.workflowDisplay, 'aguard');
+        }
+        if (filterId === 'concluida') {
+          return this.matchText(row?.workflowDisplay, 'conclu');
+        }
+        return this.matchText(row?.stageDisplay, filterId) || this.matchText(row?.workflowDisplay, filterId);
       case 'materials':
         if (filterId === 'saida') {
           return this.matchText(row?.movementDisplay, 'saida') || this.matchText(row?.movementDisplay, 'consumo');
@@ -1712,6 +1726,9 @@ export class AdminResourcePageComponent {
       }
       case 'activities': {
         const quantity = rows.reduce((sum, row) => sum + Number(row.quantity || 0), 0);
+        const emExecucao = rows.filter((row) => this.matchText(row.workflowDisplay, 'execu')).length;
+        const aguardando = rows.filter((row) => this.matchText(row.workflowDisplay, 'aguard')).length;
+        const concluidas = rows.filter((row) => this.matchText(row.workflowDisplay, 'conclu')).length;
         this.overviewCards = [
           { label: 'Atividades registradas', value: String(total), detail: `${new Set(rows.map((row) => row.daily_log_id)).size} diários impactados` },
           { label: 'Serviços distintos', value: String(new Set(rows.map((row) => row.service_name)).size), detail: 'Frentes executadas' },
@@ -1720,13 +1737,22 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Últimos serviços', lines: rows.slice(0, 5).map((row) => `${row.service_name} • ${row.diaryDisplay}`) },
-          { title: 'Observações recentes', lines: rows.filter((row) => row.notes).slice(0, 4).map((row) => `${row.service_name} • ${row.notes}`) }
+          { title: 'Observações recentes', lines: rows.filter((row) => row.notes).slice(0, 4).map((row) => `${row.service_name} • ${row.notes}`) },
+          {
+            title: 'Fluxo operacional',
+            lines: [
+              `${emExecucao} atividades estão em execução no campo`,
+              `${aguardando} atividades aguardam liberação ou sequência`,
+              `${concluidas} atividades já foram concluídas e registradas`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todas'],
-          ['instalacao', 'Instalações'],
-          ['montagem', 'Montagens'],
-          ['concretagem', 'Concretagens']
+          ['execucao', 'Em execução'],
+          ['aguardando', 'Aguardando'],
+          ['concluida', 'Concluídas'],
+          ['instalacoes', 'Instalações']
         ]);
         break;
       }
