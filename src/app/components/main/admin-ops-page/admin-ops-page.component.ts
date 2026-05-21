@@ -168,8 +168,16 @@ export class AdminOpsPageComponent {
 
   detailPrimaryActionLabel(): string {
     switch (this.resource) {
+      case 'climate':
+        return 'Ver diário';
+      case 'signatures':
+        return 'Abrir diário';
       case 'photos':
         return 'Abrir arquivo';
+      case 'pdf-automation':
+        return 'Ver relatórios';
+      case 'whatsapp':
+        return 'Abrir contato';
       case 'integrations':
         return 'Abrir link';
       case 'settings':
@@ -183,8 +191,16 @@ export class AdminOpsPageComponent {
 
   detailSecondaryActionLabel(): string {
     switch (this.resource) {
+      case 'climate':
+        return 'Ir para diários';
+      case 'signatures':
+        return 'Ir para assinaturas';
       case 'photos':
         return 'Copiar link';
+      case 'pdf-automation':
+        return 'Ir para documentos';
+      case 'whatsapp':
+        return 'Copiar obra';
       case 'integrations':
         return 'Copiar link';
       case 'settings':
@@ -199,6 +215,12 @@ export class AdminOpsPageComponent {
   canUseDetailPrimaryAction(): boolean {
     if (!this.selectedRow) return false;
     switch (this.resource) {
+      case 'climate':
+      case 'signatures':
+      case 'pdf-automation':
+        return true;
+      case 'whatsapp':
+        return !!(this.selectedRow.usuario || this.selectedRow.obra);
       case 'photos':
       case 'integrations':
         return !!(this.selectedRow.link || this.selectedRow.file_url);
@@ -214,6 +236,12 @@ export class AdminOpsPageComponent {
   canUseDetailSecondaryAction(): boolean {
     if (!this.selectedRow) return false;
     switch (this.resource) {
+      case 'climate':
+      case 'signatures':
+      case 'pdf-automation':
+        return true;
+      case 'whatsapp':
+        return !!this.selectedRow.obra;
       case 'photos':
       case 'integrations':
         return !!(this.selectedRow.link || this.selectedRow.file_url);
@@ -229,9 +257,19 @@ export class AdminOpsPageComponent {
   runDetailPrimaryAction(): void {
     if (!this.selectedRow) return;
     switch (this.resource) {
+      case 'climate':
+      case 'signatures':
+        void this.router.navigate(['/main/diaries']);
+        return;
       case 'photos':
       case 'integrations':
         this.openExternalUrl(this.selectedRow.link || this.selectedRow.file_url);
+        return;
+      case 'pdf-automation':
+        void this.router.navigate(['/main/reports']);
+        return;
+      case 'whatsapp':
+        void this.copyToClipboard(this.selectedRow.usuario || this.selectedRow.obra, 'Contato preparado', 'A referência operacional foi copiada para compartilhamento rápido.');
         return;
       case 'settings':
         void this.router.navigate(['/main/settings']);
@@ -245,9 +283,21 @@ export class AdminOpsPageComponent {
   runDetailSecondaryAction(): void {
     if (!this.selectedRow) return;
     switch (this.resource) {
+      case 'climate':
+        void this.router.navigate(['/main/diaries']);
+        return;
+      case 'signatures':
+        void this.router.navigate(['/main/signatures']);
+        return;
       case 'photos':
       case 'integrations':
         void this.copyToClipboard(this.selectedRow.link || this.selectedRow.file_url, 'Link copiado', 'O link foi copiado com sucesso.');
+        return;
+      case 'pdf-automation':
+        void this.router.navigate(['/main/documents']);
+        return;
+      case 'whatsapp':
+        void this.copyToClipboard(this.selectedRow.obra, 'Obra copiada', 'A obra relacionada foi copiada com sucesso.');
         return;
       case 'settings':
         void this.copyToClipboard(this.selectedRow.valor || this.selectedRow.configuracao, 'Valor copiado', 'O valor da configuração foi copiado.');
