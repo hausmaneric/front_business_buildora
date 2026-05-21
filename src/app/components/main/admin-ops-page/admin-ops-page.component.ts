@@ -1596,10 +1596,11 @@ export class AdminOpsPageComponent {
   private mapWhatsapp(payload: SnapshotPayload): void {
     const users = this.items<BusinessUser>(payload.users?.data);
     const withPhone = users.filter((item) => !!item.phone);
+    const activeWithPhone = withPhone.filter((item) => this.toBoolean(item.active)).length;
 
     this.cards = [
       { label: 'Usuários com telefone', value: `${withPhone.length}`, detail: `${users.length} usuários cadastrados` },
-      { label: 'Prontos para WhatsApp', value: `${withPhone.length}`, detail: 'Contatos com número informado', tone: 'success' },
+      { label: 'Prontos para WhatsApp', value: `${activeWithPhone}`, detail: 'Contatos ativos com número informado', tone: 'success' },
       { label: 'Sem contato', value: `${users.length - withPhone.length}`, detail: 'Exigem cadastro do telefone', tone: 'warning' },
       { label: 'Obras com comunicação', value: `${this.items<BusinessProject>(payload.projects?.data).length}`, detail: 'Base para comunicação operacional' }
     ];
@@ -1618,6 +1619,39 @@ export class AdminOpsPageComponent {
       { field: 'telefone', headerText: 'Telefone', width: 170 },
       { field: 'canal', headerText: 'Canal', width: 180, type: 'badge' },
       { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
+    ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['phone_ready', 'Prontos'],
+      ['no_contact', 'Sem contato'],
+      ['active', 'Ativos']
+    ]);
+
+    this.panels = [
+      {
+        title: 'Cobertura de comunicação',
+        lines: [
+          `${activeWithPhone} usuários ativos já podem receber comunicação rápida por WhatsApp`,
+          `${users.length - withPhone.length} registros ainda precisam de telefone para uso operacional`,
+          'A base atual já sustenta avisos de campo, confirmações e comunicação com responsáveis'
+        ]
+      },
+      {
+        title: 'Fila de saneamento',
+        lines: this.rows
+          .filter((row) => row.telefone === 'Não informado')
+          .slice(0, 5)
+          .map((row) => `${row.usuario} • ${row.email} • ${row.situacao}`)
+      },
+      {
+        title: 'Próximas ações',
+        lines: [
+          `${activeWithPhone} contatos já estão prontos para rotinas rápidas de comunicação em campo`,
+          `${this.rows.filter((row) => row.situacao === 'Ativo' && row.telefone === 'Não informado').length} usuários ativos ainda exigem cadastro de telefone`,
+          'Use esta base para avisos operacionais, confirmações de diário e alinhamento com responsáveis'
+        ]
+      }
     ];
   }
 
@@ -1937,6 +1971,7 @@ export class AdminOpsPageComponent {
       const blockage = String(row?.bloqueio || '').toLowerCase();
       const weather = String(row?.clima || '').toLowerCase();
       const summary = String(row?.resumo || '').toLowerCase();
+      const phone = String(row?.telefone || '').toLowerCase();
       const diaries = Number(row?.diarios || 0);
       const occurrences = Number(row?.ocorrencias || 0);
       const budget = Number(row?.orcamento_valor || 0);
@@ -1979,13 +2014,17 @@ export class AdminOpsPageComponent {
           return blockage.includes('bloque') || status.includes('bloque');
         case 'rejected':
           return status.includes('reprov');
-        case 'healthy':
-          return status.includes('saud') || balance >= 0;
-        case 'high_budget':
-          return budget >= 100000;
-        default:
-          return true;
-      }
+          case 'healthy':
+            return status.includes('saud') || balance >= 0;
+          case 'high_budget':
+            return budget >= 100000;
+          case 'phone_ready':
+            return !phone.includes('não informado') && !phone.includes('nao informado');
+          case 'no_contact':
+            return phone.includes('não informado') || phone.includes('nao informado');
+          default:
+            return true;
+        }
   }
 
   private applyFilter(): void {
