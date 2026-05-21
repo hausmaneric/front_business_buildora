@@ -1388,6 +1388,8 @@ export class AdminResourcePageComponent {
         return this.matchText(row?.statusDisplay, filterId);
       case 'diaries':
         if (filterId === 'clima_critico') return this.matchText(row?.weatherDisplay, 'chuva') || this.matchText(row?.weatherDisplay, 'tempestade') || this.matchText(row?.weatherDisplay, 'vento');
+        if (filterId === 'com_ocorrencia') return !!String(row?.occurrences || '').trim();
+        if (filterId === 'com_resumo') return !!String(row?.summary || '').trim();
         return this.matchText(row?.statusDisplay, filterId);
       case 'activities':
         if (filterId === 'instalacoes') {
@@ -1718,6 +1720,8 @@ export class AdminResourcePageComponent {
       case 'diaries': {
         const approved = rows.filter((row) => row.statusDisplay === 'Aprovado').length;
         const pending = rows.filter((row) => row.statusDisplay === 'Pendente').length;
+        const withOccurrence = rows.filter((row) => !!String(row.occurrences || '').trim()).length;
+        const withSummary = rows.filter((row) => !!String(row.summary || '').trim()).length;
         this.overviewCards = [
           { label: 'Diários lançados', value: String(total), detail: `${pending} aguardando análise` },
           { label: 'Aprovados', value: String(approved), detail: 'Prontos para histórico', tone: 'success' },
@@ -1734,6 +1738,14 @@ export class AdminResourcePageComponent {
               `${rows.filter((row) => String(row.weatherDisplay || '').toLowerCase().includes('chuva') || String(row.weatherDisplay || '').toLowerCase().includes('tempestade')).length} registros têm clima com potencial de impacto`,
               approved ? `${approved} diários já podem seguir para histórico, assinatura ou fechamento` : 'Ainda não há diários prontos para fechamento'
             ]
+          },
+          {
+            title: 'Qualidade do registro',
+            lines: [
+              `${withSummary} diários já contam com resumo operacional preenchido`,
+              `${withOccurrence} diários trazem ocorrências registradas para acompanhamento`,
+              `${rows.filter((row) => !String(row.summary || '').trim()).length} diários ainda podem ganhar fechamento mais completo`
+            ]
           }
         ];
         this.quickFilters = this.buildQuickFilters([
@@ -1741,7 +1753,9 @@ export class AdminResourcePageComponent {
           ['pendente', 'Pendentes'],
           ['aprovado', 'Aprovados'],
           ['reprovado', 'Reprovados'],
-          ['clima_critico', 'Clima crítico']
+          ['clima_critico', 'Clima crítico'],
+          ['com_ocorrencia', 'Com ocorrência'],
+          ['com_resumo', 'Com resumo']
         ]);
         break;
       }
