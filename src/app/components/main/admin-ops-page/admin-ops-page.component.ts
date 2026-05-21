@@ -1888,8 +1888,9 @@ export class AdminOpsPageComponent {
   private mapIntegrations(payload: SnapshotPayload): void {
     const company = this.items<any>(payload.companies?.data)[0];
     const documents = this.items<BusinessDocument>(payload.documents?.data);
+    const linkedDocuments = documents.filter((item) => !!item.file_url).length;
     this.cards = [
-      { label: 'Documentos com link', value: `${documents.filter((item) => !!item.file_url).length}`, detail: 'Base para integração em nuvem', tone: 'success' },
+      { label: 'Documentos com link', value: `${linkedDocuments}`, detail: 'Base para integração em nuvem', tone: 'success' },
       { label: 'Empresa conectável', value: company?.email ? 'Sim' : 'Não', detail: 'Contato principal cadastrado' },
       { label: 'Google Drive', value: 'Preparado', detail: 'Estrutura pronta para conector' },
       { label: 'OneDrive', value: 'Preparado', detail: 'Estrutura pronta para conector' }
@@ -1909,6 +1910,12 @@ export class AdminOpsPageComponent {
       { field: 'integracao', headerText: 'Integração', width: 160, type: 'badge' }
     ];
 
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['available', 'Com link'],
+      ['pending', 'Pendentes']
+    ]);
+
     this.panels = [
       {
         title: 'Conectores previstos',
@@ -1917,17 +1924,28 @@ export class AdminOpsPageComponent {
           'Google Drive e OneDrive podem ser conectados sem mudar a estrutura da tela.',
           'O próximo passo é versionamento, sincronização e regras por pasta ou obra.'
         ]
+      },
+      {
+        title: 'Prontidão de integração',
+        lines: [
+          `${linkedDocuments} documentos já podem seguir para conectores externos`,
+          `${documents.length - linkedDocuments} arquivos ainda precisam de link para sincronização`,
+          company?.email ? 'A empresa já tem contato principal para governar integrações' : 'Defina um contato principal antes de expandir integrações externas'
+        ]
       }
     ];
   }
 
   private mapDigitalSignature(payload: SnapshotPayload): void {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
+    const approved = diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length;
+    const pending = diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
+    const rejected = diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length;
     this.cards = [
       { label: 'Diários elegíveis', value: `${diaries.length}`, detail: 'Base para assinatura avançada' },
-      { label: 'Prontos', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length}`, detail: 'Mais próximos de assinatura digital', tone: 'success' },
-      { label: 'Pendentes', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Aguardando preparação', tone: 'warning' },
-      { label: 'Reprovados', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length}`, detail: 'Exigem correção', tone: 'danger' }
+      { label: 'Prontos', value: `${approved}`, detail: 'Mais próximos de assinatura digital', tone: 'success' },
+      { label: 'Pendentes', value: `${pending}`, detail: 'Aguardando preparação', tone: 'warning' },
+      { label: 'Reprovados', value: `${rejected}`, detail: 'Exigem correção', tone: 'danger' }
     ];
 
     this.rows = diaries.map((diary) => ({
@@ -1946,6 +1964,13 @@ export class AdminOpsPageComponent {
       { field: 'rastreio', headerText: 'Rastreio', width: 160 }
     ];
 
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Prontos'],
+      ['pending', 'Pendentes'],
+      ['rejected', 'Reprovados']
+    ]);
+
     this.panels = [
       {
         title: 'Preparação para assinatura digital',
@@ -1953,6 +1978,14 @@ export class AdminOpsPageComponent {
           'Diários aprovados já estão no melhor estágio para assinatura avançada.',
           'Pendências e reprovações precisam ser resolvidas antes de formalizar a assinatura.',
           'A próxima evolução é integrar trilha de auditoria e provedores externos de assinatura.'
+        ]
+      },
+      {
+        title: 'Prontidão formal',
+        lines: [
+          `${approved} diários já estão prontos para assinatura digital mais robusta`,
+          `${pending} registros seguem aguardando validação antes do aceite formal`,
+          rejected ? `${rejected} itens ainda bloqueiam a trilha digital por necessidade de correção` : 'Não há bloqueios por reprovação no fluxo atual'
         ]
       }
     ];
