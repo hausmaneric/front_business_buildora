@@ -1425,6 +1425,12 @@ export class AdminResourcePageComponent {
         if (filterId === 'com_link') {
           return !!row?.urlDisplay && row.urlDisplay !== 'Sem link';
         }
+        if (filterId === 'sem_link') {
+          return !row?.urlDisplay || row.urlDisplay === 'Sem link';
+        }
+        if (filterId === 'com_diario') {
+          return !!row?.daily_log_id;
+        }
         if (filterId === 'grande') {
           return Number(row?.file_size_bytes || 0) >= 5 * 1024 * 1024;
         }
@@ -1823,10 +1829,13 @@ export class AdminResourcePageComponent {
         break;
       }
       case 'documents': {
+        const withLink = rows.filter((row) => row.urlDisplay && row.urlDisplay !== 'Sem link').length;
+        const withDiary = new Set(rows.map((row) => row.daily_log_id)).size;
+        const pdfCount = rows.filter((row) => String(row.fileTypeDisplay || '').toLowerCase().includes('pdf')).length;
         this.overviewCards = [
           { label: 'Documentos cadastrados', value: String(total), detail: `${new Set(rows.map((row) => row.fileTypeDisplay)).size} tipos distintos` },
-          { label: 'Com link válido', value: String(rows.filter((row) => row.urlDisplay && row.urlDisplay !== 'Sem link').length), detail: 'Prontos para consulta', tone: 'success' },
-          { label: 'Diários com anexo', value: String(new Set(rows.map((row) => row.daily_log_id)).size), detail: 'Base documental da obra' },
+          { label: 'Com link válido', value: String(withLink), detail: 'Prontos para consulta', tone: 'success' },
+          { label: 'Diários com anexo', value: String(withDiary), detail: 'Base documental da obra' },
           { label: 'Volume total', value: this.formatFileSize(rows.reduce((sum, row) => sum + Number(row.file_size_bytes || 0), 0)), detail: 'Armazenamento catalogado' }
         ];
         this.insightPanels = [
@@ -1836,8 +1845,16 @@ export class AdminResourcePageComponent {
             title: 'Organização recomendada',
             lines: [
               `${rows.filter((row) => !row.urlDisplay || row.urlDisplay === 'Sem link').length} arquivos ainda precisam de publicação ou vínculo`,
-              `${rows.filter((row) => String(row.fileTypeDisplay || '').toLowerCase().includes('pdf')).length} documentos já estão prontos para leitura formal`,
-              `${new Set(rows.map((row) => row.daily_log_id)).size} diários já contam com base documental associada`
+              `${pdfCount} documentos já estão prontos para leitura formal`,
+              `${withDiary} diários já contam com base documental associada`
+            ]
+          },
+          {
+            title: 'Prontidão para relatório',
+            lines: [
+              `${withLink} arquivos já podem ser compartilhados em relatórios e fechamento`,
+              `${rows.filter((row) => !row.urlDisplay || row.urlDisplay === 'Sem link').length} itens ainda exigem publicação antes do envio`,
+              `${pdfCount} documentos em PDF reforçam a trilha formal da obra`
             ]
           }
         ];
@@ -1846,6 +1863,8 @@ export class AdminResourcePageComponent {
           ['pdf', 'PDF'],
           ['jpg', 'Imagens'],
           ['com_link', 'Com link'],
+          ['sem_link', 'Sem link'],
+          ['com_diario', 'Com diário'],
           ['grande', 'Arquivos grandes']
         ]);
         break;
