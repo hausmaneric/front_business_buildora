@@ -1384,6 +1384,7 @@ export class AdminResourcePageComponent {
       case 'projects':
         if (filterId === 'prazo') return this.isDueSoon(row?.end_date);
         if (filterId === 'orcada') return Number(row?.budget_amount || 0) > 0;
+        if (filterId === 'orcamento_alto') return Number(row?.budget_amount || 0) >= 100000;
         return this.matchText(row?.statusDisplay, filterId);
       case 'diaries':
         if (filterId === 'clima_critico') return this.matchText(row?.weatherDisplay, 'chuva') || this.matchText(row?.weatherDisplay, 'tempestade') || this.matchText(row?.weatherDisplay, 'vento');
@@ -1681,6 +1682,7 @@ export class AdminResourcePageComponent {
         const active = rows.filter((row) => String(row.statusDisplay || '').toLowerCase().includes('andamento')).length;
         const dueSoon = rows.filter((row) => this.isDueSoon(row.end_date)).length;
         const budget = rows.reduce((sum, row) => sum + Number(row.budget_amount || 0), 0);
+        const highBudget = rows.filter((row) => Number(row.budget_amount || 0) >= 100000).length;
         this.overviewCards = [
           { label: 'Obras cadastradas', value: String(total), detail: `${active} em andamento` },
           { label: 'Prazo próximo', value: String(dueSoon), detail: 'Vencem em até 15 dias', tone: dueSoon ? 'warning' : 'success' },
@@ -1689,7 +1691,15 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Obras com prazo sensível', lines: rows.filter((row) => this.isDueSoon(row.end_date)).slice(0, 4).map((row) => `${row.name} • ${this.formatDate(row.end_date)}`) },
-          { title: 'Responsáveis', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.engineerDisplay || 'Não definido'}`) }
+          { title: 'Responsáveis', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.engineerDisplay || 'Não definido'}`) },
+          {
+            title: 'Saúde da carteira',
+            lines: [
+              `${active} obras seguem em andamento na carteira atual`,
+              `${highBudget} obras já estão no grupo de orçamento elevado`,
+              `${rows.filter((row) => !row.client_name).length} obras ainda precisam de cliente mais bem definido`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todas'],
@@ -1698,7 +1708,8 @@ export class AdminResourcePageComponent {
           ['concluida', 'Concluídas'],
           ['pausada', 'Pausadas'],
           ['prazo', 'Prazo próximo'],
-          ['orcada', 'Com orçamento']
+          ['orcada', 'Com orçamento'],
+          ['orcamento_alto', 'Orçamento alto']
         ]);
         break;
       }
