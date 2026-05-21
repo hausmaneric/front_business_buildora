@@ -1437,9 +1437,11 @@ export class AdminResourcePageComponent {
         return false;
       case 'users':
         if (filterId === 'aprovador') return this.matchText(row?.approvalDisplay, 'pode aprovar');
+        if (filterId === 'edicao') return this.matchText(row?.editDisplay, 'pode editar');
         return this.matchText(row?.activeDisplay, filterId);
       case 'teams':
         if (filterId === 'grande') return Number(row?.memberCountDisplay || 0) >= 5;
+        if (filterId === 'com_obra') return !!row?.project_id;
         return this.matchText(row?.activeDisplay, filterId);
       default:
         return true;
@@ -1759,6 +1761,7 @@ export class AdminResourcePageComponent {
       case 'teams': {
         const members = rows.reduce((sum, row) => sum + Number(row.memberCountDisplay || 0), 0);
         const activeTeams = rows.filter((row) => row.activeDisplay === 'Ativo').length;
+        const linkedTeams = rows.filter((row) => !!row.project_id).length;
         this.overviewCards = [
           { label: 'Equipes cadastradas', value: String(total), detail: `${activeTeams} ativas` },
           { label: 'Integrantes alocados', value: String(members), detail: 'Vínculos ativos nas equipes', tone: 'success' },
@@ -1768,19 +1771,29 @@ export class AdminResourcePageComponent {
         this.insightPanels = [
           { title: 'Equipes com maior composição', lines: [...rows].sort((a, b) => Number(b.memberCountDisplay || 0) - Number(a.memberCountDisplay || 0)).slice(0, 4).map((row) => `${row.name} • ${row.memberCountDisplay} integrantes`) },
           { title: 'Distribuição por obra', lines: rows.slice(0, 4).map((row) => `${row.name} • ${row.projectDisplay}`) },
-          { title: 'Equipes ativas', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 4).map((row) => `${row.name} • ${row.compositionDisplay}`) }
+          { title: 'Equipes ativas', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 4).map((row) => `${row.name} • ${row.compositionDisplay}`) },
+          {
+            title: 'Cobertura de alocação',
+            lines: [
+              `${linkedTeams} equipes já estão vinculadas a uma obra`,
+              `${rows.filter((row) => !row.project_id).length} equipes ainda precisam de destino operacional`,
+              `${rows.filter((row) => Number(row.memberCountDisplay || 0) >= 5).length} equipes têm composição ampliada`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todas'],
           ['ativo', 'Ativas'],
           ['inativo', 'Inativas'],
-          ['grande', 'Com 5+ membros']
+          ['grande', 'Com 5+ membros'],
+          ['com_obra', 'Com obra']
         ]);
         break;
       }
       case 'users': {
         const activeUsers = rows.filter((row) => row.activeDisplay === 'Ativo').length;
         const approvers = rows.filter((row) => row.approvalDisplay === 'Pode aprovar').length;
+        const editors = rows.filter((row) => row.editDisplay === 'Pode editar').length;
         this.overviewCards = [
           { label: 'Usuários cadastrados', value: String(total), detail: `${activeUsers} com acesso ativo` },
           { label: 'Perfis em uso', value: String(new Set(rows.map((row) => row.roleDisplay)).size), detail: 'Distribuição de permissões' },
@@ -1790,13 +1803,22 @@ export class AdminResourcePageComponent {
         this.insightPanels = [
           { title: 'Perfis atribuídos', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.roleDisplay}`) },
           { title: 'Usuários ativos', lines: rows.filter((row) => row.activeDisplay === 'Ativo').slice(0, 5).map((row) => `${row.name} • ${row.email}`) },
-          { title: 'Permissão de aprovação', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.approvalDisplay}`) }
+          { title: 'Permissão de aprovação', lines: rows.slice(0, 5).map((row) => `${row.name} • ${row.approvalDisplay}`) },
+          {
+            title: 'Cobertura de edição',
+            lines: [
+              `${editors} usuários podem editar registros do ambiente`,
+              `${approvers} usuários podem aprovar fluxos críticos`,
+              `${rows.filter((row) => row.activeDisplay !== 'Ativo').length} usuários estão fora da operação ativa`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
           ['ativo', 'Ativos'],
           ['inativo', 'Inativos'],
-          ['aprovador', 'Aprovadores']
+          ['aprovador', 'Aprovadores'],
+          ['edicao', 'Com edição']
         ]);
         break;
       }
