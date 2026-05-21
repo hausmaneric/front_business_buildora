@@ -462,6 +462,16 @@ export class AdminResourcePageComponent {
         return 'Abrir arquivo';
       case 'users':
         return 'Enviar e-mail';
+      case 'activities':
+        return 'Editar atividade';
+      case 'teams':
+        return 'Editar equipe';
+      case 'materials':
+        return 'Editar material';
+      case 'equipments':
+        return 'Editar equipamento';
+      case 'occurrences':
+        return 'Editar ocorrência';
       case 'projects':
         return 'Editar obra';
       case 'diaries':
@@ -477,6 +487,16 @@ export class AdminResourcePageComponent {
         return 'Copiar link';
       case 'users':
         return 'Copiar contato';
+      case 'activities':
+        return 'Duplicar atividade';
+      case 'teams':
+        return 'Duplicar equipe';
+      case 'materials':
+        return 'Duplicar material';
+      case 'equipments':
+        return 'Duplicar equipamento';
+      case 'occurrences':
+        return 'Duplicar ocorrência';
       case 'projects':
         return 'Duplicar obra';
       case 'diaries':
@@ -493,6 +513,11 @@ export class AdminResourcePageComponent {
         return !!this.selectedRow.file_url;
       case 'users':
         return !!this.selectedRow.email;
+      case 'activities':
+      case 'teams':
+      case 'materials':
+      case 'equipments':
+      case 'occurrences':
       case 'projects':
       case 'diaries':
         return this.canEdit(this.selectedRow);
@@ -508,6 +533,11 @@ export class AdminResourcePageComponent {
         return !!this.selectedRow.file_url;
       case 'users':
         return !!(this.selectedRow.phone || this.selectedRow.email);
+      case 'activities':
+      case 'teams':
+      case 'materials':
+      case 'equipments':
+      case 'occurrences':
       case 'projects':
       case 'diaries':
         return this.canDuplicate(this.selectedRow);
@@ -525,6 +555,11 @@ export class AdminResourcePageComponent {
       case 'users':
         this.openExternalUrl(`mailto:${this.selectedRow.email}`);
         return;
+      case 'activities':
+      case 'teams':
+      case 'materials':
+      case 'equipments':
+      case 'occurrences':
       case 'projects':
       case 'diaries':
         this.openEditDialog(this.selectedRow);
@@ -541,6 +576,11 @@ export class AdminResourcePageComponent {
       case 'users':
         void this.copyToClipboard(this.selectedRow.phone || this.selectedRow.email, 'Contato copiado', 'O contato do usuário foi copiado.');
         return;
+      case 'activities':
+      case 'teams':
+      case 'materials':
+      case 'equipments':
+      case 'occurrences':
       case 'projects':
       case 'diaries':
         this.openDuplicateDialog(this.selectedRow);
