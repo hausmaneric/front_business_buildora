@@ -1048,6 +1048,9 @@ export class AdminOpsPageComponent {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
     const imageDocs = documents.filter((doc) => this.isImage(doc.file_name, doc.file_type, doc.file_url));
     const totalImageBytes = imageDocs.reduce((sum, item) => sum + Number(item.file_size_bytes || 0), 0);
+    const availablePhotos = imageDocs.filter((item) => !!item.file_url).length;
+    const pendingPhotos = imageDocs.filter((item) => !item.file_url).length;
+    const largePhotos = imageDocs.filter((item) => Number(item.file_size_bytes || 0) >= 5 * 1024 * 1024).length;
 
     this.cards = [
       { label: 'Fotos localizadas', value: `${imageDocs.length}`, detail: 'Arquivos com tipo de imagem' },
@@ -1116,9 +1119,17 @@ export class AdminOpsPageComponent {
       {
         title: 'Disponibilidade dos arquivos',
         lines: [
-          `${imageDocs.filter((item) => !!item.file_url).length} fotos já estão com link disponível`,
-          `${imageDocs.filter((item) => !item.file_url).length} registros ainda exigem publicação ou vínculo`,
+          `${availablePhotos} fotos já estão com link disponível`,
+          `${pendingPhotos} registros ainda exigem publicação ou vínculo`,
           `${new Set(imageDocs.map((item) => item.daily_log_id)).size} diários já contam com cobertura visual`
+        ]
+      },
+      {
+        title: 'Prontidão da galeria',
+        lines: [
+          `${availablePhotos} imagens já podem ser abertas ou compartilhadas diretamente`,
+          `${largePhotos} arquivos estão na faixa de tamanho que merece atenção de armazenamento`,
+          pendingPhotos ? `${pendingPhotos} imagens ainda precisam de publicação antes do uso externo` : 'Toda a galeria atual já está pronta para uso operacional'
         ]
       }
     ];
