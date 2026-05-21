@@ -1623,10 +1623,13 @@ export class AdminOpsPageComponent {
 
   private mapApprovalFlow(payload: SnapshotPayload): void {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
+    const approved = diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length;
+    const pending = diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
+    const rejected = diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length;
     this.cards = [
-      { label: 'Pendentes de aprovação', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Fila da gestão', tone: 'warning' },
-      { label: 'Aprovados', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length}`, detail: 'Fluxo concluído', tone: 'success' },
-      { label: 'Reprovados', value: `${diaries.filter((item) => this.diaryStatus(item.status) === 'Reprovado').length}`, detail: 'Exigem correção', tone: 'danger' },
+      { label: 'Pendentes de aprovação', value: `${pending}`, detail: 'Fila da gestão', tone: 'warning' },
+      { label: 'Aprovados', value: `${approved}`, detail: 'Fluxo concluído', tone: 'success' },
+      { label: 'Reprovados', value: `${rejected}`, detail: 'Exigem correção', tone: 'danger' },
       { label: 'Cobertura do fluxo', value: `${diaries.length}`, detail: 'Registros avaliados' }
     ];
 
@@ -1635,7 +1638,13 @@ export class AdminOpsPageComponent {
       obra: this.projectName(payload, diary.project_id),
       fluxo: this.signatureStage(this.diaryStatus(diary.status)),
       situacao: this.diaryStatus(diary.status),
-      resumo: diary.summary || 'Sem resumo'
+      resumo: diary.summary || 'Sem resumo',
+      bloqueio:
+        this.diaryStatus(diary.status) === 'Reprovado'
+          ? 'Correção necessária'
+          : this.diaryStatus(diary.status) === 'Pendente'
+            ? 'Aguardando validação'
+            : 'Liberado'
     }));
 
     this.columns = [
@@ -1643,7 +1652,58 @@ export class AdminOpsPageComponent {
       { field: 'obra', headerText: 'Obra', width: 240 },
       { field: 'fluxo', headerText: 'Etapa do fluxo', width: 180, type: 'badge' },
       { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' },
+      { field: 'bloqueio', headerText: 'Bloqueio', width: 180, type: 'badge' },
       { field: 'resumo', headerText: 'Resumo', width: 300 }
+    ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Aprovados'],
+      ['pending', 'Pendentes'],
+      ['rejected', 'Reprovados'],
+      ['blocked', 'Bloqueados'],
+      ['with_summary', 'Com resumo']
+    ]);
+
+    this.panels = [
+      {
+        title: 'Fluxo atual',
+        lines: [
+          'A aprovação do diário já representa o estágio operacional da assinatura e do aceite de campo.',
+          'Pendências e reprovações alimentam a fila de revisão do responsável e da gestão.',
+          'Esta base já sustenta uma evolução para aprovação por fluxo e assinatura mais forte.'
+        ]
+      },
+      {
+        title: 'Fila de validação',
+        lines: this.rows
+          .filter((row) => row.situacao === 'Pendente' || row.situacao === 'Reprovado')
+          .slice(0, 5)
+          .map((row) => `${row.obra} • ${row.data} • ${row.bloqueio}`)
+      },
+      {
+        title: 'Prontos para avanço',
+        lines: this.rows
+          .filter((row) => row.situacao === 'Aprovado')
+          .slice(0, 4)
+          .map((row) => `${row.obra} • ${row.data} • ${row.fluxo}`)
+      },
+      {
+        title: 'Próximas ações',
+        lines: [
+          `${pending} diários ainda aguardam validação antes de seguir para aceite formal`,
+          `${rejected} registros exigem correção antes de liberar a próxima etapa`,
+          `${this.rows.filter((row) => row.resumo !== 'Sem resumo').length} diários já têm resumo forte para revisão`
+        ]
+      },
+      {
+        title: 'Maturidade do fluxo',
+        lines: [
+          `${approved} registros já passaram por aprovação operacional`,
+          `${this.rows.filter((row) => row.bloqueio === 'Correção necessária').length} itens estão bloqueados por correção`,
+          'O próximo salto natural é formalizar a trilha com regras de aprovação e assinatura digital'
+        ]
+      }
     ];
   }
 
