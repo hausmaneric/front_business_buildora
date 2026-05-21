@@ -1441,6 +1441,8 @@ export class AdminResourcePageComponent {
         if (filterId === 'resolvida') return this.matchText(row?.resolvedDisplay, 'resolvida');
         if (filterId === 'critica') return this.matchText(row?.severityDisplay, 'critica');
         if (filterId === 'alta') return this.matchText(row?.severityDisplay, 'alta');
+        if (filterId === 'problema') return this.matchText(row?.occurrenceTypeDisplay, 'problema');
+        if (filterId === 'atraso') return this.matchText(row?.occurrenceTypeDisplay, 'atraso');
         return false;
       case 'users':
         if (filterId === 'aprovador') return this.matchText(row?.approvalDisplay, 'pode aprovar');
@@ -1929,9 +1931,10 @@ export class AdminResourcePageComponent {
       case 'occurrences': {
         const abertas = rows.filter((row) => row.resolvedDisplay === 'Aberta').length;
         const graves = rows.filter((row) => String(row.severityDisplay || '').toLowerCase().includes('alta')).length;
+        const resolved = rows.filter((row) => row.resolvedDisplay === 'Resolvida').length;
         this.overviewCards = [
           { label: 'Ocorrências abertas', value: String(abertas), detail: 'Demandam acompanhamento', tone: abertas ? 'warning' : 'success' },
-          { label: 'Resolvidas', value: String(rows.filter((row) => row.resolvedDisplay === 'Resolvida').length), detail: 'Fechadas com registro', tone: 'success' },
+          { label: 'Resolvidas', value: String(resolved), detail: 'Fechadas com registro', tone: 'success' },
           { label: 'Alta gravidade', value: String(graves), detail: 'Atenção imediata', tone: graves ? 'danger' : 'success' },
           { label: 'Tipos distintos', value: String(new Set(rows.map((row) => row.occurrenceTypeDisplay)).size), detail: 'Mapa de desvios' }
         ];
@@ -1943,7 +1946,15 @@ export class AdminResourcePageComponent {
             lines: [
               `${abertas} ocorrências abertas ainda exigem resposta da equipe`,
               `${graves} ocorrências de alta gravidade devem entrar na pauta imediata`,
-              `${rows.filter((row) => row.resolvedDisplay === 'Resolvida').length} registros já têm fechamento operacional`
+              `${resolved} registros já têm fechamento operacional`
+            ]
+          },
+          {
+            title: 'Fechamento operacional',
+            lines: [
+              `${resolved} ocorrências já foram encerradas e registradas`,
+              `${rows.filter((row) => this.matchText(row.occurrenceTypeDisplay, 'problema')).length} registros estão classificados como problema`,
+              `${rows.filter((row) => this.matchText(row.occurrenceTypeDisplay, 'atraso')).length} registros apontam atraso de execução`
             ]
           }
         ];
@@ -1952,7 +1963,9 @@ export class AdminResourcePageComponent {
           ['aberta', 'Abertas'],
           ['resolvida', 'Resolvidas'],
           ['critica', 'Críticas'],
-          ['alta', 'Alta gravidade']
+          ['alta', 'Alta gravidade'],
+          ['problema', 'Problemas'],
+          ['atraso', 'Atrasos']
         ]);
         break;
       }
