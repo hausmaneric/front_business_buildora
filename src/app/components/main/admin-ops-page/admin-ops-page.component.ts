@@ -1014,8 +1014,23 @@ export class AdminOpsPageComponent {
           'Garanta aprovação formal para diários críticos e ocorrências graves.',
           'Revise usuários inativos antes de liberar novos acessos.'
         ]
+      },
+      {
+        title: 'Maturidade da governança',
+        lines: [
+          `${activeUsers.length} usuários já estão ativos no tenant empresarial`,
+          `${approvers.length} perfis já sustentam aprovação operacional`,
+          `${users.filter((item) => !this.toBoolean(item.active)).length} acessos ainda merecem revisão antes da homologação`
+        ]
       }
     ];
+
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Aprovadores'],
+      ['editing', 'Com edição'],
+      ['active', 'Ativos']
+    ]);
   }
 
   private mapPhotos(payload: SnapshotPayload): void {
@@ -1770,6 +1785,10 @@ export class AdminOpsPageComponent {
         return status.includes('pend') || status.includes('aguard') || availability.includes('pend') || pdf.includes('aguard');
       case 'attention':
         return status.includes('aten') || status.includes('alert') || status.includes('crít') || status.includes('crit');
+      case 'editing':
+        return String(row?.edicao || '').toLowerCase().includes('editar');
+      case 'active':
+        return status.includes('ativo') || status.includes('ativa');
       case 'configured':
         return !(value.includes('não informado') || value.includes('nao informado') || value.includes('logo pendente') || status.includes('pend'));
       case 'available':
