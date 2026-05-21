@@ -1409,6 +1409,9 @@ export class AdminResourcePageComponent {
         if (filterId === 'saida') {
           return this.matchText(row?.movementDisplay, 'saida') || this.matchText(row?.movementDisplay, 'consumo');
         }
+        if (filterId === 'com_obs') {
+          return !!String(row?.notes || '').trim();
+        }
         if (filterId === 'alto_volume') {
           return Number(row?.quantity || 0) >= 100;
         }
@@ -1419,6 +1422,9 @@ export class AdminResourcePageComponent {
         }
         if (filterId === 'manutencao') {
           return this.matchText(row?.maintenanceDisplay, 'manuten');
+        }
+        if (filterId === 'com_obs') {
+          return !!String(row?.notes || '').trim();
         }
         return this.matchText(row?.equipmentStatusDisplay, filterId);
       case 'documents':
@@ -1900,6 +1906,7 @@ export class AdminResourcePageComponent {
         const entradas = rows.filter((row) => String(row.movementDisplay || '').toLowerCase().includes('entrada')).length;
         const consumo = rows.filter((row) => String(row.movementDisplay || '').toLowerCase().includes('consumo')).length;
         const quantidade = rows.reduce((sum, row) => sum + Number(row.quantity || 0), 0);
+        const withNotes = rows.filter((row) => !!String(row.notes || '').trim()).length;
         this.overviewCards = [
           { label: 'Movimentos lançados', value: String(total), detail: `${entradas} entradas registradas` },
           { label: 'Consumos apontados', value: String(consumo), detail: 'Saídas e uso na frente', tone: consumo ? 'warning' : 'success' },
@@ -1908,14 +1915,23 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Materiais mais frequentes', lines: rows.slice(0, 5).map((row) => `${row.material_name} • ${row.quantityDisplay}`) },
-          { title: 'Últimas movimentações', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.movementDisplay}`) }
+          { title: 'Últimas movimentações', lines: rows.slice(0, 5).map((row) => `${row.diaryDisplay} • ${row.movementDisplay}`) },
+          {
+            title: 'Rastreabilidade de consumo',
+            lines: [
+              `${consumo} registros já apontam consumo direto em campo`,
+              `${withNotes} movimentações trazem observações complementares`,
+              `${rows.filter((row) => !String(row.notes || '').trim()).length} itens ainda podem ganhar detalhamento operacional`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
           ['entrada', 'Entradas'],
           ['saida', 'Saídas'],
           ['consumo', 'Consumos'],
-          ['alto_volume', 'Alto volume']
+          ['alto_volume', 'Alto volume'],
+          ['com_obs', 'Com observação']
         ]);
         break;
       }
@@ -1923,6 +1939,7 @@ export class AdminResourcePageComponent {
         const emUso = rows.filter((row) => String(row.equipmentStatusDisplay || '').toLowerCase().includes('uso') || String(row.equipmentStatusDisplay || '').toLowerCase().includes('opera')).length;
         const manutencao = rows.filter((row) => String(row.maintenanceDisplay || '').toLowerCase().includes('manuten')).length;
         const horas = rows.reduce((sum, row) => sum + Number(row.hours_used || 0), 0);
+        const withNotes = rows.filter((row) => !!String(row.notes || '').trim()).length;
         this.overviewCards = [
           { label: 'Equipamentos lançados', value: String(total), detail: `${emUso} em operação` },
           { label: 'Horas registradas', value: `${this.formatNumber(horas)} h`, detail: 'Uso acumulado no período', tone: 'success' },
@@ -1931,14 +1948,23 @@ export class AdminResourcePageComponent {
         ];
         this.insightPanels = [
           { title: 'Uso por equipamento', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.hoursUsedDisplay}`) },
-          { title: 'Situação operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.equipmentStatusDisplay}`) }
+          { title: 'Situação operacional', lines: rows.slice(0, 5).map((row) => `${row.equipment_name} • ${row.equipmentStatusDisplay}`) },
+          {
+            title: 'Leitura de manutenção',
+            lines: [
+              `${manutencao} equipamentos já pedem atenção de manutenção`,
+              `${withNotes} registros possuem observações complementares`,
+              `${rows.filter((row) => Number(row.hours_used || 0) >= 100).length} itens estão em faixa de uso intenso`
+            ]
+          }
         ];
         this.quickFilters = this.buildQuickFilters([
           ['all', 'Todos'],
           ['em_uso', 'Em uso'],
           ['disponivel', 'Disponíveis'],
           ['manutencao', 'Manutenção'],
-          ['uso_intenso', 'Uso intenso']
+          ['uso_intenso', 'Uso intenso'],
+          ['com_obs', 'Com observação']
         ]);
         break;
       }
