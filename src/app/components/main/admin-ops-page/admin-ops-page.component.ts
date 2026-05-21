@@ -888,7 +888,9 @@ export class AdminOpsPageComponent {
       ['all', 'Todos'],
       ['configured', 'Configurados'],
       ['pending', 'Pendentes'],
-      ['attention', 'Atenção']
+      ['attention', 'Atenção'],
+      ['contact', 'Contato'],
+      ['branding', 'Branding']
     ]);
 
     this.panels = [
@@ -940,6 +942,14 @@ export class AdminOpsPageComponent {
           company?.logo_url ? 'A identidade visual principal já está registrada no tenant' : 'Cadastre a logo oficial para padronizar relatórios e telas',
           company?.email ? 'O e-mail principal já pode receber notificações e automações' : 'Defina um e-mail principal para comunicação e alertas',
           roles.length ? 'Os perfis existentes já permitem avançar na governança de usuários' : 'Crie perfis mínimos de gestor, engenharia e campo antes de expandir acessos'
+        ]
+      },
+      {
+        title: 'Prontidão da empresa',
+        lines: [
+          `${settingsRows.filter((row) => row.situacao === 'Configurado' || row.situacao === 'Operacional').length} itens já estão em condição adequada para homologação`,
+          `${settingsRows.filter((row) => row.grupo === 'Contato' && row.situacao === 'Configurado').length} pontos de contato já estão prontos para comunicação operacional`,
+          `${settingsRows.filter((row) => row.grupo === 'Identidade' && row.situacao === 'Configurado').length} elementos de branding já sustentam a apresentação oficial`
         ]
       }
     ];
@@ -1789,6 +1799,10 @@ export class AdminOpsPageComponent {
         return String(row?.edicao || '').toLowerCase().includes('editar');
       case 'active':
         return status.includes('ativo') || status.includes('ativa');
+      case 'branding':
+        return String(row?.grupo || '').toLowerCase().includes('identidade');
+      case 'contact':
+        return String(row?.grupo || '').toLowerCase().includes('contato');
       case 'configured':
         return !(value.includes('não informado') || value.includes('nao informado') || value.includes('logo pendente') || status.includes('pend'));
       case 'available':
