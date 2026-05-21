@@ -1148,16 +1148,19 @@ export class AdminOpsPageComponent {
   private mapClimate(payload: SnapshotPayload): void {
     const diaries = this.items<BusinessDiary>(payload.diaries?.data);
     const weatherGroups = new Map<string, number>();
+    const withWeather = diaries.filter((item) => !!item.weather).length;
+    const criticalCount = diaries.filter((item) => this.isCriticalWeather(item.weather)).length;
+    const withSummary = diaries.filter((item) => !!item.summary).length;
     diaries.forEach((diary) => {
       const key = diary.weather?.trim() || 'Não informado';
       weatherGroups.set(key, (weatherGroups.get(key) || 0) + 1);
     });
 
     this.cards = [
-      { label: 'Diários com clima', value: `${diaries.filter((item) => !!item.weather).length}`, detail: `${diaries.length} diários avaliados` },
+      { label: 'Diários com clima', value: `${withWeather}`, detail: `${diaries.length} diários avaliados` },
       { label: 'Climas mapeados', value: `${weatherGroups.size}`, detail: 'Categorias encontradas' },
       { label: 'Maior incidência', value: Array.from(weatherGroups.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Sem dados', detail: 'Clima mais informado', tone: 'success' },
-      { label: 'Impacto potencial', value: `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length}`, detail: 'Diários com clima crítico', tone: 'warning' }
+      { label: 'Impacto potencial', value: `${criticalCount}`, detail: 'Diários com clima crítico', tone: 'warning' }
     ];
 
     this.rows = diaries.map((diary) => ({
@@ -1180,7 +1183,8 @@ export class AdminOpsPageComponent {
       ['all', 'Todos'],
       ['critical', 'Clima crítico'],
       ['stable', 'Estáveis'],
-      ['attention', 'Atenção']
+      ['attention', 'Atenção'],
+      ['with_summary', 'Com resumo']
     ]);
 
     this.panels = [
@@ -1202,7 +1206,7 @@ export class AdminOpsPageComponent {
       {
         title: 'Impacto operacional',
         lines: [
-          `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length} diários exigem atenção de clima`,
+          `${criticalCount} diários exigem atenção de clima`,
           `${weatherGroups.size} variações climáticas já podem alimentar análises mensais`,
           'Use a leitura climática para cruzar produtividade, atraso e segurança'
         ]
@@ -1211,8 +1215,16 @@ export class AdminOpsPageComponent {
         title: 'Janelas de operação',
         lines: [
           `${diaries.filter((item) => !this.isCriticalWeather(item.weather)).length} diários estão em condição operacional estável`,
-          `${diaries.filter((item) => this.isCriticalWeather(item.weather)).length} registros podem impactar prazo e produtividade`,
+          `${criticalCount} registros podem impactar prazo e produtividade`,
           'Cruze essa base com ocorrências e atividades para antecipar desvios'
+        ]
+      },
+      {
+        title: 'Prontidão climática',
+        lines: [
+          `${withWeather} diários já possuem leitura climática registrada`,
+          `${withSummary} registros já trazem resumo para contextualizar o clima do dia`,
+          `${diaries.filter((item) => !item.summary).length} lançamentos ainda podem ganhar melhor fechamento operacional`
         ]
       }
     ];
@@ -1258,7 +1270,8 @@ export class AdminOpsPageComponent {
       ['all', 'Todos'],
       ['approved', 'Aprovados'],
       ['pending', 'Pendentes'],
-      ['blocked', 'Bloqueados']
+      ['blocked', 'Bloqueados'],
+      ['rejected', 'Reprovados']
     ]);
 
     this.panels = [
@@ -1305,16 +1318,24 @@ export class AdminOpsPageComponent {
           'Esta base já suporta a evolução para assinatura digital e trilha de auditoria'
         ]
       },
-      {
-        title: 'Próximos passos',
-        lines: [
-          approved ? `${approved} diários já podem seguir para assinatura formal ou fluxo digital avançado` : 'Ainda não há diários aprovados prontos para assinatura formal',
-          pending ? `${pending} registros precisam de revisão para liberar o aceite operacional` : 'A fila de pendências está controlada no momento',
-          rejected ? `${rejected} reprovações exigem correção antes da assinatura` : 'Não há reprovações bloqueando o fluxo atual'
-        ]
-      }
-    ];
-  }
+        {
+          title: 'Próximos passos',
+          lines: [
+            approved ? `${approved} diários já podem seguir para assinatura formal ou fluxo digital avançado` : 'Ainda não há diários aprovados prontos para assinatura formal',
+            pending ? `${pending} registros precisam de revisão para liberar o aceite operacional` : 'A fila de pendências está controlada no momento',
+            rejected ? `${rejected} reprovações exigem correção antes da assinatura` : 'Não há reprovações bloqueando o fluxo atual'
+          ]
+        },
+        {
+          title: 'Prontidão de assinatura',
+          lines: [
+            `${approved} diários já chegaram ao estágio ideal para assinatura e fechamento formal`,
+            `${this.rows.filter((row) => row.bloqueio === 'Aguardando validação').length} registros seguem na fila de validação`,
+            `${rejected} itens ainda precisam de correção antes de liberar o aceite definitivo`
+          ]
+        }
+      ];
+    }
 
   private mapSchedule(payload: SnapshotPayload): void {
     const projects = this.items<BusinessProject>(payload.projects?.data);
@@ -1840,11 +1861,15 @@ export class AdminOpsPageComponent {
         return weather.includes('chuva') || weather.includes('tempestade') || weather.includes('vento') || status.includes('aten');
       case 'stable':
         return status.includes('estável') || status.includes('estavel') || status.includes('ok') || status.includes('normal');
-      case 'blocked':
-        return blockage.includes('bloque') || status.includes('bloque');
-      default:
-        return true;
-    }
+      case 'with_summary':
+        return !String(row?.resumo || '').toLowerCase().includes('sem resumo');
+        case 'blocked':
+          return blockage.includes('bloque') || status.includes('bloque');
+        case 'rejected':
+          return status.includes('reprov');
+        default:
+          return true;
+      }
   }
 
   private applyFilter(): void {
