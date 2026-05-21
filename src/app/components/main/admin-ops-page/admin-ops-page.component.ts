@@ -747,7 +747,9 @@ export class AdminOpsPageComponent {
       ['all', 'Todos'],
       ['approved', 'Com aprovação'],
       ['pending', 'Pendentes'],
-      ['attention', 'Com atenção']
+      ['attention', 'Com atenção'],
+      ['high_volume', 'Maior volume'],
+      ['risk', 'Com risco']
     ]);
 
     this.panels = [
@@ -781,6 +783,14 @@ export class AdminOpsPageComponent {
           pendingDiaries ? `Priorize ${pendingDiaries} diários pendentes para acelerar fechamento e histórico` : 'Os diários já estão em estágio saudável para fechamento',
           openOccurrences ? `Inclua ${openOccurrences} ocorrências abertas no resumo gerencial da semana` : 'Não há desvios críticos pressionando o relatório atual',
           documents.length ? `${documents.length} documentos podem enriquecer relatórios e entregas formais` : 'A base documental ainda precisa amadurecer para relatórios mais ricos'
+        ]
+      },
+      {
+        title: 'Prontidão de fechamento',
+        lines: [
+          `${this.rows.filter((row) => Number(row.diarios || 0) >= 3).length} obras já têm volume suficiente para leitura gerencial mais robusta`,
+          `${this.rows.filter((row) => Number(row.ocorrencias || 0) >= 1).length} obras pedem atenção por risco ou desvio aberto`,
+          approvedDiaries ? `${approvedDiaries} diários aprovados já sustentam fechamento formal e geração de PDF` : 'A base ainda precisa de mais aprovações para fechamento formal'
         ]
       }
     ];
@@ -1798,6 +1808,8 @@ export class AdminOpsPageComponent {
     const signature = String(row?.assinatura || '').toLowerCase();
     const blockage = String(row?.bloqueio || '').toLowerCase();
     const weather = String(row?.clima || '').toLowerCase();
+    const diaries = Number(row?.diarios || 0);
+    const occurrences = Number(row?.ocorrencias || 0);
 
     switch (filterId) {
       case 'approved':
@@ -1806,6 +1818,10 @@ export class AdminOpsPageComponent {
         return status.includes('pend') || status.includes('aguard') || availability.includes('pend') || pdf.includes('aguard');
       case 'attention':
         return status.includes('aten') || status.includes('alert') || status.includes('crít') || status.includes('crit');
+      case 'high_volume':
+        return diaries >= 3;
+      case 'risk':
+        return occurrences >= 1 || status.includes('aten') || status.includes('pause');
       case 'editing':
         return String(row?.edicao || '').toLowerCase().includes('editar');
       case 'active':
