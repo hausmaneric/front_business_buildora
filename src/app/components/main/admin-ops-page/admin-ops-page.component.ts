@@ -1744,12 +1744,15 @@ export class AdminOpsPageComponent {
   private mapPdfAutomation(payload: SnapshotPayload): void {
     const reportsBase = this.items<BusinessDiary>(payload.diaries?.data);
     const documents = this.items<BusinessDocument>(payload.documents?.data);
+    const approvedCount = reportsBase.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length;
+    const pendingCount = reportsBase.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
+    const projectCoverage = new Set(reportsBase.map((item) => item.project_id)).size;
 
     this.cards = [
-      { label: 'Diários prontos', value: `${reportsBase.length}`, detail: 'Base eleg?vel para PDF' },
+      { label: 'Diários prontos', value: `${reportsBase.length}`, detail: 'Base elegível para PDF' },
       { label: 'Anexos existentes', value: `${documents.length}`, detail: 'Podem compor relatórios', tone: 'success' },
-      { label: 'Pendentes', value: `${reportsBase.filter((item) => this.diaryStatus(item.status) === 'Pendente').length}`, detail: 'Antes do envio automático', tone: 'warning' },
-      { label: 'Cobertura mensal', value: `${new Set(reportsBase.map((item) => item.project_id)).size}`, detail: 'Obras com potencial de fechamento' }
+      { label: 'Pendentes', value: `${pendingCount}`, detail: 'Antes do envio automático', tone: 'warning' },
+      { label: 'Cobertura mensal', value: `${projectCoverage}`, detail: 'Obras com potencial de fechamento' }
     ];
 
     this.rows = reportsBase.map((diary) => ({
@@ -1768,6 +1771,13 @@ export class AdminOpsPageComponent {
       { field: 'anexos', headerText: 'Anexos', width: 120 }
     ];
 
+    this.buildQuickFilters([
+      ['all', 'Todos'],
+      ['approved', 'Aprovados'],
+      ['pending', 'Pendentes'],
+      ['available', 'Prontos para envio']
+    ]);
+
     this.panels = [
       {
         title: 'Automação prevista',
@@ -1780,9 +1790,17 @@ export class AdminOpsPageComponent {
       {
         title: 'Prontidão para envio',
         lines: [
-          `${reportsBase.filter((item) => this.diaryStatus(item.status) === 'Aprovado').length} diários já podem compor fechamento automático`,
+          `${approvedCount} diários já podem compor fechamento automático`,
           `${documents.length} anexos enriquecem o conteúdo enviado`,
-          `${new Set(reportsBase.map((item) => item.project_id)).size} obras já têm base para rotinas mensais`
+          `${projectCoverage} obras já têm base para rotinas mensais`
+        ]
+      },
+      {
+        title: 'Cobertura documental do envio',
+        lines: [
+          `${this.rows.filter((row) => row.pdf === 'Pronto para envio').length} registros já estão no estágio ideal para PDF`,
+          `${this.rows.filter((row) => Number(row.anexos || 0) > 0).length} diários já contam com anexos de apoio`,
+          pendingCount ? `${pendingCount} itens ainda precisam de validação antes do disparo automático` : 'A fila atual já está pronta para automação formal'
         ]
       }
     ];

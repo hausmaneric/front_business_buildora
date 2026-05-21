@@ -1,8 +1,7 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
 import { Observable } from 'rxjs';
-// Translation files
+
 import { TRANSLATION_EN_US } from './locales/en_us';
 import { TRANSLATION_PT_BR } from './locales/pt_br';
 
@@ -15,16 +14,15 @@ export class TranslationService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
       const userLocale = navigator?.languages?.length ? navigator.languages[0] : navigator.language;
-      console.log(userLocale);
-      if (userLocale === "pt-BR") {
+      if (userLocale === 'pt-BR') {
         this.translations = TRANSLATION_PT_BR;
-      } else if (userLocale === "en-US") {
+      } else if (userLocale === 'en-US') {
         this.translations = TRANSLATION_EN_US;
       } else {
         this.translations = TRANSLATION_EN_US;
       }
     } else {
-      this.translations = TRANSLATION_EN_US;  // Default to English if not in a browser environment
+      this.translations = TRANSLATION_EN_US;
     }
   }
 
