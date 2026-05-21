@@ -1179,13 +1179,14 @@ export class AdminOpsPageComponent {
       { field: 'situacao', headerText: 'Situação', width: 140, type: 'badge' }
     ];
 
-    this.buildQuickFilters([
-      ['all', 'Todos'],
-      ['critical', 'Clima crítico'],
-      ['stable', 'Estáveis'],
-      ['attention', 'Atenção'],
-      ['with_summary', 'Com resumo']
-    ]);
+      this.buildQuickFilters([
+        ['all', 'Todos'],
+        ['critical', 'Clima crítico'],
+        ['stable', 'Estáveis'],
+        ['attention', 'Atenção'],
+        ['with_summary', 'Com resumo'],
+        ['missing_summary', 'Sem resumo']
+      ]);
 
     this.panels = [
       {
@@ -1467,28 +1468,74 @@ export class AdminOpsPageComponent {
       { label: 'Obras monitoradas', value: `${projects.length}`, detail: 'Com visibilidade financeira operacional' }
     ];
 
-    this.rows = projects.map((project) => {
-      const budget = Number(project.budget_amount || 0);
-      const estimated =
-        this.estimatedMaterialCost(project.id, diaries, materials) +
-        this.estimatedEquipmentCost(project.id, diaries, equipments);
-      return {
-        obra: project.name,
-        orcamento: this.formatCurrency(budget),
-        custo: this.formatCurrency(estimated),
-        saldo: this.formatCurrency(budget - estimated),
-        situacao: budget - estimated >= 0 ? 'Saudável' : 'Atenção'
-      };
-    });
+      this.rows = projects.map((project) => {
+        const budget = Number(project.budget_amount || 0);
+        const estimated =
+          this.estimatedMaterialCost(project.id, diaries, materials) +
+          this.estimatedEquipmentCost(project.id, diaries, equipments);
+        return {
+          obra: project.name,
+          orcamento: this.formatCurrency(budget),
+          orcamento_valor: budget,
+          custo: this.formatCurrency(estimated),
+          saldo: this.formatCurrency(budget - estimated),
+          saldo_valor: budget - estimated,
+          situacao: budget - estimated >= 0 ? 'Saudável' : 'Atenção'
+        };
+      });
 
-    this.columns = [
-      { field: 'obra', headerText: 'Obra', width: 240 },
-      { field: 'orcamento', headerText: 'Orçamento', width: 160 },
-      { field: 'custo', headerText: 'Custo estimado', width: 170 },
-      { field: 'saldo', headerText: 'Saldo projetado', width: 170 },
-      { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
-    ];
-  }
+      this.columns = [
+        { field: 'obra', headerText: 'Obra', width: 240 },
+        { field: 'orcamento', headerText: 'Orçamento', width: 160 },
+        { field: 'custo', headerText: 'Custo estimado', width: 170 },
+        { field: 'saldo', headerText: 'Saldo projetado', width: 170 },
+        { field: 'situacao', headerText: 'Situação', width: 150, type: 'badge' }
+      ];
+
+      this.buildQuickFilters([
+        ['all', 'Todas'],
+        ['healthy', 'Saudáveis'],
+        ['attention', 'Atenção'],
+        ['high_budget', 'Orçamento alto']
+      ]);
+
+      this.panels = [
+        {
+          title: 'Leitura financeira',
+          lines: [
+            'O módulo cruza orçamento da obra com consumo estimado de materiais e uso de equipamentos.',
+            'A leitura atual ajuda a enxergar saldo projetado, pressão de custo e prioridade de revisão.',
+            'A próxima evolução natural é orçamento realizado, medições e financeiro mais granular.'
+          ]
+        },
+        {
+          title: 'Obras com maior orçamento',
+          lines: this.rows
+            .slice()
+            .sort((left, right) => Number(right.orcamento_valor || 0) - Number(left.orcamento_valor || 0))
+            .slice(0, 4)
+            .map((row) => `${row.obra} • ${row.orcamento} • saldo ${row.saldo}`)
+        },
+        {
+          title: 'Saúde financeira',
+          lines: [
+            `${this.rows.filter((row) => Number(row.saldo_valor || 0) >= 0).length} obras seguem com saldo projetado saudável`,
+            `${this.rows.filter((row) => Number(row.saldo_valor || 0) < 0).length} obras pedem revisão por pressão de custo`,
+            `${this.rows.filter((row) => Number(row.orcamento_valor || 0) >= 100000).length} obras já estão na faixa de orçamento alto`
+          ]
+        },
+        {
+          title: 'Próximos passos financeiros',
+          lines: [
+            `${materials.length} movimentos de materiais já podem alimentar custo realizado`,
+            `${equipments.length} apontamentos de equipamentos já ajudam a medir pressão operacional`,
+            totalBudget >= totalEstimatedCost
+              ? 'A carteira atual ainda sustenta saldo positivo consolidado'
+              : 'Há pressão consolidada de custo e convém revisar orçamento e consumo'
+          ]
+        }
+      ];
+    }
 
   private mapSafety(payload: SnapshotPayload): void {
     const occurrences = this.items<BusinessOccurrence>(payload.occurrences?.data);
@@ -1825,12 +1872,15 @@ export class AdminOpsPageComponent {
     const availability = String(row?.disponibilidade || '').toLowerCase();
     const size = String(row?.tamanho || '').toLowerCase();
     const value = String(row?.valor || '').toLowerCase();
-    const pdf = String(row?.pdf || '').toLowerCase();
-    const signature = String(row?.assinatura || '').toLowerCase();
-    const blockage = String(row?.bloqueio || '').toLowerCase();
-    const weather = String(row?.clima || '').toLowerCase();
-    const diaries = Number(row?.diarios || 0);
-    const occurrences = Number(row?.ocorrencias || 0);
+      const pdf = String(row?.pdf || '').toLowerCase();
+      const signature = String(row?.assinatura || '').toLowerCase();
+      const blockage = String(row?.bloqueio || '').toLowerCase();
+      const weather = String(row?.clima || '').toLowerCase();
+      const summary = String(row?.resumo || '').toLowerCase();
+      const diaries = Number(row?.diarios || 0);
+      const occurrences = Number(row?.ocorrencias || 0);
+      const budget = Number(row?.orcamento_valor || 0);
+      const balance = Number(row?.saldo_valor || 0);
 
     switch (filterId) {
       case 'approved':
@@ -1861,12 +1911,18 @@ export class AdminOpsPageComponent {
         return weather.includes('chuva') || weather.includes('tempestade') || weather.includes('vento') || status.includes('aten');
       case 'stable':
         return status.includes('estável') || status.includes('estavel') || status.includes('ok') || status.includes('normal');
-      case 'with_summary':
-        return !String(row?.resumo || '').toLowerCase().includes('sem resumo');
+        case 'with_summary':
+          return !summary.includes('sem resumo');
+        case 'missing_summary':
+          return summary.includes('sem resumo');
         case 'blocked':
           return blockage.includes('bloque') || status.includes('bloque');
         case 'rejected':
           return status.includes('reprov');
+        case 'healthy':
+          return status.includes('saud') || balance >= 0;
+        case 'high_budget':
+          return budget >= 100000;
         default:
           return true;
       }
