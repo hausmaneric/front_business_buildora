@@ -235,6 +235,14 @@ export class AdminResourcePageComponent {
     return this.resource === 'documents';
   }
 
+  get isMaterialForm(): boolean {
+    return this.resource === 'materials';
+  }
+
+  get isEquipmentForm(): boolean {
+    return this.resource === 'equipments';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -379,6 +387,40 @@ export class AdminResourcePageComponent {
   selectedDocumentLinkLabel(): string {
     const value = String(this.createForm?.get('file_url')?.value || '').trim();
     return value ? 'Link informado' : 'Link pendente';
+  }
+
+  selectedMaterialDiaryLabel(): string {
+    const id = this.createForm?.get('daily_log_id')?.value;
+    return this.optionLabel('diaries', id, 'Selecione o diário relacionado à movimentação');
+  }
+
+  selectedMaterialMovementLabel(): string {
+    const id = this.createForm?.get('movement_type')?.value;
+    return this.optionLabel('movementType', id, 'Defina o tipo da movimentação');
+  }
+
+  selectedMaterialQuantityLabel(): string {
+    const quantity = this.createForm?.get('quantity')?.value;
+    const unit = String(this.createForm?.get('unit')?.value || '').trim();
+    if (!quantity) {
+      return 'Informe a quantidade movimentada';
+    }
+    return `${this.formatNumber(quantity)} ${unit}`.trim();
+  }
+
+  selectedEquipmentDiaryLabel(): string {
+    const id = this.createForm?.get('daily_log_id')?.value;
+    return this.optionLabel('diaries', id, 'Selecione o diário relacionado ao uso do equipamento');
+  }
+
+  selectedEquipmentStatusLabel(): string {
+    const id = this.createForm?.get('status')?.value;
+    return this.optionLabel('equipmentStatus', id, 'Defina a situação operacional');
+  }
+
+  selectedEquipmentHoursLabel(): string {
+    const hours = this.createForm?.get('hours_used')?.value;
+    return hours ? `${this.formatNumber(hours)} h` : 'Informe as horas de uso registradas';
   }
 
   employeeRolePreview(): string {

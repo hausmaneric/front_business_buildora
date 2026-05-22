@@ -481,6 +481,82 @@
           </div>
         }
 
+        @if (isMaterialForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Diário vinculado</span>
+              <strong>{{ selectedMaterialDiaryLabel() }}</strong>
+              <small>A movimentação do material precisa ficar rastreada no diário correto.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Tipo de movimentação</span>
+              <strong>{{ selectedMaterialMovementLabel() }}</strong>
+              <small>Classifique corretamente como entrada, saída ou consumo para manter o estoque legível.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Quantidade lançada</span>
+              <strong>{{ selectedMaterialQuantityLabel() }}</strong>
+              <small>Quantifique o volume com unidade para apoiar rastreabilidade, consumo e saldo.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo do material</span>
+              <strong>Entrada → uso → histórico</strong>
+              <small>O lançamento correto alimenta consumo, produtividade e histórico da obra.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Material + quantidade + unidade</strong>
+              <small>Use nomes claros, quantidades exatas e observações quando houver perda, sobra ou restrição.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Rastreabilidade</span>
+              <strong>Diário + observação</strong>
+              <small>Conecte cada movimento ao diário certo para facilitar auditoria e acompanhamento.</small>
+            </article>
+          </div>
+        }
+
+        @if (isEquipmentForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Diário vinculado</span>
+              <strong>{{ selectedEquipmentDiaryLabel() }}</strong>
+              <small>Registre o uso do equipamento no diário em que ele realmente atuou.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Situação operacional</span>
+              <strong>{{ selectedEquipmentStatusLabel() }}</strong>
+              <small>Use a situação para indicar disponibilidade, operação ou manutenção.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Horas de uso</span>
+              <strong>{{ selectedEquipmentHoursLabel() }}</strong>
+              <small>Acumule as horas corretamente para apoiar manutenção, produtividade e custo.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo do equipamento</span>
+              <strong>Uso → status → manutenção</strong>
+              <small>Um lançamento bem feito ajuda a prever revisão e entender disponibilidade real.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Horas + situação + observação</strong>
+              <small>Descreva manutenção, indisponibilidade ou condição especial sempre que necessário.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Rastreabilidade</span>
+              <strong>Diário + código do ativo</strong>
+              <small>Associe cada uso ao ativo certo para manter histórico operacional e suporte à gestão.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -594,6 +670,18 @@
                   <small class="form-hint">Exemplo: contrato social, licença ambiental, ART, foto da obra ou relatório diário.</small>
                 } @else if (isDocumentForm && field.controlName === 'file_url') {
                   <small class="form-hint">Informe um link válido quando o arquivo já estiver publicado ou acessível para consulta.</small>
+                } @else if (isMaterialForm && field.controlName === 'daily_log_id') {
+                  <small class="form-hint">Selecione o diário em que o material entrou, saiu ou foi consumido.</small>
+                } @else if (isMaterialForm && field.controlName === 'material_name') {
+                  <small class="form-hint">Exemplo: cimento, areia, brita, bloco cerâmico, vergalhão ou tubo PVC.</small>
+                } @else if (isMaterialForm && field.controlName === 'quantity') {
+                  <small class="form-hint">Informe a quantidade movimentada usando a mesma unidade operacional do material.</small>
+                } @else if (isEquipmentForm && field.controlName === 'daily_log_id') {
+                  <small class="form-hint">Selecione o diário em que o equipamento foi utilizado ou ficou indisponível.</small>
+                } @else if (isEquipmentForm && field.controlName === 'equipment_name') {
+                  <small class="form-hint">Exemplo: escavadeira hidráulica, betoneira, guindaste ou vibrador de concreto.</small>
+                } @else if (isEquipmentForm && field.controlName === 'hours_used') {
+                  <small class="form-hint">Registre as horas usadas no período para apoiar manutenção e gestão de uso.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
