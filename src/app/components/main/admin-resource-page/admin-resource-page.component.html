@@ -557,6 +557,44 @@
           </div>
         }
 
+        @if (isUserForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Empresa vinculada</span>
+              <strong>{{ selectedUserCompanyLabel() }}</strong>
+              <small>O usuário será cadastrado diretamente para a empresa logada.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Perfil selecionado</span>
+              <strong>{{ selectedUserRoleLabel() }}</strong>
+              <small>O perfil define alcance visual, edição disponível e participação nos fluxos.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Aprovação operacional</span>
+              <strong>{{ userApprovalHint() }}</strong>
+              <small>Use perfis certos para não travar nem liberar demais o fluxo da obra.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Edição permitida</span>
+              <strong>{{ userEditionHint() }}</strong>
+              <small>Isso impacta cadastros, diários, documentos, ocorrências e leituras gerenciais.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Governança do acesso</span>
+              <strong>Perfil → edição → aprovação</strong>
+              <small>Cadastre cada usuário com o menor nível de acesso necessário para a função real.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Nome + perfil + contato</strong>
+              <small>Mantenha dados de contato corretos e perfis coerentes para acelerar comunicação e responsabilização.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -682,6 +720,12 @@
                   <small class="form-hint">Exemplo: escavadeira hidráulica, betoneira, guindaste ou vibrador de concreto.</small>
                 } @else if (isEquipmentForm && field.controlName === 'hours_used') {
                   <small class="form-hint">Registre as horas usadas no período para apoiar manutenção e gestão de uso.</small>
+                } @else if (isUserForm && field.controlName === 'role_id') {
+                  <small class="form-hint">Escolha o perfil conforme a atuação real: gestão, engenharia, técnico, almoxarifado, apoio ou consulta.</small>
+                } @else if (isUserForm && field.controlName === 'email') {
+                  <small class="form-hint">Use um e-mail válido para login, comunicação e responsabilização operacional.</small>
+                } @else if (isUserForm && field.controlName === 'password') {
+                  <small class="form-hint">Defina uma senha inicial segura. Depois o usuário poderá seguir o fluxo normal de acesso.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {

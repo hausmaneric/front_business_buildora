@@ -243,6 +243,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'equipments';
   }
 
+  get isUserForm(): boolean {
+    return this.resource === 'users';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -421,6 +425,31 @@ export class AdminResourcePageComponent {
   selectedEquipmentHoursLabel(): string {
     const hours = this.createForm?.get('hours_used')?.value;
     return hours ? `${this.formatNumber(hours)} h` : 'Informe as horas de uso registradas';
+  }
+
+  selectedUserRoleLabel(): string {
+    const id = this.createForm?.get('role_id')?.value;
+    return this.optionLabel('roles', id, 'Selecione o perfil do usuário');
+  }
+
+  selectedUserCompanyLabel(): string {
+    return this.currentCompanyLabel();
+  }
+
+  userApprovalHint(): string {
+    const role = this.selectedUserRoleLabel().toLowerCase();
+    if (role.includes('admin') || role.includes('gestor') || role.includes('engenheiro')) {
+      return 'Esse perfil pode participar da aprovação operacional e do fechamento de fluxos.';
+    }
+    return 'Esse perfil tende a atuar mais em execução, consulta ou apoio operacional.';
+  }
+
+  userEditionHint(): string {
+    const role = this.selectedUserRoleLabel().toLowerCase();
+    if (role.includes('admin') || role.includes('gestor') || role.includes('engenheiro') || role.includes('técnico')) {
+      return 'Esse perfil pode editar registros relevantes da operação.';
+    }
+    return 'Esse perfil terá uma atuação mais restrita, com menor poder de edição.';
   }
 
   employeeRolePreview(): string {
