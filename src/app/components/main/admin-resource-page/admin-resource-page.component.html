@@ -309,6 +309,24 @@
               <small>{{ responsibleRoleHint() }}</small>
             </article>
           </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Cliente selecionado</span>
+              <strong>{{ selectedClientLabel() }}</strong>
+              <small>Esse vínculo será usado em obras, relatórios e documentos relacionados.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Responsável atual</span>
+              <strong>{{ selectedResponsibleLabel() }}</strong>
+              <small>Esse usuário será a principal referência operacional da obra.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Prazo e situação</span>
+              <strong>{{ selectedDeadlinePreview() }} • {{ selectedProjectStatusLabel() }}</strong>
+              <small>Defina um prazo coerente e a situação inicial para acompanhar a evolução da obra.</small>
+            </article>
+          </div>
         }
 
         @if (isClientForm) {

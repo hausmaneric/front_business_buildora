@@ -256,6 +256,29 @@ export class AdminResourcePageComponent {
     return 'Selecione o gestor, engenheiro ou líder responsável pela condução da obra.';
   }
 
+  selectedClientLabel(): string {
+    const id = this.createForm?.get('client_id')?.value;
+    return this.optionLabel('clients', id, 'Selecione um cliente cadastrado');
+  }
+
+  selectedResponsibleLabel(): string {
+    const id = this.createForm?.get('engineer_user_id')?.value;
+    return this.optionLabel('users', id, 'Selecione o responsável principal da obra');
+  }
+
+  selectedProjectStatusLabel(): string {
+    const id = this.createForm?.get('status')?.value;
+    return this.optionLabel('projectStatus', id, 'Em andamento');
+  }
+
+  selectedDeadlinePreview(): string {
+    const value = this.createForm?.get('deadline')?.value;
+    if (!value) {
+      return 'Defina o prazo contratual da obra';
+    }
+    return this.formatDate(value);
+  }
+
   employeeRolePreview(): string {
     const value = String(this.createForm?.get('role_name')?.value || '').trim();
     return value || 'Defina a função principal do funcionário na operação.';
