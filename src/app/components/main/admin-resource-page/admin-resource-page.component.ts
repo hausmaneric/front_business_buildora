@@ -215,6 +215,23 @@ export class AdminResourcePageComponent {
     return this.config().supportsCreate;
   }
 
+  get isProjectForm(): boolean {
+    return this.resource === 'projects';
+  }
+
+  currentCompanyLabel(): string {
+    const account = this.loginService.getLocalToken()?.account as { name?: string; code?: string } | undefined;
+    return account?.name || account?.code || 'Empresa logada';
+  }
+
+  projectCodePreview(): string {
+    return String(this.createForm?.get('code')?.value || this.generatedCodeForResource());
+  }
+
+  responsibleRoleHint(): string {
+    return 'Selecione o gestor, engenheiro ou líder responsável pela condução da obra.';
+  }
+
   openCreateDialog(): void {
     if (!this.config().supportsCreate) {
       return;

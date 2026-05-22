@@ -291,12 +291,34 @@
           <p>Organize os dados essenciais com clareza para manter a operação empresarial consistente.</p>
         </div>
 
+        @if (isProjectForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Código da obra</span>
+              <strong>{{ projectCodePreview() }}</strong>
+              <small>Gerado automaticamente pelo sistema.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Empresa vinculada</span>
+              <strong>{{ currentCompanyLabel() }}</strong>
+              <small>A obra será salva automaticamente para a empresa logada.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Responsável pela obra</span>
+              <strong>Gestor ou engenheiro</strong>
+              <small>{{ responsibleRoleHint() }}</small>
+            </article>
+          </div>
+        }
+
         <div class="form-grid two-cols">
           @for (field of activeFields; track field.controlName) {
             <div class="form-field" [class.full-span]="field.type === 'textarea'">
               <div class="form-field-header">
                 <label>{{ field.label }}</label>
-                @if (field.placeholder) {
+                @if (isProjectForm && field.controlName === 'engineer_user_id') {
+                  <small class="form-hint">{{ responsibleRoleHint() }}</small>
+                } @else if (field.placeholder) {
                   <small class="form-hint">{{ field.placeholder }}</small>
                 }
               </div>
