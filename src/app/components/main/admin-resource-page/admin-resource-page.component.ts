@@ -227,6 +227,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'activities';
   }
 
+  get isOccurrenceForm(): boolean {
+    return this.resource === 'occurrences';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -331,6 +335,26 @@ export class AdminResourcePageComponent {
   selectedActivityQuantityPreview(): string {
     const value = this.createForm?.get('quantity')?.value;
     return value ? this.formatNumber(value) : 'Informe a quantidade produzida';
+  }
+
+  selectedOccurrenceDiaryLabel(): string {
+    const id = this.createForm?.get('daily_log_id')?.value;
+    return this.optionLabel('diaries', id, 'Selecione o diário em que a ocorrência foi percebida');
+  }
+
+  selectedOccurrenceTypeLabel(): string {
+    const id = this.createForm?.get('type')?.value;
+    return this.optionLabel('occurrenceType', id, 'Defina o tipo da ocorrência');
+  }
+
+  selectedOccurrenceSeverityLabel(): string {
+    const id = this.createForm?.get('severity')?.value;
+    return this.optionLabel('severity', id, 'Defina a gravidade');
+  }
+
+  selectedOccurrenceTitleLabel(): string {
+    const value = String(this.createForm?.get('title')?.value || '').trim();
+    return value || 'Descreva o problema, atraso, acidente ou impedimento';
   }
 
   employeeRolePreview(): string {

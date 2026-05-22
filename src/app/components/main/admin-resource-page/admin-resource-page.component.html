@@ -405,6 +405,44 @@
           </div>
         }
 
+        @if (isOccurrenceForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Diário vinculado</span>
+              <strong>{{ selectedOccurrenceDiaryLabel() }}</strong>
+              <small>A ocorrência deve ficar vinculada ao diário em que foi percebida ou registrada.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Tipo da ocorrência</span>
+              <strong>{{ selectedOccurrenceTypeLabel() }}</strong>
+              <small>Classifique corretamente para melhorar tratativa, indicadores e leitura gerencial.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Gravidade</span>
+              <strong>{{ selectedOccurrenceSeverityLabel() }}</strong>
+              <small>Use a gravidade para priorizar resposta, contenção e fechamento operacional.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Resumo do evento</span>
+              <strong>{{ selectedOccurrenceTitleLabel() }}</strong>
+              <small>Use um título objetivo para facilitar leitura rápida da equipe e do gestor.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo de tratativa</span>
+              <strong>Registro → resposta → resolução</strong>
+              <small>Uma ocorrência bem descrita acelera correção, comunicação e acompanhamento.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Contexto + impacto + ação</strong>
+              <small>Explique o que aconteceu, o impacto na obra e qual ação corretiva foi tomada ou precisa ser tomada.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -506,6 +544,12 @@
                   <small class="form-hint">Exemplo: Concretagem, alvenaria, instalação hidráulica ou montagem metálica.</small>
                 } @else if (isActivityForm && field.controlName === 'quantity') {
                   <small class="form-hint">Informe a quantidade produzida para apoiar produtividade, medições e histórico.</small>
+                } @else if (isOccurrenceForm && field.controlName === 'daily_log_id') {
+                  <small class="form-hint">Selecione o diário em que o evento foi percebido, registrado ou tratado.</small>
+                } @else if (isOccurrenceForm && field.controlName === 'title') {
+                  <small class="form-hint">Exemplo: atraso na concretagem, acidente sem afastamento, impedimento por chuva ou falha de equipamento.</small>
+                } @else if (isOccurrenceForm && field.controlName === 'description') {
+                  <small class="form-hint">Descreva causa, impacto, tratativa e o que ainda precisa ser acompanhado.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
