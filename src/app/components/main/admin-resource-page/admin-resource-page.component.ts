@@ -219,6 +219,14 @@ export class AdminResourcePageComponent {
     return this.resource === 'projects';
   }
 
+  get isTeamForm(): boolean {
+    return this.resource === 'teams';
+  }
+
+  get isTeamMemberForm(): boolean {
+    return this.resource === 'teamMembers';
+  }
+
   currentCompanyLabel(): string {
     const account = this.loginService.getLocalToken()?.account as { name?: string; code?: string } | undefined;
     return account?.name || account?.code || 'Empresa logada';
@@ -230,6 +238,22 @@ export class AdminResourcePageComponent {
 
   responsibleRoleHint(): string {
     return 'Selecione o gestor, engenheiro ou líder responsável pela condução da obra.';
+  }
+
+  selectedTeamLabel(): string {
+    const id = this.createForm?.get('team_id')?.value;
+    return this.optionLabel('teams', id, 'Selecione a equipe que receberá o funcionário');
+  }
+
+  selectedEmployeeLabel(): string {
+    const id = this.createForm?.get('employee_id')?.value;
+    return this.optionLabel('employees', id, 'Selecione o funcionário para compor a equipe');
+  }
+
+  selectedEmployeeRoleHint(): string {
+    const id = this.createForm?.get('employee_id')?.value;
+    const employee = this.employeesCache.find((item) => String(item.id) === String(id));
+    return employee?.role_name || 'A função do funcionário aparecerá aqui e poderá ser ajustada para a equipe.';
   }
 
   openCreateDialog(): void {

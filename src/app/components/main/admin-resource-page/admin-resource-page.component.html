@@ -311,6 +311,46 @@
           </div>
         }
 
+        @if (isTeamForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Composição da equipe</span>
+              <strong>Vários funcionários</strong>
+              <small>Uma equipe pode receber quantos funcionários forem necessários.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Fluxo recomendado</span>
+              <strong>Equipe → membros</strong>
+              <small>Primeiro cadastre a equipe e depois vincule os funcionários em “Membros da Equipe”.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Vínculo operacional</span>
+              <strong>Obra + função</strong>
+              <small>Use a equipe para organizar alocação, composição e cobertura por obra.</small>
+            </article>
+          </div>
+        }
+
+        @if (isTeamMemberForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Equipe selecionada</span>
+              <strong>{{ selectedTeamLabel() }}</strong>
+              <small>O funcionário será vinculado a esta equipe.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Funcionário selecionado</span>
+              <strong>{{ selectedEmployeeLabel() }}</strong>
+              <small>Escolha o profissional que passará a compor a equipe.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Função sugerida</span>
+              <strong>{{ selectedEmployeeRoleHint() }}</strong>
+              <small>Você pode manter a função do cadastro ou ajustá-la para o contexto dessa equipe.</small>
+            </article>
+          </div>
+        }
+
         <div class="form-grid two-cols">
           @for (field of activeFields; track field.controlName) {
             <div class="form-field" [class.full-span]="field.type === 'textarea'">
@@ -318,6 +358,8 @@
                 <label>{{ field.label }}</label>
                 @if (isProjectForm && field.controlName === 'engineer_user_id') {
                   <small class="form-hint">{{ responsibleRoleHint() }}</small>
+                } @else if (isTeamMemberForm && field.controlName === 'role_name') {
+                  <small class="form-hint">A função pode repetir a do cadastro do funcionário ou ser ajustada para a atuação nesta equipe.</small>
                 } @else if (field.placeholder) {
                   <small class="form-hint">{{ field.placeholder }}</small>
                 }
