@@ -231,6 +231,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'occurrences';
   }
 
+  get isDocumentForm(): boolean {
+    return this.resource === 'documents';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -355,6 +359,26 @@ export class AdminResourcePageComponent {
   selectedOccurrenceTitleLabel(): string {
     const value = String(this.createForm?.get('title')?.value || '').trim();
     return value || 'Descreva o problema, atraso, acidente ou impedimento';
+  }
+
+  selectedDocumentDiaryLabel(): string {
+    const id = this.createForm?.get('daily_log_id')?.value;
+    return this.optionLabel('diaries', id, 'Selecione o diário relacionado ao documento');
+  }
+
+  selectedDocumentTypeLabel(): string {
+    const value = String(this.createForm?.get('file_type')?.value || '').trim();
+    return value || 'Defina o tipo do arquivo';
+  }
+
+  selectedDocumentNameLabel(): string {
+    const value = String(this.createForm?.get('file_name')?.value || '').trim();
+    return value || 'Informe o nome do documento';
+  }
+
+  selectedDocumentLinkLabel(): string {
+    const value = String(this.createForm?.get('file_url')?.value || '').trim();
+    return value ? 'Link informado' : 'Link pendente';
   }
 
   employeeRolePreview(): string {

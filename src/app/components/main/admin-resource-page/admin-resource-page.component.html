@@ -443,6 +443,44 @@
           </div>
         }
 
+        @if (isDocumentForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Diário vinculado</span>
+              <strong>{{ selectedDocumentDiaryLabel() }}</strong>
+              <small>Associe o documento ao diário certo para fortalecer rastreabilidade e fechamento.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Nome do arquivo</span>
+              <strong>{{ selectedDocumentNameLabel() }}</strong>
+              <small>Use um nome claro para facilitar busca, auditoria e compartilhamento.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Tipo do documento</span>
+              <strong>{{ selectedDocumentTypeLabel() }}</strong>
+              <small>Defina corretamente se é contrato, licença, foto, relatório, planta ou outro ativo.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Publicação do arquivo</span>
+              <strong>{{ selectedDocumentLinkLabel() }}</strong>
+              <small>Um link válido deixa o documento pronto para consulta, envio e referência externa.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo documental</span>
+              <strong>Cadastro → vínculo → compartilhamento</strong>
+              <small>Um documento bem classificado fortalece relatórios, histórico e trilha formal da obra.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Nome + tipo + diário</strong>
+              <small>Padronize nome, tipo e vínculo operacional para manter a base documental fácil de auditar.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -550,6 +588,12 @@
                   <small class="form-hint">Exemplo: atraso na concretagem, acidente sem afastamento, impedimento por chuva ou falha de equipamento.</small>
                 } @else if (isOccurrenceForm && field.controlName === 'description') {
                   <small class="form-hint">Descreva causa, impacto, tratativa e o que ainda precisa ser acompanhado.</small>
+                } @else if (isDocumentForm && field.controlName === 'daily_log_id') {
+                  <small class="form-hint">Selecione o diário ao qual esse documento, anexo ou evidência pertence.</small>
+                } @else if (isDocumentForm && field.controlName === 'file_name') {
+                  <small class="form-hint">Exemplo: contrato social, licença ambiental, ART, foto da obra ou relatório diário.</small>
+                } @else if (isDocumentForm && field.controlName === 'file_url') {
+                  <small class="form-hint">Informe um link válido quando o arquivo já estiver publicado ou acessível para consulta.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
