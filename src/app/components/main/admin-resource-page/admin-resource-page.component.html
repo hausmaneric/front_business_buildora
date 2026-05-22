@@ -329,6 +329,44 @@
           </div>
         }
 
+        @if (isDiaryForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Obra vinculada</span>
+              <strong>{{ selectedDiaryProjectLabel() }}</strong>
+              <small>O diário será registrado dentro dessa obra e impactará sua leitura operacional.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Data do diário</span>
+              <strong>{{ selectedDiaryDatePreview() }}</strong>
+              <small>Use a data real da frente de serviço para manter a trilha do campo consistente.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Situação inicial</span>
+              <strong>{{ selectedDiaryStatusLabel() }}</strong>
+              <small>Depois o diário poderá seguir para aprovação, reprovação ou fechamento.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Clima informado</span>
+              <strong>{{ selectedDiaryWeatherPreview() }}</strong>
+              <small>O clima ajuda a explicar produtividade, atrasos e ocorrências registradas no dia.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo de revisão</span>
+              <strong>Pendente → Aprovação → Assinatura</strong>
+              <small>Mantenha resumo, clima e ocorrências claros para acelerar o fluxo de validação.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Qualidade do registro</span>
+              <strong>Resumo + ocorrências + contexto</strong>
+              <small>Um diário completo melhora relatórios, assinaturas e histórico da obra.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">

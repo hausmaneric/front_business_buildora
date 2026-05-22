@@ -219,6 +219,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'projects';
   }
 
+  get isDiaryForm(): boolean {
+    return this.resource === 'diaries';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -277,6 +281,29 @@ export class AdminResourcePageComponent {
       return 'Defina o prazo contratual da obra';
     }
     return this.formatDate(value);
+  }
+
+  selectedDiaryProjectLabel(): string {
+    const id = this.createForm?.get('project_id')?.value;
+    return this.optionLabel('projects', id, 'Selecione a obra vinculada ao diário');
+  }
+
+  selectedDiaryStatusLabel(): string {
+    const id = this.createForm?.get('status')?.value;
+    return this.optionLabel('diaryStatus', id, 'Pendente');
+  }
+
+  selectedDiaryDatePreview(): string {
+    const value = this.createForm?.get('work_date')?.value;
+    if (!value) {
+      return 'Defina a data operacional do diário';
+    }
+    return this.formatDate(value);
+  }
+
+  selectedDiaryWeatherPreview(): string {
+    const value = String(this.createForm?.get('weather')?.value || '').trim();
+    return value || 'Informe o clima reportado na obra';
   }
 
   employeeRolePreview(): string {
