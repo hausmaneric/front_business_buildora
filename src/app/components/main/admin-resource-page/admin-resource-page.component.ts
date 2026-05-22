@@ -778,6 +778,68 @@ export class AdminResourcePageComponent {
     }
   }
 
+  formSectionTitle(): string {
+    switch (this.resource) {
+      case 'clients':
+        return 'Cadastro do cliente';
+      case 'employees':
+        return 'Cadastro do funcionário';
+      case 'projects':
+        return 'Cadastro da obra';
+      case 'diaries':
+        return 'Registro do diário';
+      case 'activities':
+        return 'Registro da atividade';
+      case 'teams':
+        return 'Cadastro da equipe';
+      case 'teamMembers':
+        return 'Composição da equipe';
+      case 'materials':
+        return 'Movimentação de material';
+      case 'equipments':
+        return 'Uso de equipamento';
+      case 'occurrences':
+        return 'Registro da ocorrência';
+      case 'documents':
+        return 'Cadastro do documento';
+      case 'users':
+        return 'Cadastro do usuário';
+      default:
+        return 'Informações do registro';
+    }
+  }
+
+  formSectionDescription(): string {
+    switch (this.resource) {
+      case 'clients':
+        return 'Organize os dados do cliente que será usado em obras, contratos, documentos e relatórios.';
+      case 'employees':
+        return 'Cadastre o colaborador com função, contato e contexto suficientes para compor equipes e operação.';
+      case 'projects':
+        return 'Estruture a obra com cliente, responsável, endereço, prazo e situação inicial.';
+      case 'diaries':
+        return 'Monte um diário claro, com data, clima, resumo e base suficiente para aprovação e assinatura.';
+      case 'activities':
+        return 'Registre a execução com vínculo ao diário, descrição objetiva e quantidade produzida.';
+      case 'teams':
+        return 'Defina a equipe operacional que atuará na obra e depois complemente com os membros adequados.';
+      case 'teamMembers':
+        return 'Vincule o funcionário certo à equipe certa para manter composição, função e cobertura organizadas.';
+      case 'materials':
+        return 'Lance entradas, saídas e consumos com unidade, quantidade e vínculo operacional corretos.';
+      case 'equipments':
+        return 'Registre uso, situação e horas do ativo para apoiar disponibilidade e manutenção.';
+      case 'occurrences':
+        return 'Descreva o evento com tipo, gravidade e tratativa para acelerar resposta e fechamento.';
+      case 'documents':
+        return 'Cadastre o arquivo com nome, tipo, vínculo ao diário e link quando já estiver publicado.';
+      case 'users':
+        return 'Configure perfil, contato e acesso do usuário com o menor nível necessário para a função real.';
+      default:
+        return 'Organize os dados essenciais com clareza para manter a operação empresarial consistente.';
+    }
+  }
+
   detailSecondaryActionLabel(): string {
     switch (this.resource) {
       case 'documents':

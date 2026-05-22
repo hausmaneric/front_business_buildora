@@ -286,9 +286,9 @@
         <div class="form-section-header">
           <div>
             <span class="form-section-eyebrow">Dados principais</span>
-            <h4>Informações do registro</h4>
+            <h4>{{ formSectionTitle() }}</h4>
           </div>
-          <p>Organize os dados essenciais com clareza para manter a operação empresarial consistente.</p>
+          <p>{{ formSectionDescription() }}</p>
         </div>
 
         @if (isProjectForm) {
