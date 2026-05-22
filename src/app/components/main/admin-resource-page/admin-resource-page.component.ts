@@ -223,6 +223,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'diaries';
   }
 
+  get isActivityForm(): boolean {
+    return this.resource === 'activities';
+  }
+
   get isClientForm(): boolean {
     return this.resource === 'clients';
   }
@@ -304,6 +308,29 @@ export class AdminResourcePageComponent {
   selectedDiaryWeatherPreview(): string {
     const value = String(this.createForm?.get('weather')?.value || '').trim();
     return value || 'Informe o clima reportado na obra';
+  }
+
+  selectedActivityDiaryLabel(): string {
+    const id = this.createForm?.get('daily_log_id')?.value;
+    return this.optionLabel('diaries', id, 'Selecione o diário em que a atividade foi executada');
+  }
+
+  selectedActivityProjectLabel(): string {
+    const label = this.selectedActivityDiaryLabel();
+    if (label.includes('Selecione')) {
+      return 'A obra será identificada a partir do diário selecionado';
+    }
+    return `Vinculada por ${label}`;
+  }
+
+  selectedActivityServiceLabel(): string {
+    const value = String(this.createForm?.get('service_name')?.value || '').trim();
+    return value || 'Defina o serviço ou frente executada';
+  }
+
+  selectedActivityQuantityPreview(): string {
+    const value = this.createForm?.get('quantity')?.value;
+    return value ? this.formatNumber(value) : 'Informe a quantidade produzida';
   }
 
   employeeRolePreview(): string {

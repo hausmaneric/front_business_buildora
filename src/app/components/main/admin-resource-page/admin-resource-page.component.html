@@ -367,6 +367,44 @@
           </div>
         }
 
+        @if (isActivityForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Diário vinculado</span>
+              <strong>{{ selectedActivityDiaryLabel() }}</strong>
+              <small>A atividade sempre nasce dentro de um diário já registrado em campo.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Obra impactada</span>
+              <strong>{{ selectedActivityProjectLabel() }}</strong>
+              <small>O vínculo da obra é herdado do diário selecionado, mantendo a rastreabilidade.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Serviço executado</span>
+              <strong>{{ selectedActivityServiceLabel() }}</strong>
+              <small>Use o nome do serviço ou da frente executada para facilitar leitura e relatórios.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Quantidade registrada</span>
+              <strong>{{ selectedActivityQuantityPreview() }}</strong>
+              <small>Quantifique a produção para sustentar produtividade, medições e acompanhamento.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo operacional</span>
+              <strong>Registro → validação → histórico</strong>
+              <small>Uma atividade bem descrita fortalece o diário, o relatório e a leitura da execução.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Resumo objetivo</strong>
+              <small>Descreva o serviço com clareza e use observações para apontar restrições, avanços ou pendências.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -462,6 +500,12 @@
                 <label>{{ field.label }}</label>
                 @if (isProjectForm && field.controlName === 'engineer_user_id') {
                   <small class="form-hint">{{ responsibleRoleHint() }}</small>
+                } @else if (isActivityForm && field.controlName === 'daily_log_id') {
+                  <small class="form-hint">Selecione o diário em que essa frente ou serviço foi executado.</small>
+                } @else if (isActivityForm && field.controlName === 'service_name') {
+                  <small class="form-hint">Exemplo: Concretagem, alvenaria, instalação hidráulica ou montagem metálica.</small>
+                } @else if (isActivityForm && field.controlName === 'quantity') {
+                  <small class="form-hint">Informe a quantidade produzida para apoiar produtividade, medições e histórico.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
