@@ -277,6 +277,15 @@ export class AdminResourcePageComponent {
     return employee?.role_name || 'A função do funcionário aparecerá aqui e poderá ser ajustada para a equipe.';
   }
 
+  teamMemberFlowHint(): string {
+    const team = this.selectedTeamLabel();
+    const employee = this.selectedEmployeeLabel();
+    if (team.includes('Selecione') || employee.includes('Selecione')) {
+      return 'Escolha a equipe e o funcionário para montar a composição operacional da obra.';
+    }
+    return `${employee} será vinculado à equipe ${team}.`;
+  }
+
   openCreateDialog(): void {
     if (!this.config().supportsCreate) {
       return;

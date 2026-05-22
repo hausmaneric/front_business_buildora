@@ -788,6 +788,47 @@
   line-height: 1.5;
 }
 
+.team-member-flow-banner {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(16, 185, 129, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(236, 253, 245, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.team-member-flow-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.team-member-flow-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.team-member-flow-copy strong {
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.team-member-flow-copy p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
 .form-grid.two-cols {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

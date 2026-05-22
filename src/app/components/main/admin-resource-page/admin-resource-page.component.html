@@ -389,6 +389,14 @@
               <small>Você pode manter a função do cadastro ou ajustá-la para o contexto dessa equipe.</small>
             </article>
           </div>
+
+          <div class="team-member-flow-banner">
+            <div class="team-member-flow-copy">
+              <span class="team-member-flow-eyebrow">Montagem da equipe</span>
+              <strong>Vincule o funcionário certo à frente certa da obra</strong>
+              <p>{{ teamMemberFlowHint() }}</p>
+            </div>
+          </div>
         }
 
         <div class="form-grid two-cols">
@@ -398,6 +406,10 @@
                 <label>{{ field.label }}</label>
                 @if (isProjectForm && field.controlName === 'engineer_user_id') {
                   <small class="form-hint">{{ responsibleRoleHint() }}</small>
+                } @else if (isTeamMemberForm && field.controlName === 'team_id') {
+                  <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
+                } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
+                  <small class="form-hint">Selecione um funcionário já cadastrado para vincular à equipe.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'role_name') {
                   <small class="form-hint">A função pode repetir a do cadastro do funcionário ou ser ajustada para a atuação nesta equipe.</small>
                 } @else if (field.placeholder) {
