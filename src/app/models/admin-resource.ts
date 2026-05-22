@@ -12,6 +12,7 @@ export interface AdminPagedResponse<T> {
 export interface BusinessProject {
   id: number;
   company_id: number;
+  client_id?: number | null;
   engineer_user_id?: number | null;
   code: string;
   name: string;
@@ -64,6 +65,47 @@ export interface BusinessTeam {
   active?: boolean;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface BusinessClient {
+  id: number;
+  company_id: number;
+  code?: string;
+  name: string;
+  document?: string;
+  contact_name?: string;
+  email?: string;
+  phone?: string;
+  notes?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BusinessEmployee {
+  id: number;
+  company_id: number;
+  code?: string;
+  name: string;
+  document?: string;
+  email?: string;
+  phone?: string;
+  role_name?: string;
+  notes?: string;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BusinessTeamMember {
+  id: number;
+  team_id: number;
+  user_id?: number | null;
+  employee_id?: number | null;
+  member_name: string;
+  role_name?: string;
+  active?: boolean;
+  created_at?: string;
 }
 
 export interface BusinessMaterial {

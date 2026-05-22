@@ -9,13 +9,16 @@ import { DialogComponent, DialogModule } from '@syncfusion/ej2-angular-popups';
 import { Observable, finalize } from 'rxjs';
 import {
   BusinessActivity,
+  BusinessClient,
   BusinessDiary,
   BusinessDocument,
+  BusinessEmployee,
   BusinessEquipment,
   BusinessMaterial,
   BusinessOccurrence,
   BusinessProject,
   BusinessTeam,
+  BusinessTeamMember,
   BusinessUser,
   TenantMetadataRole
 } from '../../../models/admin-resource';
@@ -24,10 +27,13 @@ import { LoginService } from '../../../services/login.service';
 
 type DialogMode = 'create' | 'edit' | 'duplicate';
 type ResourceKey =
+  | 'clients'
+  | 'employees'
   | 'projects'
   | 'diaries'
   | 'activities'
   | 'teams'
+  | 'teamMembers'
   | 'materials'
   | 'equipments'
   | 'occurrences'
@@ -35,6 +41,9 @@ type ResourceKey =
   | 'users';
 type SelectBucket =
   | 'companies'
+  | 'clients'
+  | 'employees'
+  | 'teams'
   | 'users'
   | 'roles'
   | 'projects'
@@ -63,6 +72,7 @@ interface ResourceField {
   required?: boolean;
   min?: number;
   hideOnEdit?: boolean;
+  readonly?: boolean;
 }
 
 interface ResourceConfig {
@@ -157,6 +167,9 @@ export class AdminResourcePageComponent {
 
   optionBuckets: Record<SelectBucket, Array<{ id: any; text: string }>> = {
     companies: [],
+    clients: [],
+    employees: [],
+    teams: [],
     users: [],
     roles: [],
     projects: [],
@@ -173,6 +186,8 @@ export class AdminResourcePageComponent {
   private supportLoaded = false;
   private allRows: any[] = [];
   private teamMembersCache: any[] = [];
+  private clientsCache: BusinessClient[] = [];
+  private employeesCache: BusinessEmployee[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -923,6 +938,22 @@ export class AdminResourcePageComponent {
 
   private config(): ResourceConfig {
     const baseColumns = {
+      clients: [
+        { field: 'code', headerText: 'Código', width: 140 },
+        { field: 'name', headerText: 'Cliente', width: 240 },
+        { field: 'contactDisplay', headerText: 'Contato', width: 220 },
+        { field: 'documentDisplay', headerText: 'Documento', width: 180 },
+        { field: 'phoneDisplay', headerText: 'Telefone', width: 170 },
+        { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ],
+      employees: [
+        { field: 'code', headerText: 'Código', width: 140 },
+        { field: 'name', headerText: 'Funcionário', width: 240 },
+        { field: 'roleDisplay', headerText: 'Função', width: 180 },
+        { field: 'documentDisplay', headerText: 'Documento', width: 180 },
+        { field: 'phoneDisplay', headerText: 'Telefone', width: 170 },
+        { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ],
       projects: [
         { field: 'code', headerText: 'Código', width: 130 },
         { field: 'name', headerText: 'Obra', width: 280 },
@@ -952,6 +983,13 @@ export class AdminResourcePageComponent {
         { field: 'name', headerText: 'Equipe', width: 220 },
         { field: 'memberCountDisplay', headerText: 'Integrantes', width: 140, type: 'number' as const },
         { field: 'compositionDisplay', headerText: 'Composição', width: 240 },
+        { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
+      ],
+      teamMembers: [
+        { field: 'teamDisplay', headerText: 'Equipe', width: 220 },
+        { field: 'employeeDisplay', headerText: 'Funcionário', width: 240 },
+        { field: 'roleDisplay', headerText: 'Função na equipe', width: 190 },
+        { field: 'allocationDisplay', headerText: 'Obra', width: 240 },
         { field: 'activeDisplay', headerText: 'Situação', width: 150, type: 'badge' as const }
       ],
       materials: [
@@ -998,6 +1036,50 @@ export class AdminResourcePageComponent {
     };
 
     const map: Record<ResourceKey, ResourceConfig> = {
+      clients: {
+        sortField: 'name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.clients(token),
+        create: (token, payload) => this.adminDataService.createClient(token, payload),
+        update: (token, payload) => this.adminDataService.updateClient(token, payload),
+        remove: (token, id) => this.adminDataService.deleteClient(token, id),
+        columns: baseColumns.clients,
+        fields: [
+          { controlName: 'code', label: 'Código', type: 'text', readonly: true, placeholder: 'Gerado automaticamente' },
+          { controlName: 'name', label: 'Cliente', type: 'text', required: true },
+          { controlName: 'contact_name', label: 'Contato principal', type: 'text' },
+          { controlName: 'document', label: 'Documento', type: 'text' },
+          { controlName: 'email', label: 'E-mail', type: 'text' },
+          { controlName: 'phone', label: 'Telefone', type: 'text' },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' },
+          { controlName: 'active', label: 'Ativo', type: 'checkbox' }
+        ]
+      },
+      employees: {
+        sortField: 'name',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.employees(token),
+        create: (token, payload) => this.adminDataService.createEmployee(token, payload),
+        update: (token, payload) => this.adminDataService.updateEmployee(token, payload),
+        remove: (token, id) => this.adminDataService.deleteEmployee(token, id),
+        columns: baseColumns.employees,
+        fields: [
+          { controlName: 'code', label: 'Código', type: 'text', readonly: true, placeholder: 'Gerado automaticamente' },
+          { controlName: 'name', label: 'Funcionário', type: 'text', required: true },
+          { controlName: 'role_name', label: 'Função', type: 'text', required: true, placeholder: 'Pedreiro, mestre de obras, operador...' },
+          { controlName: 'document', label: 'Documento', type: 'text' },
+          { controlName: 'email', label: 'E-mail', type: 'text' },
+          { controlName: 'phone', label: 'Telefone', type: 'text' },
+          { controlName: 'notes', label: 'Observações', type: 'textarea' },
+          { controlName: 'active', label: 'Ativo', type: 'checkbox' }
+        ]
+      },
       projects: {
         sortField: 'name',
         supportsCreate: true,
@@ -1010,11 +1092,10 @@ export class AdminResourcePageComponent {
         remove: (token, id) => this.adminDataService.deleteProject(token, id),
         columns: baseColumns.projects,
         fields: [
-          { controlName: 'code', label: 'Código', type: 'text', required: true },
+          { controlName: 'code', label: 'Código', type: 'text', readonly: true, placeholder: 'Gerado automaticamente' },
           { controlName: 'name', label: 'Nome da obra', type: 'text', required: true },
-          { controlName: 'client_name', label: 'Cliente', type: 'text' },
-          { controlName: 'company_id', label: 'Empresa', type: 'select', optionsKey: 'companies', required: true },
-          { controlName: 'engineer_user_id', label: 'Responsável', type: 'select', optionsKey: 'users' },
+          { controlName: 'client_id', label: 'Cliente', type: 'select', optionsKey: 'clients', required: true, placeholder: 'Selecione um cliente cadastrado' },
+          { controlName: 'engineer_user_id', label: 'Responsável pela obra', type: 'select', optionsKey: 'users', placeholder: 'Gestor ou engenheiro responsável' },
           { controlName: 'address', label: 'Endereço', type: 'text' },
           { controlName: 'number', label: 'Número', type: 'text' },
           { controlName: 'district', label: 'Bairro', type: 'text' },
@@ -1082,6 +1163,24 @@ export class AdminResourcePageComponent {
           { controlName: 'name', label: 'Nome da equipe', type: 'text', required: true },
           { controlName: 'description', label: 'Descrição', type: 'textarea' },
           { controlName: 'active', label: 'Ativa', type: 'checkbox' }
+        ]
+      },
+      teamMembers: {
+        sortField: 'employeeDisplay',
+        supportsCreate: true,
+        supportsEdit: true,
+        supportsDuplicate: true,
+        supportsDelete: true,
+        list: (token) => this.adminDataService.teamMembers(token),
+        create: (token, payload) => this.adminDataService.createTeamMember(token, payload),
+        update: (token, payload) => this.adminDataService.updateTeamMember(token, payload),
+        remove: (token, id) => this.adminDataService.deleteTeamMember(token, id),
+        columns: baseColumns.teamMembers,
+        fields: [
+          { controlName: 'team_id', label: 'Equipe', type: 'select', optionsKey: 'teams', required: true },
+          { controlName: 'employee_id', label: 'Funcionário', type: 'select', optionsKey: 'employees', required: true },
+          { controlName: 'role_name', label: 'Função na equipe', type: 'text', placeholder: 'Pode sobrescrever a função do cadastro' },
+          { controlName: 'active', label: 'Ativo', type: 'checkbox' }
         ]
       },
       materials: {
@@ -1259,6 +1358,26 @@ export class AdminResourcePageComponent {
       }
     });
 
+    this.adminDataService.clients(token).subscribe({
+      next: (response) => {
+        this.clientsCache = this.items<BusinessClient>(response?.data);
+        this.optionBuckets.clients = this.clientsCache.map((item) => ({
+          id: item.id,
+          text: item.name
+        }));
+      }
+    });
+
+    this.adminDataService.employees(token).subscribe({
+      next: (response) => {
+        this.employeesCache = this.items<BusinessEmployee>(response?.data);
+        this.optionBuckets.employees = this.employeesCache.map((item) => ({
+          id: item.id,
+          text: `${item.name}${item.role_name ? ` - ${item.role_name}` : ''}`
+        }));
+      }
+    });
+
     this.adminDataService.tenantUsers(token).subscribe({
       next: (response) => {
         this.optionBuckets.users = this.items<BusinessUser>(response?.data).map((item) => ({
@@ -1283,6 +1402,15 @@ export class AdminResourcePageComponent {
           this.rebuildOverview();
           this.applyGridState();
         }
+      }
+    });
+
+    this.adminDataService.teams(token).subscribe({
+      next: (response) => {
+        this.optionBuckets.teams = this.items<BusinessTeam>(response?.data).map((item) => ({
+          id: item.id,
+          text: item.name
+        }));
       }
     });
   }
@@ -1489,7 +1617,10 @@ export class AdminResourcePageComponent {
       if (field.controlName === 'phone') validators.push(Validators.pattern(/^[0-9()+\-\s]{8,20}$/));
       if (field.controlName === 'document') validators.push(Validators.pattern(/^[0-9./-]{8,20}$/));
       if (field.controlName === 'zipcode') validators.push(Validators.pattern(/^[0-9-]{8,10}$/));
-      const initial = field.type === 'checkbox' ? false : '';
+      let initial: any = field.type === 'checkbox' ? false : '';
+      if (field.controlName === 'code') {
+        initial = this.generatedCodeForResource();
+      }
       group[field.controlName] = new FormControl(initial, validators);
     }
     group['id'] = new FormControl(null);
@@ -1509,6 +1640,37 @@ export class AdminResourcePageComponent {
       default:
         return 'Formato inválido.';
     }
+  }
+
+  private currentCompanyId(): number | null {
+    return this.loginService.getLocalToken()?.account?.id ?? null;
+  }
+
+  private generatedCodeForResource(): string {
+    const prefixMap: Record<ResourceKey, string> = {
+      clients: 'CLI',
+      employees: 'FUN',
+      projects: 'OBR',
+      diaries: 'DIA',
+      activities: 'ATV',
+      teams: 'EQP',
+      teamMembers: 'MEM',
+      materials: 'MAT',
+      equipments: 'EQT',
+      occurrences: 'OCR',
+      documents: 'DOC',
+      users: 'USR'
+    };
+
+    const prefix = prefixMap[this.resource] || 'REG';
+    const sourceRows = Array.isArray(this.allRows) && this.allRows.length ? this.allRows : this.rows;
+    const highest = sourceRows.reduce((max, row) => {
+      const code = String(row?.code || '');
+      const match = code.match(/(\d+)(?!.*\d)/);
+      const value = match ? Number(match[1]) : 0;
+      return Math.max(max, Number.isFinite(value) ? value : 0);
+    }, 0);
+    return `${prefix}${String(highest + 1).padStart(4, '0')}`;
   }
 
   private rowIdentityLabel(row: any): string {
@@ -1531,7 +1693,7 @@ export class AdminResourcePageComponent {
       }
     });
 
-    const numericFields = ['company_id', 'engineer_user_id', 'project_id', 'daily_log_id', 'role_id', 'quantity', 'hours_used', 'file_size_bytes', 'budget_amount'];
+    const numericFields = ['company_id', 'client_id', 'engineer_user_id', 'project_id', 'team_id', 'employee_id', 'daily_log_id', 'role_id', 'quantity', 'hours_used', 'file_size_bytes', 'budget_amount'];
     numericFields.forEach((field) => {
       if (field in raw && raw[field] !== '' && raw[field] !== null && raw[field] !== undefined) {
         raw[field] = Number(raw[field]);
@@ -1546,17 +1708,65 @@ export class AdminResourcePageComponent {
       raw.created_by = this.loginService.getLocalToken()?.user?.id ?? 1;
     }
 
+    if (this.resource === 'projects') {
+      raw.company_id = this.currentCompanyId();
+      raw.code = this.dialogMode === 'edit' ? raw.code : this.generatedCodeForResource();
+      const selectedClient = this.clientsCache.find((item) => item.id === raw.client_id);
+      raw.client_name = selectedClient?.name || raw.client_name || '';
+    }
+
+    if (this.resource === 'clients' || this.resource === 'employees') {
+      raw.company_id = this.currentCompanyId();
+      raw.code = this.dialogMode === 'edit' ? raw.code : this.generatedCodeForResource();
+    }
+
+    if (this.resource === 'teamMembers') {
+      const employee = this.employeesCache.find((item) => item.id === raw.employee_id);
+      raw.member_name = employee?.name || raw.member_name || '';
+      raw.role_name = raw.role_name || employee?.role_name || '';
+      if ('user_id' in raw && !raw.user_id) {
+        delete raw.user_id;
+      }
+    }
+
     return raw;
   }
 
   private toFormValue(row: any, mode: DialogMode): Record<string, any> {
+    if (this.resource === 'clients') {
+      return {
+        id: mode === 'edit' ? row.id : null,
+        code: mode === 'edit' ? row.code : this.generatedCodeForResource(),
+        name: mode === 'duplicate' ? `${row.name} - Cópia` : row.name,
+        contact_name: row.contact_name || '',
+        document: row.document || '',
+        email: row.email || '',
+        phone: row.phone || '',
+        notes: row.notes || '',
+        active: this.toBoolean(row.active)
+      };
+    }
+
+    if (this.resource === 'employees') {
+      return {
+        id: mode === 'edit' ? row.id : null,
+        code: mode === 'edit' ? row.code : this.generatedCodeForResource(),
+        name: mode === 'duplicate' ? `${row.name} - Cópia` : row.name,
+        role_name: row.role_name || '',
+        document: row.document || '',
+        email: mode === 'duplicate' && row.email ? `copy.${row.email}` : row.email || '',
+        phone: row.phone || '',
+        notes: row.notes || '',
+        active: this.toBoolean(row.active)
+      };
+    }
+
     if (this.resource === 'projects') {
       return {
         id: mode === 'edit' ? row.id : null,
-        code: mode === 'duplicate' ? `${row.code}-copy` : row.code,
+        code: mode === 'edit' ? row.code : this.generatedCodeForResource(),
         name: mode === 'duplicate' ? `${row.name} - Cópia` : row.name,
-        client_name: row.client_name || '',
-        company_id: row.company_id || '',
+        client_id: row.client_id || '',
         engineer_user_id: row.engineer_user_id || '',
         address: row.address || '',
         number: row.number || '',
@@ -1568,6 +1778,17 @@ export class AdminResourcePageComponent {
         start_date: row.start_date || '',
         end_date: row.end_date || '',
         status: row.status || 'em_andamento'
+      };
+    }
+
+    if (this.resource === 'teamMembers') {
+      return {
+        id: mode === 'edit' ? row.id : null,
+        team_id: row.team_id || '',
+        employee_id: row.employee_id || '',
+        member_name: row.member_name || '',
+        role_name: row.role_name || '',
+        active: this.toBoolean(row.active)
       };
     }
 
@@ -1604,6 +1825,22 @@ export class AdminResourcePageComponent {
 
   private mapRowsForDisplay(rows: any[]): any[] {
     switch (this.resource) {
+      case 'clients':
+        return rows.map((row: BusinessClient) => ({
+          ...row,
+          contactDisplay: row.contact_name || 'Sem contato',
+          documentDisplay: row.document || 'Não informado',
+          phoneDisplay: row.phone || 'Não informado',
+          activeDisplay: this.activeDisplay(row.active)
+        }));
+      case 'employees':
+        return rows.map((row: BusinessEmployee) => ({
+          ...row,
+          roleDisplay: row.role_name || 'Função não informada',
+          documentDisplay: row.document || 'Não informado',
+          phoneDisplay: row.phone || 'Não informado',
+          activeDisplay: this.activeDisplay(row.active)
+        }));
       case 'projects':
         return rows.map((row: BusinessProject) => ({
           ...row,
@@ -1637,6 +1874,17 @@ export class AdminResourcePageComponent {
           ...row,
           projectDisplay: this.optionLabel('projects', row.project_id, `Obra #${row.project_id}`),
           descriptionDisplay: row.description || 'Sem descrição',
+          activeDisplay: this.activeDisplay(row.active)
+        }));
+      case 'teamMembers':
+        return rows.map((row: BusinessTeamMember) => ({
+          ...row,
+          teamDisplay: this.optionLabel('teams', row.team_id, `Equipe #${row.team_id}`),
+          employeeDisplay:
+            this.employeesCache.find((item) => item.id === row.employee_id)?.name ||
+            row.member_name ||
+            'Funcionário não informado',
+          roleDisplay: row.role_name || 'Função não informada',
           activeDisplay: this.activeDisplay(row.active)
         }));
       case 'materials':

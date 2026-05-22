@@ -320,7 +320,13 @@
                   </label>
                 }
                 @default {
-                  <ejs-textbox [formControlName]="field.controlName" [type]="inputType(field)" cssClass="orb-input" [placeholder]="field.placeholder || ''"></ejs-textbox>
+                  <ejs-textbox
+                    [formControlName]="field.controlName"
+                    [type]="inputType(field)"
+                    cssClass="orb-input"
+                    [placeholder]="field.placeholder || ''"
+                    [readonly]="field.readonly === true">
+                  </ejs-textbox>
                 }
               }
 

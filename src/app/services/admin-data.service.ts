@@ -3,13 +3,16 @@ import { Injectable } from '@angular/core';
 import { Observable, shareReplay, tap } from 'rxjs';
 import {
   BusinessActivity,
+  BusinessClient,
   BusinessDiary,
   BusinessDocument,
+  BusinessEmployee,
   BusinessEquipment,
   BusinessMaterial,
   BusinessOccurrence,
   BusinessProject,
   BusinessTeam,
+  BusinessTeamMember,
   BusinessUser
 } from '../models/admin-resource';
 import { NxResult } from '../models/login';
@@ -107,6 +110,60 @@ export class AdminDataService {
     return this.cachedGet<NxResult<any>>(url, headers);
   }
 
+  clients(token: string): Observable<NxResult<BusinessClient[]>> {
+    const headers = this.tenantHeaders();
+    const url = `${resources.apiURL}clients/${token}`;
+    return this.cachedGet<NxResult<BusinessClient[]>>(url, headers);
+  }
+
+  createClient(token: string, payload: Record<string, any>): Observable<NxResult<any>> {
+    this.invalidate(['clients/', 'projects/', 'dashboard/operational/']);
+    return this.http.post<NxResult<any>>(`${resources.apiURL}clients/${token}`, payload, {
+      headers: this.tenantHeaders()
+    });
+  }
+
+  updateClient(token: string, payload: Record<string, any>): Observable<NxResult<any>> {
+    this.invalidate(['clients/', 'projects/', 'dashboard/operational/']);
+    return this.http.put<NxResult<any>>(`${resources.apiURL}clients/${token}`, payload, {
+      headers: this.tenantHeaders()
+    });
+  }
+
+  deleteClient(token: string, id: number): Observable<NxResult<any>> {
+    this.invalidate(['clients/', 'projects/', 'dashboard/operational/']);
+    return this.http.delete<NxResult<any>>(`${resources.apiURL}clients/${token}${this.queryParams({ id })}`, {
+      headers: this.tenantHeaders()
+    });
+  }
+
+  employees(token: string): Observable<NxResult<BusinessEmployee[]>> {
+    const headers = this.tenantHeaders();
+    const url = `${resources.apiURL}employees/${token}`;
+    return this.cachedGet<NxResult<BusinessEmployee[]>>(url, headers);
+  }
+
+  createEmployee(token: string, payload: Record<string, any>): Observable<NxResult<any>> {
+    this.invalidate(['employees/', 'team_members/', 'teams/', 'dashboard/operational/']);
+    return this.http.post<NxResult<any>>(`${resources.apiURL}employees/${token}`, payload, {
+      headers: this.tenantHeaders()
+    });
+  }
+
+  updateEmployee(token: string, payload: Record<string, any>): Observable<NxResult<any>> {
+    this.invalidate(['employees/', 'team_members/', 'teams/', 'dashboard/operational/']);
+    return this.http.put<NxResult<any>>(`${resources.apiURL}employees/${token}`, payload, {
+      headers: this.tenantHeaders()
+    });
+  }
+
+  deleteEmployee(token: string, id: number): Observable<NxResult<any>> {
+    this.invalidate(['employees/', 'team_members/', 'teams/', 'dashboard/operational/']);
+    return this.http.delete<NxResult<any>>(`${resources.apiURL}employees/${token}${this.queryParams({ id })}`, {
+      headers: this.tenantHeaders()
+    });
+  }
+
   projects(token: string): Observable<NxResult<BusinessProject[]>> {
     const headers = this.tenantHeaders();
     const url = `${resources.apiURL}projects/${token}`;
@@ -168,10 +225,10 @@ export class AdminDataService {
     });
   }
 
-  teamMembers(token: string): Observable<NxResult<any[]>> {
+  teamMembers(token: string): Observable<NxResult<BusinessTeamMember[]>> {
     const headers = this.tenantHeaders();
     const url = `${resources.apiURL}team_members/${token}`;
-    return this.cachedGet<NxResult<any[]>>(url, headers);
+    return this.cachedGet<NxResult<BusinessTeamMember[]>>(url, headers);
   }
 
   createTeamMember(token: string, payload: Record<string, any>): Observable<NxResult<any>> {

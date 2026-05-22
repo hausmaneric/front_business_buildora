@@ -22,6 +22,24 @@ export const routes: Routes = [
         }
       },
       {
+        path: 'clients',
+        component: AdminResourcePageComponent,
+        data: {
+          title: 'Clientes',
+          subtitle: 'Cadastro de clientes da construtora para vínculo direto com as obras',
+          resource: 'clients'
+        }
+      },
+      {
+        path: 'employees',
+        component: AdminResourcePageComponent,
+        data: {
+          title: 'Funcionários',
+          subtitle: 'Cadastro de funcionários para compor equipes, obras e operação de campo',
+          resource: 'employees'
+        }
+      },
+      {
         path: 'projects',
         component: AdminResourcePageComponent,
         data: {
@@ -55,6 +73,15 @@ export const routes: Routes = [
           title: 'Equipes',
           subtitle: 'Equipes vinculadas às obras, funções e alocações de campo',
           resource: 'teams'
+        }
+      },
+      {
+        path: 'team-members',
+        component: AdminResourcePageComponent,
+        data: {
+          title: 'Membros da Equipe',
+          subtitle: 'Funcionários vinculados às equipes com função e composição operacional',
+          resource: 'teamMembers'
         }
       },
       {

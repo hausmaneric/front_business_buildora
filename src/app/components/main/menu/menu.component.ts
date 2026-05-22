@@ -41,10 +41,13 @@ export class MenuComponent {
       id: 'operacao',
       name: 'Operação',
       items: [
+        { id: 'clients', name: 'Clientes', iconKey: 'briefcase', route: '/main/clients' },
+        { id: 'employees', name: 'Funcionários', iconKey: 'users', route: '/main/employees' },
         { id: 'projects', name: 'Obras', iconKey: 'briefcase', route: '/main/projects' },
         { id: 'diaries', name: 'Diários de Obra', iconKey: 'receipt', route: '/main/diaries' },
         { id: 'activities', name: 'Atividades', iconKey: 'grid', route: '/main/activities' },
         { id: 'teams', name: 'Equipes', iconKey: 'users', route: '/main/teams' },
+        { id: 'team-members', name: 'Membros da Equipe', iconKey: 'users', route: '/main/team-members' },
         { id: 'users', name: 'Usuários', iconKey: 'users', route: '/main/users' },
         { id: 'permissions', name: 'Permissões', iconKey: 'settings', route: '/main/permissions' },
         { id: 'photos', name: 'Fotos', iconKey: 'message', route: '/main/photos' },
