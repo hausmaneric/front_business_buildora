@@ -436,6 +436,21 @@ export class AdminResourcePageComponent {
     return this.currentCompanyLabel();
   }
 
+  selectedTeamProjectLabel(): string {
+    const id = this.createForm?.get('project_id')?.value;
+    return this.optionLabel('projects', id, 'Selecione a obra vinculada à equipe');
+  }
+
+  selectedTeamNameLabel(): string {
+    const value = String(this.createForm?.get('name')?.value || '').trim();
+    return value || 'Defina o nome da equipe';
+  }
+
+  selectedTeamStatusLabel(): string {
+    const active = this.createForm?.get('active')?.value;
+    return this.toBoolean(active) ? 'Equipe ativa' : 'Equipe inativa';
+  }
+
   userApprovalHint(): string {
     const role = this.selectedUserRoleLabel().toLowerCase();
     if (role.includes('admin') || role.includes('gestor') || role.includes('engenheiro')) {

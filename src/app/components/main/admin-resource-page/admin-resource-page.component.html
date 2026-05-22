@@ -595,6 +595,44 @@
           </div>
         }
 
+        @if (isTeamForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Obra vinculada</span>
+              <strong>{{ selectedTeamProjectLabel() }}</strong>
+              <small>A equipe deve nascer associada à obra em que vai atuar com mais frequência.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Nome da equipe</span>
+              <strong>{{ selectedTeamNameLabel() }}</strong>
+              <small>Use um nome claro para facilitar alocação, leitura de campo e composição operacional.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Situação</span>
+              <strong>{{ selectedTeamStatusLabel() }}</strong>
+              <small>Equipes ativas ficam disponíveis para composição, alocação e cobertura de obra.</small>
+            </article>
+          </div>
+
+          <div class="project-context-strip project-context-strip-secondary">
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Fluxo da equipe</span>
+              <strong>Cadastro → composição → alocação</strong>
+              <small>Primeiro cadastre a equipe, depois vincule os funcionários e acompanhe cobertura por obra.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Boa prática</span>
+              <strong>Nome + obra + membros</strong>
+              <small>Mantenha a equipe ligada à obra certa e depois ajuste a composição com funcionários compatíveis.</small>
+            </article>
+            <article class="project-context-card soft-card">
+              <span class="project-context-label">Uso operacional</span>
+              <strong>Execução e rastreabilidade</strong>
+              <small>Equipes bem organizadas ajudam em diários, atividades, produtividade e responsabilização.</small>
+            </article>
+          </div>
+        }
+
         @if (isClientForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
@@ -726,6 +764,10 @@
                   <small class="form-hint">Use um e-mail válido para login, comunicação e responsabilização operacional.</small>
                 } @else if (isUserForm && field.controlName === 'password') {
                   <small class="form-hint">Defina uma senha inicial segura. Depois o usuário poderá seguir o fluxo normal de acesso.</small>
+                } @else if (isTeamForm && field.controlName === 'project_id') {
+                  <small class="form-hint">Selecione a obra principal dessa equipe para manter a alocação mais clara desde o início.</small>
+                } @else if (isTeamForm && field.controlName === 'name') {
+                  <small class="form-hint">Exemplo: Equipe Estrutura, Equipe Alvenaria, Equipe Instalações ou Equipe Acabamento.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'team_id') {
                   <small class="form-hint">Selecione a equipe que receberá esse profissional na composição da obra.</small>
                 } @else if (isTeamMemberForm && field.controlName === 'employee_id') {
