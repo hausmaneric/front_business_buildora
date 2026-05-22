@@ -219,6 +219,14 @@ export class AdminResourcePageComponent {
     return this.resource === 'projects';
   }
 
+  get isClientForm(): boolean {
+    return this.resource === 'clients';
+  }
+
+  get isEmployeeForm(): boolean {
+    return this.resource === 'employees';
+  }
+
   get isTeamForm(): boolean {
     return this.resource === 'teams';
   }
@@ -236,8 +244,21 @@ export class AdminResourcePageComponent {
     return String(this.createForm?.get('code')?.value || this.generatedCodeForResource());
   }
 
+  clientCodePreview(): string {
+    return String(this.createForm?.get('code')?.value || this.generatedCodeForResource());
+  }
+
+  employeeCodePreview(): string {
+    return String(this.createForm?.get('code')?.value || this.generatedCodeForResource());
+  }
+
   responsibleRoleHint(): string {
     return 'Selecione o gestor, engenheiro ou líder responsável pela condução da obra.';
+  }
+
+  employeeRolePreview(): string {
+    const value = String(this.createForm?.get('role_name')?.value || '').trim();
+    return value || 'Defina a função principal do funcionário na operação.';
   }
 
   selectedTeamLabel(): string {

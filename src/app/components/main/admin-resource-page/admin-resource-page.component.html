@@ -311,6 +311,46 @@
           </div>
         }
 
+        @if (isClientForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Código do cliente</span>
+              <strong>{{ clientCodePreview() }}</strong>
+              <small>Gerado automaticamente para manter o cadastro padronizado.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Empresa vinculada</span>
+              <strong>{{ currentCompanyLabel() }}</strong>
+              <small>O cliente será cadastrado diretamente para a empresa logada.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Uso no sistema</span>
+              <strong>Obras e contratos</strong>
+              <small>Depois do cadastro, o cliente poderá ser selecionado nas obras e em fluxos documentais.</small>
+            </article>
+          </div>
+        }
+
+        @if (isEmployeeForm) {
+          <div class="project-context-strip">
+            <article class="project-context-card">
+              <span class="project-context-label">Código do funcionário</span>
+              <strong>{{ employeeCodePreview() }}</strong>
+              <small>Gerado automaticamente para manter a base de equipe organizada.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Função principal</span>
+              <strong>{{ employeeRolePreview() }}</strong>
+              <small>Essa função será sugerida depois nos vínculos de equipe e composições de obra.</small>
+            </article>
+            <article class="project-context-card">
+              <span class="project-context-label">Empresa vinculada</span>
+              <strong>{{ currentCompanyLabel() }}</strong>
+              <small>O funcionário será cadastrado automaticamente para a empresa logada.</small>
+            </article>
+          </div>
+        }
+
         @if (isTeamForm) {
           <div class="project-context-strip">
             <article class="project-context-card">
