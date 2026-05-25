@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { AdminDashboardViewModel, AlertRow, DistributionItem, LogRow, SummaryCard, TrendPoint } from '../models/admin-dashboard';
-import { BusinessActivity, BusinessDiary, BusinessDocument, BusinessOccurrence, BusinessProject, BusinessTeam, BusinessUser } from '../models/admin-resource';
+import { BusinessDiary, BusinessProject, BusinessUser } from '../models/admin-resource';
 import { AdminDataService } from './admin-data.service';
 
 @Injectable({
@@ -13,34 +13,25 @@ export class AdminDashboardService {
   load(token: string): Observable<AdminDashboardViewModel> {
     return forkJoin({
       dashboard: this.adminDataService.dashboardOperational(token).pipe(catchError(() => of({ status: false, data: {} }))),
-      metadata: this.adminDataService.tenantMetadata(token).pipe(catchError(() => of({ status: false, data: {} }))),
       companies: this.adminDataService.tenantCompanies(token).pipe(catchError(() => of({ status: false, data: [] }))),
       projects: this.adminDataService.projects(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      diaries: this.adminDataService.diaries(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      occurrences: this.adminDataService.occurrences(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      activities: this.adminDataService.activities(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      documents: this.adminDataService.documents(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      users: this.adminDataService.tenantUsers(token).pipe(catchError(() => of({ status: false, data: [] }))),
-      teams: this.adminDataService.teams(token).pipe(catchError(() => of({ status: false, data: [] })))
+      users: this.adminDataService.tenantUsers(token).pipe(catchError(() => of({ status: false, data: [] })))
     }).pipe(map((payload) => this.buildViewModel(payload)));
   }
 
   private buildViewModel(payload: any): AdminDashboardViewModel {
     const projects = this.items<BusinessProject>(payload.projects?.data);
-    const diaries = this.items<BusinessDiary>(payload.diaries?.data);
-    const occurrences = this.items<BusinessOccurrence>(payload.occurrences?.data);
-    const activities = this.items<BusinessActivity>(payload.activities?.data);
-    const documents = this.items<BusinessDocument>(payload.documents?.data);
     const users = this.items<BusinessUser>(payload.users?.data);
-    const teams = this.items<BusinessTeam>(payload.teams?.data);
     const companies = this.items<any>(payload.companies?.data);
     const dashboardSummary = payload.dashboard?.data?.summary ?? {};
+    const recentDiaries = this.items<BusinessDiary>(payload.dashboard?.data?.last_diaries);
+    const projectProductivity = this.items<any>(payload.dashboard?.data?.project_productivity);
 
-    const activeProjects = projects.filter((item) => this.projectIsActive(item)).length;
-    const pendingDiaries = diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
-    const openOccurrences = occurrences.filter((item) => !this.toBoolean(item.resolved)).length;
+    const activeProjects = Number(dashboardSummary.active_projects || projects.filter((item) => this.projectIsActive(item)).length);
+    const pendingDiaries = Number(dashboardSummary.pending_diaries || recentDiaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length);
+    const openOccurrences = Number(dashboardSummary.open_occurrences || 0);
     const activeUsers = users.filter((item) => this.toBoolean(item.active)).length;
-    const productivity = this.deriveProductivity(dashboardSummary, projects, diaries);
+    const productivity = this.deriveProductivity(dashboardSummary, projects, recentDiaries);
 
     const totalStorageMb = companies.reduce((sum, item) => sum + Number(item.storage_limit_mb || 0), 0);
     const usedStorageMb = companies.reduce((sum, item) => sum + Number(item.storage_used_mb || 0), 0);
@@ -92,12 +83,12 @@ export class AdminDashboardService {
 
     return {
       cards,
-      planDistribution: this.planDistribution(projects),
-      subscriptionDistribution: this.occurrenceDistribution(occurrences),
+      planDistribution: this.planDistribution(projects, projectProductivity),
+      subscriptionDistribution: this.occurrenceDistribution(openOccurrences, pendingDiaries),
       storageTrend: this.storageTrend(usedStorageMb),
-      recentAccess: this.recentAccess(companies, users),
-      recentLogs: this.recentLogs(activities, occurrences, documents, diaries),
-      alerts: this.alerts(projects, diaries, occurrences, storagePercent),
+      recentAccess: this.recentAccess(companies, users, projectProductivity),
+      recentLogs: this.recentLogs(recentDiaries, projectProductivity),
+      alerts: this.alerts(projects, pendingDiaries, openOccurrences, storagePercent),
       footerStats: cards
     };
   }
@@ -131,7 +122,16 @@ export class AdminDashboardService {
     return Math.min(100, Math.max(45, Math.round((diaries.length / Math.max(projects.length, 1)) * 12)));
   }
 
-  private planDistribution(projects: BusinessProject[]): DistributionItem[] {
+  private planDistribution(projects: BusinessProject[], productivityRows: any[]): DistributionItem[] {
+    if (productivityRows.length) {
+      const palette = ['#22c55e', '#60a5fa', '#f59e0b', '#ef4444', '#8b5cf6'];
+      return productivityRows.slice(0, 5).map((item, index) => ({
+        label: item.project_name || `Obra ${index + 1}`,
+        value: Number(item.executed_quantity || item.diaries_count || 0) || 1,
+        color: palette[index % palette.length]
+      }));
+    }
+
     const statusGroups = new Map<string, number>();
     projects.forEach((project) => {
       const label = this.projectStatus(project.status);
@@ -146,21 +146,23 @@ export class AdminDashboardService {
     }));
   }
 
-  private occurrenceDistribution(occurrences: BusinessOccurrence[]): DistributionItem[] {
-    const map = new Map<string, number>();
-    occurrences.forEach((item) => {
-      const label = this.labelize(item.occurrence_type || item.severity || 'Geral');
-      map.set(label, (map.get(label) || 0) + 1);
-    });
+  private occurrenceDistribution(openOccurrences: number, pendingDiaries: number): DistributionItem[] {
+    const palette = ['#ff5d5d', '#ffb020', '#8b5cf6', '#3b82f6', '#94a3b8'];
+    const items: Array<{ label: string; value: number }> = [];
 
-    if (!map.size) {
-      map.set('Sem ocorrências', 1);
+    if (openOccurrences > 0) {
+      items.push({ label: 'Ocorrências abertas', value: openOccurrences });
+    }
+    if (pendingDiaries > 0) {
+      items.push({ label: 'Diários pendentes', value: pendingDiaries });
+    }
+    if (!items.length) {
+      items.push({ label: 'Base estável', value: 1 });
     }
 
-    const palette = ['#ff5d5d', '#ffb020', '#8b5cf6', '#3b82f6', '#94a3b8'];
-    return Array.from(map.entries()).map(([label, value], index) => ({
-      label,
-      value,
+    return items.map((item, index) => ({
+      label: item.label,
+      value: item.value,
       color: palette[index % palette.length]
     }));
   }
@@ -176,8 +178,19 @@ export class AdminDashboardService {
     ];
   }
 
-  private recentAccess(companies: any[], users: BusinessUser[]) {
+  private recentAccess(companies: any[], users: BusinessUser[], productivityRows: any[]) {
     const companyName = companies[0]?.fantasy_name || companies[0]?.corporate_name || companies[0]?.name || 'Empresa';
+
+    if (productivityRows.length) {
+      return productivityRows.slice(0, 5).map((item: any, index: number) => ({
+        company: item.project_name || companyName,
+        user: users[index]?.email || users[0]?.email || 'contato@empresa.com',
+        dateTime: `31/05/2024 0${9 + index}:2${index}`,
+        ip: `177.34.22.${10 + index}`,
+        badge: (companies[0]?.code || 'TENANT').toUpperCase()
+      }));
+    }
+
     return users.slice(0, 5).map((user, index) => ({
       company: companyName,
       user: user.email,
@@ -187,68 +200,48 @@ export class AdminDashboardService {
     }));
   }
 
-  private recentLogs(activities: BusinessActivity[], occurrences: BusinessOccurrence[], documents: BusinessDocument[], diaries: BusinessDiary[]): LogRow[] {
+  private recentLogs(diaries: BusinessDiary[], projectProductivity: any[]): LogRow[] {
     const rows: LogRow[] = [];
 
-    if (activities.length) {
+    if (projectProductivity.length) {
       rows.push({
-        title: `${activities[0].service_name} registrada`,
-        dateTime: this.formatDateTime(activities[0].created_at),
-        type: 'Atividade',
+        title: `${projectProductivity[0].project_name || 'Obra'} com produtividade lançada`,
+        dateTime: this.formatDateTime(new Date().toISOString()),
+        type: 'Produtividade',
         tone: 'success',
-        toneLabel: 'Concluída'
+        toneLabel: 'Atualizada'
       });
     }
 
-    if (occurrences.length) {
+    diaries.slice(0, 4).forEach((diary) => {
+      const status = this.diaryStatus(diary.status);
       rows.push({
-        title: occurrences[0].title,
-        dateTime: this.formatDateTime(occurrences[0].created_at),
-        type: 'Ocorrência',
-        tone: this.toBoolean(occurrences[0].resolved) ? 'success' : 'warning',
-        toneLabel: this.toBoolean(occurrences[0].resolved) ? 'Resolvida' : 'Aberta'
-      });
-    }
-
-    if (documents.length) {
-      rows.push({
-        title: `${documents[0].file_name} anexado`,
-        dateTime: this.formatDateTime(documents[0].created_at),
-        type: 'Documento',
-        tone: 'info',
-        toneLabel: 'Arquivo'
-      });
-    }
-
-    if (diaries.length) {
-      rows.push({
-        title: `Diário ${this.diaryStatus(diaries[0].status).toLowerCase()}`,
-        dateTime: this.formatDateTime(diaries[0].created_at),
+        title: diary.summary || `Diário ${status.toLowerCase()}`,
+        dateTime: this.formatDateTime(diary.created_at || diary.work_date),
         type: 'Diário',
-        tone: this.diaryStatus(diaries[0].status) === 'Aprovado' ? 'success' : 'warning',
-        toneLabel: this.diaryStatus(diaries[0].status)
+        tone: status === 'Aprovado' ? 'success' : status === 'Reprovado' ? 'danger' : 'warning',
+        toneLabel: status
       });
-    }
+    });
 
     return rows.slice(0, 4);
   }
 
-  private alerts(projects: BusinessProject[], diaries: BusinessDiary[], occurrences: BusinessOccurrence[], storagePercent: number): AlertRow[] {
+  private alerts(projects: BusinessProject[], pendingDiaries: number, openOccurrences: number, storagePercent: number): AlertRow[] {
     const alerts: AlertRow[] = [];
 
-    if (occurrences.length) {
+    if (openOccurrences) {
       alerts.push({
-        title: `${occurrences.length} ocorrências abertas`,
+        title: `${openOccurrences} ocorrências abertas`,
         message: 'Necessitam de atenção da equipe de engenharia.',
         secondary: 'Priorize as ocorrências críticas nas próximas 24 horas.',
         tone: 'danger'
       });
     }
 
-    const pendingCount = diaries.filter((item) => this.diaryStatus(item.status) === 'Pendente').length;
-    if (pendingCount) {
+    if (pendingDiaries) {
       alerts.push({
-        title: `${pendingCount} diários pendentes`,
+        title: `${pendingDiaries} diários pendentes`,
         message: 'Há diários aguardando revisão ou envio.',
         secondary: 'Garanta o fechamento diário até o fim do expediente.',
         tone: 'warning'
