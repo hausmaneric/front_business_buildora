@@ -477,6 +477,15 @@ export class AdminResourcePageComponent {
     return this.optionLabel('teams', id, 'Selecione a equipe que receberá o funcionário');
   }
 
+  selectedTeamProjectContext(): string {
+    const id = this.createForm?.get('team_id')?.value;
+    const option = this.optionBuckets.teams.find((item) => String(item.id) === String(id));
+    if (option?.text) {
+      return `Equipe selecionada: ${option.text}`;
+    }
+    return 'A obra vinculada será identificada a partir da equipe selecionada';
+  }
+
   selectedEmployeeLabel(): string {
     const id = this.createForm?.get('employee_id')?.value;
     return this.optionLabel('employees', id, 'Selecione o funcionário para compor a equipe');
@@ -505,6 +514,7 @@ export class AdminResourcePageComponent {
     this.dialogMode = 'create';
     this.editingRow = null;
     this.createForm = this.buildForm();
+    this.bindFormExperience();
     this.dialogMessage = '';
     this.createDialog.show();
   }
@@ -518,6 +528,7 @@ export class AdminResourcePageComponent {
     this.editingRow = row;
     this.createForm = this.buildForm();
     this.createForm.patchValue(this.toFormValue(row, 'edit'));
+    this.bindFormExperience();
     this.dialogMessage = '';
     this.createDialog.show();
   }
@@ -531,6 +542,7 @@ export class AdminResourcePageComponent {
     this.editingRow = row;
     this.createForm = this.buildForm();
     this.createForm.patchValue(this.toFormValue(row, 'duplicate'));
+    this.bindFormExperience();
     this.dialogMessage = '';
     this.createDialog.show();
   }
@@ -1276,8 +1288,38 @@ export class AdminResourcePageComponent {
     this.activeQuickFilter = 'all';
     this.supportLoaded = false;
     this.createForm = this.buildForm();
+    this.bindFormExperience();
     this.ensureSupportOptions();
     this.loadRows();
+  }
+
+  private bindFormExperience(): void {
+    if (!this.createForm) {
+      return;
+    }
+
+    if (this.resource === 'teamMembers') {
+      const employeeControl = this.createForm.get('employee_id');
+      const roleControl = this.createForm.get('role_name');
+      employeeControl?.valueChanges.subscribe((employeeId) => {
+        const employee = this.employeesCache.find((item) => String(item.id) === String(employeeId));
+        const currentRole = String(roleControl?.value || '').trim();
+        if (employee?.role_name && (!currentRole || currentRole === '')) {
+          roleControl?.patchValue(employee.role_name, { emitEvent: false });
+        }
+        this.flushView();
+      });
+
+      this.createForm.get('team_id')?.valueChanges.subscribe(() => this.flushView());
+      this.createForm.get('role_name')?.valueChanges.subscribe(() => this.flushView());
+    }
+
+    if (this.resource === 'projects') {
+      this.createForm.get('client_id')?.valueChanges.subscribe(() => this.flushView());
+      this.createForm.get('engineer_user_id')?.valueChanges.subscribe(() => this.flushView());
+      this.createForm.get('deadline')?.valueChanges.subscribe(() => this.flushView());
+      this.createForm.get('status')?.valueChanges.subscribe(() => this.flushView());
+    }
   }
 
   private config(): ResourceConfig {
