@@ -782,7 +782,12 @@
 
               @switch (field.type) {
                 @case ('textarea') {
-                  <textarea class="orb-native-textarea" [formControlName]="field.controlName" [placeholder]="field.placeholder || ''" rows="4"></textarea>
+                  <ejs-textarea
+                    [formControlName]="field.controlName"
+                    cssClass="orb-input orb-textarea"
+                    [placeholder]="field.placeholder || ''"
+                    [rows]="4">
+                  </ejs-textarea>
                 }
                 @case ('select') {
                   <ejs-dropdownlist
@@ -793,10 +798,11 @@
                   </ejs-dropdownlist>
                 }
                 @case ('checkbox') {
-                  <label class="checkbox-field">
-                    <input type="checkbox" [formControlName]="field.controlName" />
-                    <span>Sim</span>
-                  </label>
+                  <ejs-checkbox
+                    cssClass="orb-checkbox"
+                    [label]="'Sim'"
+                    [formControlName]="field.controlName">
+                  </ejs-checkbox>
                 }
                 @default {
                   <ejs-textbox

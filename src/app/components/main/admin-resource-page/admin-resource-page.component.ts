@@ -2,9 +2,9 @@
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
+import { ButtonModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
-import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { TextAreaModule, TextBoxModule } from '@syncfusion/ej2-angular-inputs';
 import { DialogComponent, DialogModule } from '@syncfusion/ej2-angular-popups';
 import { Observable, finalize } from 'rxjs';
 import {
@@ -117,7 +117,7 @@ interface QuickFilterChip {
 @Component({
   selector: 'app-admin-resource-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TextBoxModule, DialogModule, ButtonModule, DropDownListModule],
+  imports: [CommonModule, ReactiveFormsModule, TextBoxModule, TextAreaModule, DialogModule, ButtonModule, CheckBoxModule, DropDownListModule],
   templateUrl: './admin-resource-page.component.html',
   styleUrl: './admin-resource-page.component.scss'
 })

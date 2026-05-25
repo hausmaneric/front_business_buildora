@@ -634,7 +634,13 @@
   font-weight: 700;
 }
 
-.orb-native-textarea {
+:host ::ng-deep .orb-textarea.e-control-wrapper,
+:host ::ng-deep .orb-textarea.e-input-group {
+  width: 100%;
+}
+
+:host ::ng-deep .orb-textarea.e-input-group textarea.e-input,
+:host ::ng-deep .orb-textarea.e-control-wrapper textarea.e-input {
   min-height: 136px;
   border-radius: 18px;
   border: 1px solid rgba(203, 213, 225, 0.9);
@@ -642,15 +648,18 @@
   color: #0f172a;
   padding: 16px 18px;
   font: inherit;
-  resize: vertical;
   line-height: 1.6;
 }
 
-.checkbox-field {
+:host ::ng-deep .orb-checkbox.e-checkbox-wrapper {
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 40px;
+}
+
+:host ::ng-deep .orb-checkbox.e-checkbox-wrapper .e-label {
+  color: #334155;
+  font-weight: 600;
 }
 
 .field-error {
