@@ -111,7 +111,7 @@
 
       @if (filteredRows.length) {
         <div class="grid-shell">
-          <table class="resource-grid" [style.min-width.px]="totalRowsMinWidth()">
+          <table class="resource-grid" [style.width.%]="100" [style.min-width.px]="totalRowsMinWidth()">
             <colgroup>
               @for (column of columns; track column.field) {
                 <col [style.width.px]="column.width" [style.min-width.px]="column.width" />
@@ -257,11 +257,6 @@
       </section>
 
       <section class="form-section-card">
-        <div class="form-section-header">
-          <div>
-            <h4>{{ formSectionTitle() }}</h4>
-          </div>
-        </div>
 
         @if (isProjectForm) {
           <div class="project-context-strip">
