@@ -201,12 +201,12 @@
   width: 100%;
   min-width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 .resource-grid th,
 .resource-grid td {
-  padding: 18px 18px;
+  padding: 16px 16px;
   text-align: left;
   vertical-align: middle;
 }
@@ -232,9 +232,9 @@
 }
 
 .resource-grid td[title] {
-  max-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .resource-grid tbody tr:hover td {
@@ -763,6 +763,12 @@
   box-shadow: none !important;
 }
 
+::ng-deep .e-dropdownlist.e-control-wrapper,
+::ng-deep .e-ddl.e-control-wrapper,
+::ng-deep .e-ddl.e-input-group {
+  padding: 0 2px !important;
+}
+
 ::ng-deep .e-input-group input,
 ::ng-deep .e-ddl .e-input-value,
 ::ng-deep .e-ddl input,
@@ -787,6 +793,17 @@
 ::ng-deep .e-ddl .e-input-value,
 ::ng-deep .e-ddl input {
   padding-left: 14px !important;
+}
+
+::ng-deep .e-ddl .e-input-value,
+::ng-deep .e-ddl .e-dropdownlist,
+::ng-deep .e-ddl input.e-input {
+  line-height: 44px !important;
+}
+
+::ng-deep .e-ddl .e-search-icon,
+::ng-deep .e-ddl .e-input-group-icon.e-ddl-icon {
+  width: 40px !important;
 }
 
 ::ng-deep .e-input-group.e-control-wrapper.e-input-focus,
@@ -963,11 +980,7 @@
 }
 
 .dialog-hero {
-  display: block;
-  padding: 0;
-  border: none;
-  background: transparent;
-  margin-bottom: -2px;
+  display: none;
 }
 
 .dialog-hero strong {
