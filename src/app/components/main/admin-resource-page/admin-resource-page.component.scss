@@ -42,27 +42,27 @@
 }
 
 .resource-body {
-  padding: 28px 28px 30px;
+  padding: 22px 22px 24px;
 }
 
+.resource-topline,
 .resource-hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 26px 28px;
-  margin-bottom: 22px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 36%),
-    linear-gradient(135deg, rgba(240, 253, 244, 0.94) 0%, rgba(255, 255, 255, 0.99) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.12);
-  box-shadow: 0 18px 42px rgba(148, 163, 184, 0.08);
+  gap: 16px;
+  padding: 0 0 16px;
+  margin-bottom: 14px;
+  border: none;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.92);
+  background: transparent;
+  box-shadow: none;
 }
 
+.resource-topline-copy,
 .resource-hero-copy {
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 
 .team-member-flow-support {
@@ -75,71 +75,87 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 24px;
+  padding: 0 10px;
   border-radius: 999px;
   background: rgba(16, 185, 129, 0.08);
   color: #059669;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+.resource-topline h3,
 .resource-hero h3 {
   margin: 0 0 6px;
-  font-size: 2rem;
+  font-size: 1.65rem;
   color: #0f172a;
 }
 
+.resource-topline p,
 .resource-hero p {
   margin: 0;
   color: #64748b;
-  line-height: 1.65;
+  line-height: 1.45;
 }
 
 .resource-summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
-.overview-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.resource-summary.compact {
+  margin: 0;
+}
+
+.resource-topline-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
-.overview-card {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-  padding: 16px 18px;
-  border-radius: 18px;
-  border: 1px solid rgba(100, 116, 139, 0.12);
+.overview-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.overview-inline-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
   background: #f8fafc;
+  color: #475569;
 }
 
-.overview-card strong {
-  font-size: 1.55rem;
+.overview-inline-card strong {
   color: #0f172a;
+  font-size: 0.92rem;
 }
 
-.overview-card.tone-success {
-  background: rgba(236, 253, 245, 0.95);
-  border-color: rgba(16, 185, 129, 0.2);
+.overview-inline-card.tone-success {
+  background: rgba(236, 253, 245, 0.92);
+  border-color: rgba(16, 185, 129, 0.18);
 }
 
-.overview-card.tone-warning {
-  background: rgba(255, 251, 235, 0.95);
-  border-color: rgba(245, 158, 11, 0.2);
+.overview-inline-card.tone-warning {
+  background: rgba(255, 251, 235, 0.92);
+  border-color: rgba(245, 158, 11, 0.18);
 }
 
-.overview-card.tone-danger {
-  background: rgba(254, 242, 242, 0.95);
-  border-color: rgba(220, 38, 38, 0.16);
+.overview-inline-card.tone-danger {
+  background: rgba(254, 242, 242, 0.92);
+  border-color: rgba(220, 38, 38, 0.14);
 }
 
 .quick-filter-rail {
@@ -182,13 +198,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 32px;
+  padding: 0 12px;
   border-radius: 999px;
   background: #f8fafc;
   border: 1px solid rgba(100, 116, 139, 0.12);
   color: #64748b;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .resource-toolbar {
@@ -200,13 +216,13 @@
 
 .toolbar-shell {
   display: grid;
-  gap: 16px;
-  margin-bottom: 22px;
-  padding: 22px;
-  border-radius: 26px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #fbfdff;
   border: 1px solid rgba(226, 232, 240, 0.92);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: none;
 }
 
 .resource-search {
@@ -645,21 +661,19 @@
 
 .create-form {
   display: grid;
-  gap: 24px;
-  padding-top: 6px;
+  gap: 18px;
+  padding-top: 2px;
 }
 
 .dialog-hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 24px 26px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 38%),
-    linear-gradient(135deg, rgba(240, 253, 244, 0.96) 0%, rgba(255, 255, 255, 0.98) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.14);
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #fbfdff;
+  border: 1px solid rgba(226, 232, 240, 0.92);
 }
 
 .dialog-eyebrow {
@@ -674,55 +688,56 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .dialog-hero strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #0f172a;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
 }
 
 .dialog-hero p {
   margin: 0;
   color: #64748b;
-  line-height: 1.65;
+  line-height: 1.45;
 }
 
 .dialog-meta {
-  display: grid;
-  gap: 10px;
-  min-width: 210px;
+  display: flex;
+  gap: 8px;
+  min-width: auto;
+  flex-wrap: wrap;
 }
 
 .dialog-meta-card {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 14px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
   border: 1px solid rgba(203, 213, 225, 0.85);
-  background: rgba(255, 255, 255, 0.82);
+  background: #fff;
   color: #334155;
-  font-size: 0.86rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .form-section-card {
-  padding: 24px;
-  border-radius: 26px;
+  padding: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(226, 232, 240, 0.95);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: #fff;
+  box-shadow: none;
 }
 
 .form-section-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .form-section-eyebrow {
@@ -740,9 +755,9 @@
 }
 
 .form-section-header h4 {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: #0f172a;
-  font-size: 1.14rem;
+  font-size: 1.05rem;
 }
 
 .form-section-header p {
@@ -755,14 +770,14 @@
 
 .form-grid {
   display: grid;
-  gap: 16px 18px;
+  gap: 14px 16px;
 }
 
 .project-context-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .project-context-strip-secondary {
@@ -772,19 +787,15 @@
 .project-context-card {
   display: grid;
   gap: 4px;
-  padding: 16px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(16, 185, 129, 0.14);
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 38%),
-    linear-gradient(180deg, rgba(240, 253, 244, 0.88) 0%, rgba(255, 255, 255, 0.98) 100%);
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background: #f8fafc;
 }
 
 .project-context-card.soft-card {
-  border-color: rgba(148, 163, 184, 0.14);
-  background:
-    radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 36%),
-    linear-gradient(180deg, rgba(248, 250, 252, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+  border-color: rgba(226, 232, 240, 0.92);
+  background: #fff;
 }
 
 .project-context-label {
@@ -797,22 +808,20 @@
 
 .project-context-card strong {
   color: #0f172a;
-  font-size: 1rem;
+  font-size: 0.94rem;
 }
 
 .project-context-card small {
   color: #64748b;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .team-member-flow-banner {
-  margin-bottom: 18px;
-  padding: 18px 20px;
-  border-radius: 22px;
-  border: 1px solid rgba(16, 185, 129, 0.14);
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 34%),
-    linear-gradient(135deg, rgba(236, 253, 245, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%);
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background: #fbfdff;
 }
 
 .team-member-flow-copy {

@@ -42,31 +42,31 @@
     </article>
   } @else {
     <article class="resource-body orb-card">
-      <div class="resource-hero">
-        <div class="resource-hero-copy">
+      <div class="resource-topline">
+        <div class="resource-topline-copy">
           <span class="resource-eyebrow">Operação empresarial</span>
           <h3>{{ title }}</h3>
           <p>{{ subtitle }}</p>
         </div>
 
-        @if (supportsCreate) {
-          <button ejs-button class="primary-action" type="button" (click)="openCreateDialog()">Novo cadastro</button>
-        }
+        <div class="resource-topline-actions">
+          @if (supportsCreate) {
+            <button ejs-button class="primary-action" type="button" (click)="openCreateDialog()">Novo cadastro</button>
+          }
+        </div>
       </div>
 
-      <div class="resource-summary">
-        <span class="metric-pill">Total: <strong>{{ totalItems }}</strong></span>
+      <div class="resource-summary compact">
+        <span class="metric-pill">Total <strong>{{ totalItems }}</strong></span>
         <span class="metric-pill">Página: <strong>{{ currentPage }}</strong></span>
-        <span class="metric-pill">Mostrando: <strong>{{ filteredRows.length }}</strong></span>
         <span class="metric-pill">Busca: <strong>{{ appliedSearch || 'Sem filtro' }}</strong></span>
       </div>
 
-      <div class="overview-grid" *ngIf="overviewCards.length">
-        @for (card of overviewCards; track card.label) {
-          <article class="overview-card" [class]="'tone-' + (card.tone || 'default')">
-            <span class="overview-label">{{ card.label }}</span>
+      <div class="overview-inline" *ngIf="filteredRows.length && visibleOverviewCards().length">
+        @for (card of visibleOverviewCards(); track card.label) {
+          <article class="overview-inline-card" [class]="'tone-' + (card.tone || 'default')">
+            <span>{{ card.label }}</span>
             <strong>{{ card.value }}</strong>
-            <small>{{ card.detail }}</small>
           </article>
         }
       </div>

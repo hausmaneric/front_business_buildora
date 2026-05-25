@@ -751,6 +751,10 @@ export class AdminResourcePageComponent {
     return this.resource === 'diaries' ? 280 : 184;
   }
 
+  visibleOverviewCards(): ResourceOverviewCard[] {
+    return this.overviewCards.slice(0, 3);
+  }
+
   dialogTitle(): string {
     if (this.dialogMode === 'edit') {
       return `Editar ${this.title}`;
