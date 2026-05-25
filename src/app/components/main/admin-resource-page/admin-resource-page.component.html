@@ -44,7 +44,6 @@
     <article class="resource-body orb-card">
       <div class="resource-topline">
         <div class="resource-topline-copy">
-          <span class="resource-eyebrow">Operação empresarial</span>
           <h3>{{ title }}</h3>
           <p>{{ subtitle }}</p>
         </div>
@@ -54,21 +53,6 @@
             <button ejs-button class="primary-action" type="button" (click)="openCreateDialog()">Novo cadastro</button>
           }
         </div>
-      </div>
-
-      <div class="resource-summary compact">
-        <span class="metric-pill">Total <strong>{{ totalItems }}</strong></span>
-        <span class="metric-pill">Página: <strong>{{ currentPage }}</strong></span>
-        <span class="metric-pill">Busca: <strong>{{ appliedSearch || 'Sem filtro' }}</strong></span>
-      </div>
-
-      <div class="overview-inline" *ngIf="filteredRows.length && visibleOverviewCards().length">
-        @for (card of visibleOverviewCards(); track card.label) {
-          <article class="overview-inline-card" [class]="'tone-' + (card.tone || 'default')">
-            <span>{{ card.label }}</span>
-            <strong>{{ card.value }}</strong>
-          </article>
-        }
       </div>
 
       @if (quickFilters.length > 1) {
@@ -272,23 +256,16 @@
     <form class="create-form" [formGroup]="createForm">
       <section class="dialog-hero">
         <div class="dialog-hero-copy">
-          <span class="dialog-eyebrow">{{ dialogMode === 'edit' ? 'Edição' : dialogMode === 'duplicate' ? 'Duplicação' : 'Novo cadastro' }}</span>
           <strong>{{ dialogTitle() }}</strong>
-          <p>Preencha os campos principais com atenção. Esta tela foi organizada para facilitar a operação diária, reduzir erros e acelerar o cadastro da equipe.</p>
-        </div>
-        <div class="dialog-meta">
-          <span class="dialog-meta-card">Módulo: {{ title }}</span>
-          <span class="dialog-meta-card">Campos: {{ activeFields.length }}</span>
+          <p>Preencha apenas o necessário para concluir este cadastro.</p>
         </div>
       </section>
 
       <section class="form-section-card">
         <div class="form-section-header">
           <div>
-            <span class="form-section-eyebrow">Dados principais</span>
             <h4>{{ formSectionTitle() }}</h4>
           </div>
-          <p>{{ formSectionDescription() }}</p>
         </div>
 
         @if (isProjectForm) {
