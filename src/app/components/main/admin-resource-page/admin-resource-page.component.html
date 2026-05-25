@@ -76,8 +76,6 @@
           </div>
           <button ejs-button cssClass="dialog-secondary" type="button" (click)="clearSearch()">Limpar</button>
           <button ejs-button cssClass="dialog-primary" type="button" (click)="applySearch()">Buscar</button>
-          <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportCsv()">Exportar CSV</button>
-          <button ejs-button cssClass="dialog-secondary" type="button" (click)="exportJson()">Exportar JSON</button>
         </div>
 
         <div class="resource-controls">
@@ -182,13 +180,12 @@
           <div class="state-hero">
             <div class="state-icon state-icon-empty">+</div>
             <div class="state-copy">
-              <span class="state-eyebrow">Base vazia</span>
               <strong>Nenhum registro encontrado</strong>
-              <p>Ajuste a busca ou crie um novo cadastro para este módulo.</p>
+              <p>Crie um novo cadastro para começar.</p>
             </div>
           </div>
           @if (supportsCreate) {
-            <button ejs-button cssClass="dialog-primary" type="button" (click)="openCreateDialog()">Criar primeiro registro</button>
+            <button ejs-button cssClass="dialog-primary" type="button" (click)="openCreateDialog()">Novo cadastro</button>
           }
         </div>
       }
