@@ -859,7 +859,8 @@
 .form-section-header p,
 .project-context-strip,
 .team-member-flow-banner,
-.dialog-actions-copy {
+.dialog-actions-copy,
+.form-hint {
   display: none !important;
 }
 
@@ -986,10 +987,6 @@
 
 .form-field label {
   font-size: 0.88rem;
-}
-
-.form-hint {
-  font-size: 0.76rem;
 }
 
 .dialog-actions {
