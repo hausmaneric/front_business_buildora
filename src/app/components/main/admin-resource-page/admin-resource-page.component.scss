@@ -685,6 +685,13 @@
 
 .form-field.full-span {
   grid-column: 1 / -1;
+  width: 100%;
+}
+
+.form-field.full-span ::ng-deep .orb-textarea.e-control-wrapper,
+.form-field.full-span ::ng-deep .orb-textarea.e-input-group,
+.form-field.full-span ::ng-deep .orb-textarea textarea.e-input {
+  width: 100% !important;
 }
 
 .form-field label {
@@ -804,6 +811,17 @@
 ::ng-deep .e-ddl .e-search-icon,
 ::ng-deep .e-ddl .e-input-group-icon.e-ddl-icon {
   width: 40px !important;
+}
+
+::ng-deep .orb-input.e-ddl.e-control-wrapper,
+::ng-deep .orb-input.e-ddl.e-input-group {
+  display: flex !important;
+  align-items: center;
+}
+
+::ng-deep .orb-input.e-ddl .e-input-value,
+::ng-deep .orb-input.e-ddl input.e-input {
+  min-height: 46px !important;
 }
 
 ::ng-deep .e-input-group.e-control-wrapper.e-input-focus,

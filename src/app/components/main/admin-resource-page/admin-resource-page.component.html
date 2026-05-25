@@ -82,6 +82,7 @@
           <div class="control-item">
             <label>Ordenar por</label>
             <ejs-dropdownlist
+              cssClass="orb-input"
               [dataSource]="sortOptions"
               [fields]="{ text: 'text', value: 'id' }"
               [value]="sortField"
@@ -91,6 +92,7 @@
           <div class="control-item">
             <label>Direção</label>
             <ejs-dropdownlist
+              cssClass="orb-input"
               [dataSource]="sortDirectionOptions"
               [fields]="{ text: 'text', value: 'id' }"
               [value]="sortDirection"
@@ -100,6 +102,7 @@
           <div class="control-item">
             <label>Tamanho da página</label>
             <ejs-dropdownlist
+              cssClass="orb-input"
               [dataSource]="pageSizeOptions"
               [fields]="{ text: 'text', value: 'id' }"
               [value]="pageSize"
@@ -117,7 +120,9 @@
                 @for (column of columns; track column.field) {
                   <th [title]="column.headerText" [style.min-width.px]="column.width">{{ column.headerText }}</th>
                 }
-                <th class="actions-column" [style.width.px]="actionColumnWidth()" [style.min-width.px]="actionColumnWidth()">Ações</th>
+                @if (showActionsColumn()) {
+                  <th class="actions-column" [style.width.px]="actionColumnWidth()" [style.min-width.px]="actionColumnWidth()">Ações</th>
+                }
               </tr>
             </thead>
             <tbody>
@@ -134,6 +139,7 @@
                       }
                     </td>
                   }
+                  @if (showActionsColumn()) {
                   <td class="actions-column">
                     <div class="row-actions">
                       <button ejs-button cssClass="row-action edit icon-only" type="button" title="Editar" [disabled]="!canEdit(row)" (click)="openEditDialog(row)">
@@ -155,6 +161,7 @@
                       </button>
                     </div>
                   </td>
+                  }
                 </tr>
               }
             </tbody>
@@ -750,6 +757,7 @@
                 }
                 @case ('select') {
                   <ejs-dropdownlist
+                    cssClass="orb-input"
                     [formControlName]="field.controlName"
                     [dataSource]="controlOptions(field)"
                     [fields]="{ text: 'text', value: 'id' }"

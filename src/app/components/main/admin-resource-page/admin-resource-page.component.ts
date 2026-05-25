@@ -1224,6 +1224,10 @@ export class AdminResourcePageComponent {
     return this.config().supportsDelete;
   }
 
+  showActionsColumn(): boolean {
+    return this.config().supportsEdit || this.config().supportsDuplicate || this.config().supportsDelete || this.resource === 'diaries';
+  }
+
   canApprove(row: any): boolean {
     return this.resource === 'diaries' && !this.isDiaryStatus(row?.status, 'aprovado');
   }
